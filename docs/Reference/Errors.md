@@ -64,7 +64,6 @@
     - [FST_ERR_FAILED_ERROR_SERIALIZATION](#fst_err_failed_error_serialization)
     - [FST_ERR_MISSING_SERIALIZATION_FN](#fst_err_missing_serialization_fn)
     - [FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN](#fst_err_missing_contenttype_serialization_fn)
-    - [FST_ERR_OUTPUT_VALIDATION](#fst_err_output_validation)
     - [FST_ERR_REQ_INVALID_VALIDATION_INVOCATION](#fst_err_req_invalid_validation_invocation)
     - [FST_ERR_SCH_MISSING_ID](#fst_err_sch_missing_id)
     - [FST_ERR_SCH_ALREADY_PRESENT](#fst_err_sch_already_present)
@@ -72,6 +71,8 @@
     - [FST_ERR_SCH_DUPLICATE](#fst_err_sch_duplicate)
     - [FST_ERR_SCH_VALIDATION_BUILD](#fst_err_sch_validation_build)
     - [FST_ERR_SCH_SERIALIZATION_BUILD](#fst_err_sch_serialization_build)
+    - [FST_ERR_SCH_OUTPUT_VALIDATION_BUILD](#fst_err_sch_output_validation_build)
+    - [FST_ERR_SCH_OUTPUT_VALIDATION](#fst_err_sch_output_validation)
     - [FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX](#fst_err_sch_response_schema_not_nested_2xx)
     - [FST_ERR_INIT_OPTS_INVALID](#fst_err_init_opts_invalid)
     - [FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE](#fst_err_force_close_connections_idle_not_available)
@@ -431,7 +432,6 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_failed_error_serialization">FST_ERR_FAILED_ERROR_SERIALIZATION</a> | Failed to serialize an error. | - | [#4601](https://github.com/fastify/fastify/pull/4601) |
 | <a id="fst_err_missing_serialization_fn">FST_ERR_MISSING_SERIALIZATION_FN</a> | Missing serialization function. | Add a serialization function. | [#3970](https://github.com/fastify/fastify/pull/3970) |
 | <a id="fst_err_missing_contenttype_serialization_fn">FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN</a> | Missing `Content-Type` serialization function. | Add a serialization function. | [#4264](https://github.com/fastify/fastify/pull/4264) |
-| <a id="fst_err_output_validation">FST_ERR_OUTPUT_VALIDATION</a> | The response payload does not match the route response schema. | Fix the handler payload or the response schema. | - |
 | <a id="fst_err_req_invalid_validation_invocation">FST_ERR_REQ_INVALID_VALIDATION_INVOCATION</a> | Invalid validation invocation. Missing validation function for HTTP part nor schema provided. | Add a validation function. | [#3970](https://github.com/fastify/fastify/pull/3970) |
 | <a id="fst_err_sch_missing_id">FST_ERR_SCH_MISSING_ID</a> | The schema provided does not have `$id` property. | Add a `$id` property. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_sch_already_present">FST_ERR_SCH_ALREADY_PRESENT</a> | A schema with the same `$id` already exists. | Use a different `$id`. | [#1168](https://github.com/fastify/fastify/pull/1168) |
@@ -439,6 +439,8 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_sch_duplicate">FST_ERR_SCH_DUPLICATE</a> | Schema with the same attribute already present! | Use a different attribute. | [#1954](https://github.com/fastify/fastify/pull/1954) |
 | <a id="fst_err_sch_validation_build">FST_ERR_SCH_VALIDATION_BUILD</a> | The JSON schema provided for validation to a route is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_serialization_build">FST_ERR_SCH_SERIALIZATION_BUILD</a> | The JSON schema provided for serialization of a route response is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
+| <a id="fst_err_sch_output_validation_build">FST_ERR_SCH_OUTPUT_VALIDATION_BUILD</a> | The JSON schema provided for the output validation of a route response is not valid. | Fix the JSON schema. | - |
+| <a id="fst_err_sch_output_validation">FST_ERR_SCH_OUTPUT_VALIDATION</a> | The response payload does not match the route response schema. | Fix the handler payload or the response schema. | - |
 | <a id="fst_err_sch_response_schema_not_nested_2xx">FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX</a> | Response schemas should be nested under a valid status code (2XX). | Use a valid status code. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_init_opts_invalid">FST_ERR_INIT_OPTS_INVALID</a> | Invalid initialization options. | Use valid initialization options. | [#1471](https://github.com/fastify/fastify/pull/1471) |
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |

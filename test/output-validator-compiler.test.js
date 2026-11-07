@@ -16,7 +16,7 @@ const atLeastTen = {
 function outputValidationFailure (message) {
   return {
     statusCode: 500,
-    code: 'FST_ERR_OUTPUT_VALIDATION',
+    code: 'FST_ERR_SCH_OUTPUT_VALIDATION',
     error: 'Internal Server Error',
     message: `Response validation failed. Errors: ${message}`
   }
@@ -83,7 +83,7 @@ test('onReady hook has the output validator compiler ready', async t => {
   await fastify.ready()
 })
 
-test('a response that violates the response schema fails with FST_ERR_OUTPUT_VALIDATION', async t => {
+test('a response that violates the response schema fails with FST_ERR_SCH_OUTPUT_VALIDATION', async t => {
   t.plan(4)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -106,7 +106,7 @@ test('the output validation error reaches the error handler', async t => {
   t.after(() => fastify.close())
 
   fastify.setErrorHandler((error, request, reply) => {
-    t.assert.strictEqual(error.code, 'FST_ERR_OUTPUT_VALIDATION')
+    t.assert.strictEqual(error.code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
     t.assert.strictEqual(error.validationContext, 'response')
     t.assert.strictEqual(error.validation[0].keyword, 'minimum')
     reply.code(502).send({ handled: true })
@@ -143,9 +143,9 @@ test('the output validator is selected by status code, NXX wildcard and default 
     reply.code(Number(request.params.code)).send({ n: 300 })
   })
 
-  t.assert.strictEqual((await fastify.inject('/201')).payload, 'FST_ERR_OUTPUT_VALIDATION', 'exact status code')
+  t.assert.strictEqual((await fastify.inject('/201')).payload, 'FST_ERR_SCH_OUTPUT_VALIDATION', 'exact status code')
   t.assert.strictEqual((await fastify.inject('/202')).statusCode, 202, 'NXX wildcard')
-  t.assert.strictEqual((await fastify.inject('/404')).payload, 'FST_ERR_OUTPUT_VALIDATION', 'default entry')
+  t.assert.strictEqual((await fastify.inject('/404')).payload, 'FST_ERR_SCH_OUTPUT_VALIDATION', 'default entry')
 })
 
 test('the output validator is selected by content type', async t => {
@@ -168,7 +168,7 @@ test('the output validator is selected by content type', async t => {
     reply.type(request.params.type === 'v2' ? 'application/vnd.v2+json' : 'application/json').send({ n: 1 })
   })
 
-  t.assert.strictEqual((await fastify.inject('/v1')).json().code, 'FST_ERR_OUTPUT_VALIDATION')
+  t.assert.strictEqual((await fastify.inject('/v1')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
   t.assert.deepStrictEqual((await fastify.inject('/v2')).json(), { n: 1 })
 })
 
@@ -306,7 +306,7 @@ test('the outputValidatorOptions customOptions win over the defaults', async t =
     schema: { response: { 200: { type: 'object', whatever: 'unknown keyword' } } }
   }, () => ({}))
 
-  await t.assert.rejects(strict.ready(), { code: 'FST_ERR_SCH_SERIALIZATION_BUILD' })
+  await t.assert.rejects(strict.ready(), { code: 'FST_ERR_SCH_OUTPUT_VALIDATION_BUILD' })
 })
 
 test('the outputValidatorOptions plugins and onCreate reach the default output pool', async t => {
@@ -327,7 +327,7 @@ test('the outputValidatorOptions plugins and onCreate reach the default output p
   }, (request) => ({ n: Number(request.params.n) }))
 
   t.assert.strictEqual((await fastify.inject('/2')).statusCode, 200)
-  t.assert.strictEqual((await fastify.inject('/3')).json().code, 'FST_ERR_OUTPUT_VALIDATION')
+  t.assert.strictEqual((await fastify.inject('/3')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
   t.assert.ok(created > 0)
 })
 
@@ -387,7 +387,7 @@ test('a custom output validator can reject a payload without errors', async t =>
 
   t.assert.deepStrictEqual((await fastify.inject('/')).json(), {
     statusCode: 500,
-    code: 'FST_ERR_OUTPUT_VALIDATION',
+    code: 'FST_ERR_SCH_OUTPUT_VALIDATION',
     error: 'Internal Server Error',
     message: 'Response validation failed.'
   })
@@ -434,7 +434,7 @@ test('Encapsulation: a child context inherits the shared schemas of its parent',
   })
 
   t.assert.deepStrictEqual((await fastify.inject('/10')).json(), { n: 10 })
-  t.assert.strictEqual((await fastify.inject('/1')).json().code, 'FST_ERR_OUTPUT_VALIDATION')
+  t.assert.strictEqual((await fastify.inject('/1')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
 })
 
 test('setSchemaController: the outputValidatorOptions of a context apply to its routes only', async t => {
@@ -481,6 +481,6 @@ test('setSchemaController: a context can replace buildOutputValidator', async t 
     child.get('/', { schema }, () => ({ n: 1 }))
   }, { prefix: '/lenient' })
 
-  t.assert.strictEqual((await fastify.inject('/')).json().code, 'FST_ERR_OUTPUT_VALIDATION')
+  t.assert.strictEqual((await fastify.inject('/')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
   t.assert.deepStrictEqual((await fastify.inject('/lenient')).json(), { n: 1 })
 })

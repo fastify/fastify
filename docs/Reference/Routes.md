@@ -98,7 +98,7 @@ fastify.route(options)
   the route. To access the default factory, you can access
   `instance.childLoggerFactory`. Note that this will point to Fastify's default
   `childLoggerFactory` only if a plugin hasn't overridden it already.
-* `validatorCompiler({ schema, method, url, httpPart })`: function that builds
+* `inputValidatorCompiler({ schema, method, url, httpPart })`: function that builds
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.

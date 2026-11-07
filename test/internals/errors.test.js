@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 94
+const expectedErrors = 95
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -511,6 +511,16 @@ test('FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN')
   t.assert.strictEqual(error.message, 'Missing serialization function. Key "%s:%s"')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_OUTPUT_VALIDATION', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_OUTPUT_VALIDATION()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_OUTPUT_VALIDATION')
+  t.assert.strictEqual(error.message, 'Response validation failed. Errors: %s')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

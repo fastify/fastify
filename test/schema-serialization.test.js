@@ -38,10 +38,12 @@ test('basic test', (t, testDone) => {
 test('custom serializer options', (t, testDone) => {
   t.plan(3)
 
+  // the output validator accepts every payload: the test covers the serializer
   const fastify = Fastify({
     serializerOpts: {
       rounding: 'ceil'
-    }
+    },
+    schemaController: { compilersFactory: { buildOutputValidator: () => () => () => true } }
   })
   fastify.get('/', {
     schema: {
@@ -338,14 +340,16 @@ test('Different content types', (t, testDone) => {
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, '"[object Object]"')
-    t.assert.strictEqual(res.statusCode, 201)
+    // the payload does not match the response schema: the output validation fails
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.payload, '{}')
     completion.stepIn()
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, '"Processing exclusive content"')
-    t.assert.strictEqual(res.statusCode, 202)
+    // the payload does not match the response schema: the output validation fails
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.payload, '{}')
     completion.stepIn()
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
@@ -1107,7 +1111,10 @@ test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION
 test('Errors in serializer send to errorHandler', async t => {
   let savedError
 
-  const fastify = Fastify()
+  // the output validator accepts every payload: the test covers the serializer
+  const fastify = Fastify({
+    schemaController: { compilersFactory: { buildOutputValidator: () => () => () => true } }
+  })
   fastify.get('/', {
     schema: {
       response: {

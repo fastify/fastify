@@ -376,6 +376,23 @@ test('compilersFactory.buildOutputValidator replaces the default output pool', a
   t.assert.strictEqual(res.json().message, 'Response validation failed. Errors: /a must be >= 10; /b must be >= 10')
 })
 
+test('a custom output validator can reject a payload without errors', async t => {
+  t.plan(1)
+  const fastify = Fastify({
+    schemaController: { compilersFactory: { buildOutputValidator: () => () => () => false } }
+  })
+  t.after(() => fastify.close())
+
+  fastify.get('/', { schema: { response: atLeastTen } }, () => ({ n: 10 }))
+
+  t.assert.deepStrictEqual((await fastify.inject('/')).json(), {
+    statusCode: 500,
+    code: 'FST_ERR_OUTPUT_VALIDATION',
+    error: 'Internal Server Error',
+    message: 'Response validation failed.'
+  })
+})
+
 test('Encapsulation: each context validates the responses with its own shared schemas', async t => {
   t.plan(4)
   const fastify = Fastify()

@@ -256,3 +256,29 @@ test('removeAllContentTypeParsers should support encapsulation', async (t) => {
   t.assert.strictEqual(result2.status, 200)
   t.assert.equal(JSON.parse(await result2.text()).test, 1)
 })
+
+test('removeContentTypeParser removes the catch-all parser added as "*"', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser('*', function (req, payload, done) {
+    payload.on('data', () => {})
+    payload.on('end', () => { done(null, 'catch-all') })
+  })
+
+  fastify.removeContentTypeParser('*')
+
+  fastify.post('/', (req, reply) => reply.send(req.body))
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/octet-stream' },
+    payload: 'anything'
+  })
+
+  t.assert.strictEqual(res.statusCode, 415)
+  t.assert.strictEqual(JSON.parse(res.body).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+})

@@ -103,3 +103,60 @@ test('request.mediaType supported in hooks', async (t) => {
   const body = await response.json()
   t.assert.strictEqual(body.mediaType, 'application/json')
 })
+
+test('request.mediaType does not throw when a custom header parser throws in a deferred hook', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.setContentTypeHeaderParser(() => {
+    throw new Error('header parser boom')
+  })
+
+  fastify.addHook('onRequest', (request, reply, done) => {
+    setImmediate(() => {
+      try {
+        t.assert.strictEqual(request.mediaType, undefined)
+      } catch (error) {
+        done(error)
+        return
+      }
+      done()
+    })
+  })
+  fastify.get('/', () => 'ok')
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'content-type': 'text/plain' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'ok')
+})
+
+test('request.mediaType returns undefined for non-object header parser results', async (t) => {
+  for (const result of [undefined, null, false, 0, 'text/plain', Symbol('invalid'), 1n, () => {}]) {
+    await t.test(result === null ? 'null' : typeof result, async (t) => {
+      t.plan(3)
+
+      const fastify = Fastify()
+      t.after(() => fastify.close())
+      fastify.setContentTypeHeaderParser(() => result)
+      fastify.get('/', (request, reply) => {
+        t.assert.strictEqual(request.mediaType, undefined)
+        reply.send('ok')
+      })
+
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/',
+        headers: { 'content-type': 'text/plain' }
+      })
+
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.body, 'ok')
+    })
+  }
+})

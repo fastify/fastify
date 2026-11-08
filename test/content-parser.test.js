@@ -769,7 +769,6 @@ test('content-type fail when not a valid type', async t => {
   }
 })
 
-
 test('string body keeps multi-byte characters split across chunks', async t => {
   t.plan(2)
 
@@ -829,7 +828,6 @@ test('string body with invalid UTF-8 is not treated as a content-length mismatch
   t.assert.strictEqual(res.body, 'a�b')
 })
 
-
 test('a synchronous throw in a custom parser is handled like a route error, not an uncaught exception', async t => {
   await t.test('stream-mode parser', async t => {
     t.plan(2)
@@ -874,6 +872,79 @@ const malformedJson = 'application/json,application/json'
 function recoverMalformedJson (headerValue, defaultParser) {
   return defaultParser(headerValue === malformedJson ? 'application/json' : headerValue)
 }
+
+test('custom header parser errors reach the error handler', async t => {
+  for (const inspectMediaType of [false, true]) {
+    for (const statusCode of [500, 422]) {
+      await t.test(`${statusCode}, inspect request.mediaType: ${inspectMediaType}`, async t => {
+        t.plan(inspectMediaType ? 4 : 3)
+
+        const fastify = Fastify()
+        t.after(() => fastify.close())
+        const parserError = new Error('header parser boom')
+        if (statusCode !== 500) parserError.statusCode = statusCode
+        fastify.setContentTypeHeaderParser(() => {
+          throw parserError
+        })
+
+        let receivedError
+        fastify.setErrorHandler((error, request, reply) => {
+          receivedError = error
+          reply.send(error)
+        })
+        if (inspectMediaType) {
+          fastify.addHook('onRequest', (request, reply, done) => {
+            t.assert.strictEqual(request.mediaType, undefined)
+            done()
+          })
+        }
+        fastify.post('/', () => {
+          t.assert.fail('the route handler must not run')
+        })
+
+        const response = await fastify.inject({
+          method: 'POST',
+          url: '/',
+          headers: { 'content-type': 'text/plain' },
+          payload: 'hello'
+        })
+
+        t.assert.strictEqual(receivedError, parserError)
+        t.assert.strictEqual(response.statusCode, statusCode)
+        t.assert.strictEqual(response.json().message, parserError.message)
+      })
+    }
+  }
+})
+
+test('non-object header parser results are rejected after inspecting request.mediaType', async t => {
+  for (const result of [undefined, null, false, 0, 'text/plain', Symbol('invalid'), 1n, () => {}]) {
+    await t.test(result === null ? 'null' : typeof result, async t => {
+      t.plan(3)
+
+      const fastify = Fastify()
+      t.after(() => fastify.close())
+      fastify.setContentTypeHeaderParser(() => result)
+      fastify.addHook('onRequest', (request, reply, done) => {
+        t.assert.strictEqual(request.mediaType, undefined)
+        done()
+      })
+      fastify.post('/', () => {
+        t.assert.fail('the route handler must not run')
+      })
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: '/',
+        headers: { 'content-type': 'text/plain' },
+        payload: 'hello'
+      })
+
+      t.assert.strictEqual(response.statusCode, 415)
+      t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+    })
+  }
+})
 
 test('repairs a malformed content-type before parsing and validation', async t => {
   const fastify = Fastify()

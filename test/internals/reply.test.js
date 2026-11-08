@@ -136,7 +136,7 @@ test('reply.send returns itself', t => {
 
 test('reply.serializer should set a custom serializer', t => {
   t.plan(2)
-  const reply = new Reply(null, null, null)
+  const reply = new Reply(null, {}, null)
   t.assert.strictEqual(reply[kReplySerializer], null)
   reply.serializer('serializer')
   t.assert.strictEqual(reply[kReplySerializer], 'serializer')
@@ -1478,7 +1478,7 @@ test('should throw when trying to modify the reply.sent property', (t, done) => 
 test('reply.elapsedTime should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const response = { statusCode: 200 }
-  const reply = new Reply(response, null)
+  const reply = new Reply(response, {})
   t.assert.strictEqual(reply.elapsedTime, 0)
 })
 

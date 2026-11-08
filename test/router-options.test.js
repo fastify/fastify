@@ -151,6 +151,7 @@ test('Should set is404 flag for unmatched paths', (t, done) => {
 test('request.signal is available in frameworkErrors', async t => {
   const fastify = Fastify({
     frameworkErrors: (err, request, reply) => {
+      t.assert.ok(err instanceof FST_ERR_BAD_URL)
       t.assert.ok(request.signal instanceof AbortSignal)
       reply.code(400).send()
     }

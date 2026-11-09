@@ -419,3 +419,68 @@ test('do not crash with error in follow up onReady hook', async t => {
 
   await t.assert.rejects(fastify.ready())
 })
+
+test('hooks, routes and decorators cannot be added once ready() has resolved', async t => {
+  t.plan(6)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.ready()
+
+  t.assert.throws(() => fastify.addHook('onClose', async () => {}), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  t.assert.throws(() => fastify.addHook('preClose', async () => {}), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  t.assert.throws(() => fastify.decorate('late', true), { code: 'FST_ERR_DEC_AFTER_START' })
+  t.assert.throws(
+    () => fastify.addContentTypeParser('text/late', (req, body, done) => done(null, body)),
+    { code: 'FST_ERR_CTP_INSTANCE_ALREADY_STARTED' }
+  )
+  t.assert.throws(() => fastify.get('/late', () => 'late'), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+
+  // the rejected route must not be left half-registered in the router
+  const res = await fastify.inject('/late')
+  t.assert.strictEqual(res.statusCode, 404)
+})
+
+test('hooks, routes and decorators cannot be added from the ready() callback', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    t.assert.throws(() => fastify.addHook('onClose', async () => {}), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+    t.assert.throws(() => fastify.decorate('late', true), { code: 'FST_ERR_DEC_AFTER_START' })
+    t.assert.throws(() => fastify.get('/late', () => 'late'), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+    fastify.close(done)
+  })
+})
+
+test('onReady cannot add onClose hooks', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addHook('onReady', async function () {
+    // it would run before the server stops listening, while requests are still in flight
+    this.addHook('onClose', async () => {
+      t.assert.fail('should not be registered')
+    })
+  })
+
+  await t.assert.rejects(fastify.ready(), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  await fastify.close()
+})
+
+test('onReady cannot add routes, and they are not left in the router', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addHook('onReady', function (done) {
+    t.assert.throws(() => this.get('/late', () => 'late'), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+    done()
+  })
+
+  await fastify.ready()
+
+  const res = await fastify.inject('/late')
+  t.assert.strictEqual(res.statusCode, 404)
+})

@@ -12,6 +12,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onRoute', function (instance, routeOptions) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       t.assert.strictEqual(routeOptions.url, '/root')
       seen.push('onRoute')
     })
@@ -20,6 +21,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onRegister', function (instance, newInstance, opts) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       t.assert.strictEqual(Object.getPrototypeOf(newInstance), fastify)
       t.assert.strictEqual(opts.prefix, '/sub')
       registeredChild = newInstance
@@ -29,6 +31,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onReady', function (instance, done) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onReady:cb')
       done()
     })
@@ -36,6 +39,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onReady', async function (instance) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onReady:async')
     })
 
@@ -47,6 +51,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onListen:cb')
       done()
     })
@@ -54,6 +59,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onListen', async function (instance) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onListen:async')
       onListenDoneResolve()
     })
@@ -61,6 +67,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('preClose', function (instance, done) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('preClose:cb')
       done()
     })
@@ -68,12 +75,14 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('preClose', async function (instance) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('preClose:async')
     })
 
     fastify.addHook('onClose', function (instance, done) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onClose:cb')
       done()
     })
@@ -81,6 +90,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     fastify.addHook('onClose', async function (instance) {
       t.assert.strictEqual(this, fastify)
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       seen.push('onClose:async')
     })
 
@@ -227,7 +237,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
       child.decorate('scopeName', 'child')
 
       child.addHook('onRoute', function (instance, routeOptions) {
-        t.assert.strictEqual(this, instance)
+        t.assert.strictEqual(instance, this)
         if (routeOptions.url === '/child/ping') {
           t.assert.strictEqual(instance, child)
           t.assert.strictEqual(instance.scopeName, 'child')
@@ -247,24 +257,28 @@ describe('Application hooks instance reference consistency (#4967)', () => {
         })
       })
 
-      child.addHook('onReady', (instance, done) => {
+      child.addHook('onReady', function (instance, done) {
         t.assert.strictEqual(instance, child)
+        t.assert.strictEqual(instance, this)
         t.assert.strictEqual(instance.scopeName, 'child')
         done()
       })
 
-      child.addHook('onListen', (instance, done) => {
+      child.addHook('onListen', function (instance, done) {
         t.assert.strictEqual(instance, child)
+        t.assert.strictEqual(instance, this)
         done()
       })
 
-      child.addHook('preClose', (instance, done) => {
+      child.addHook('preClose', function (instance, done) {
         t.assert.strictEqual(instance, child)
+        t.assert.strictEqual(instance, this)
         done()
       })
 
-      child.addHook('onClose', (instance, done) => {
+      child.addHook('onClose', function (instance, done) {
         t.assert.strictEqual(instance, child)
+        t.assert.strictEqual(instance, this)
         done()
       })
 
@@ -274,22 +288,26 @@ describe('Application hooks instance reference consistency (#4967)', () => {
         capturedGrandchild = grandchild
         grandchild.decorate('scopeName', 'grandchild')
 
-        grandchild.addHook('onReady', async (instance) => {
+        grandchild.addHook('onReady', async function (instance) {
           t.assert.strictEqual(instance, grandchild)
+          t.assert.strictEqual(instance, this)
           t.assert.strictEqual(instance.scopeName, 'grandchild')
         })
 
-        grandchild.addHook('onListen', async (instance) => {
+        grandchild.addHook('onListen', async function (instance) {
           t.assert.strictEqual(instance, grandchild)
+          t.assert.strictEqual(instance, this)
           onListenDoneResolve()
         })
 
-        grandchild.addHook('preClose', async (instance) => {
+        grandchild.addHook('preClose', async function (instance) {
           t.assert.strictEqual(instance, grandchild)
+          t.assert.strictEqual(instance, this)
         })
 
-        grandchild.addHook('onClose', async (instance) => {
+        grandchild.addHook('onClose', async function (instance) {
           t.assert.strictEqual(instance, grandchild)
+          t.assert.strictEqual(instance, this)
         })
 
         grandchild.get('/pong', async () => 'pong')
@@ -306,6 +324,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     t.assert.strictEqual(onRegisterCalls[0].hookOwner, 'root')
     t.assert.strictEqual(onRegisterCalls[0].thisRef, fastify)
     t.assert.strictEqual(onRegisterCalls[0].instance, fastify)
+    t.assert.strictEqual(onRegisterCalls[0].instance, onRegisterCalls[0].thisRef)
     t.assert.strictEqual(onRegisterCalls[0].newInstance, capturedChild)
     t.assert.strictEqual(onRegisterCalls[0].prefix, '/child')
 
@@ -313,6 +332,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     t.assert.strictEqual(onRegisterCalls[1].hookOwner, 'root')
     t.assert.strictEqual(onRegisterCalls[1].thisRef, capturedChild)
     t.assert.strictEqual(onRegisterCalls[1].instance, capturedChild)
+    t.assert.strictEqual(onRegisterCalls[1].instance, onRegisterCalls[1].thisRef)
     t.assert.strictEqual(onRegisterCalls[1].newInstance, capturedGrandchild)
     t.assert.strictEqual(onRegisterCalls[1].prefix, '/grand')
 
@@ -320,6 +340,7 @@ describe('Application hooks instance reference consistency (#4967)', () => {
     t.assert.strictEqual(onRegisterCalls[2].hookOwner, 'child')
     t.assert.strictEqual(onRegisterCalls[2].thisRef, capturedChild)
     t.assert.strictEqual(onRegisterCalls[2].instance, capturedChild)
+    t.assert.strictEqual(onRegisterCalls[2].instance, onRegisterCalls[2].thisRef)
     t.assert.strictEqual(onRegisterCalls[2].newInstance, capturedGrandchild)
     t.assert.strictEqual(onRegisterCalls[2].prefix, '/grand')
   })
@@ -343,29 +364,34 @@ describe('Application hooks instance reference consistency (#4967)', () => {
         onRouteCalls++
         t.assert.strictEqual(this, fastify)
         t.assert.strictEqual(instance, fastify)
+        t.assert.strictEqual(instance, this)
         t.assert.strictEqual(routeOptions.url, '/shared')
       })
 
       pluginInstance.addHook('onReady', function (instance, done) {
         t.assert.strictEqual(this, fastify)
         t.assert.strictEqual(instance, fastify)
+        t.assert.strictEqual(instance, this)
         done()
       })
 
       pluginInstance.addHook('onListen', function (instance) {
         t.assert.strictEqual(this, fastify)
         t.assert.strictEqual(instance, fastify)
+        t.assert.strictEqual(instance, this)
         onListenDoneResolve()
       })
 
       pluginInstance.addHook('preClose', function (instance) {
         t.assert.strictEqual(this, fastify)
         t.assert.strictEqual(instance, fastify)
+        t.assert.strictEqual(instance, this)
       })
 
       pluginInstance.addHook('onClose', function (instance, done) {
         t.assert.strictEqual(this, fastify)
         t.assert.strictEqual(instance, fastify)
+        t.assert.strictEqual(instance, this)
         done()
       })
 
@@ -386,36 +412,62 @@ describe('Application hooks instance reference consistency (#4967)', () => {
       onListenDoneResolve = resolve
     })
 
-    fastify.addHook('onReady', () => { calls.push('onReady:sync0') })
-    fastify.addHook('onReady', (instance) => {
+    fastify.addHook('onReady', function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('onReady:sync0')
+    })
+    fastify.addHook('onReady', function (instance) {
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       calls.push('onReady:sync1')
     })
-    fastify.addHook('onReady', async () => { calls.push('onReady:async0') })
+    fastify.addHook('onReady', async function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('onReady:async0')
+    })
 
-    fastify.addHook('onListen', () => { calls.push('onListen:sync0') })
-    fastify.addHook('onListen', (instance) => {
+    fastify.addHook('onListen', function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('onListen:sync0')
+    })
+    fastify.addHook('onListen', function (instance) {
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       calls.push('onListen:sync1')
     })
-    fastify.addHook('onListen', async () => {
+    fastify.addHook('onListen', async function () {
+      t.assert.strictEqual(this, fastify)
       calls.push('onListen:async0')
       onListenDoneResolve()
     })
 
-    fastify.addHook('preClose', () => { calls.push('preClose:sync0') })
-    fastify.addHook('preClose', (instance) => {
+    fastify.addHook('preClose', function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('preClose:sync0')
+    })
+    fastify.addHook('preClose', function (instance) {
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       calls.push('preClose:sync1')
     })
-    fastify.addHook('preClose', async () => { calls.push('preClose:async0') })
+    fastify.addHook('preClose', async function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('preClose:async0')
+    })
 
-    fastify.addHook('onClose', () => { calls.push('onClose:sync0') })
-    fastify.addHook('onClose', (instance) => {
+    fastify.addHook('onClose', function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('onClose:sync0')
+    })
+    fastify.addHook('onClose', function (instance) {
       t.assert.strictEqual(instance, fastify)
+      t.assert.strictEqual(instance, this)
       calls.push('onClose:sync1')
     })
-    fastify.addHook('onClose', async () => { calls.push('onClose:async0') })
+    fastify.addHook('onClose', async function () {
+      t.assert.strictEqual(this, fastify)
+      calls.push('onClose:async0')
+    })
 
     await fastify.listen({ port: 0 })
     await onListenDone

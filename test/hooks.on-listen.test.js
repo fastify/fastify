@@ -279,7 +279,7 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
 })
 
 test('localhost onListen encapsulation should be called in order', async t => {
-  t.plan(12)
+  t.plan(16)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -289,6 +289,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     t.assert.strictEqual(instance, fastify, 'the instance parameter is the right instance')
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -297,6 +298,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       t.assert.strictEqual(instance, childOne, 'the instance parameter is the right instance')
+      t.assert.strictEqual(instance, this)
       done()
     })
 
@@ -305,6 +307,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
         t.assert.strictEqual(instance, childTwo, 'the instance parameter is the right instance')
+        t.assert.strictEqual(instance, this)
       })
     })
 
@@ -313,6 +316,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
         t.assert.strictEqual(++order, 4, 'called second in childTwo')
         t.assert.strictEqual(this.pluginName, childTwoPeer.pluginName, 'the this binding is the right instance')
         t.assert.strictEqual(instance, childTwoPeer, 'the instance parameter is the right instance')
+        t.assert.strictEqual(instance, this)
       })
     })
   })
@@ -370,7 +374,7 @@ test('localhost onListen peer encapsulations with only nested hooks', async t =>
 })
 
 test('localhost onListen encapsulation should be called in order and should log errors as warnings and continue', (t, testDone) => {
-  t.plan(7)
+  t.plan(13)
   const stream = split(JSON.parse)
   const fastify = Fastify({
     forceCloseConnections: false,
@@ -392,6 +396,8 @@ test('localhost onListen encapsulation should be called in order and should log 
   fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -399,12 +405,16 @@ test('localhost onListen encapsulation should be called in order and should log 
     childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
+      childTwo.addHook('onListen', async function (instance) {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
         throw new Error('Error in onListen hook of childTwo')
       })
     })
@@ -619,7 +629,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin should
 })
 
 test('non-localhost onListen encapsulation should be called in order', { skip: isIPv6Missing }, (t, testDone) => {
-  t.plan(6)
+  t.plan(12)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -628,6 +638,8 @@ test('non-localhost onListen encapsulation should be called in order', { skip: i
   fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -635,12 +647,16 @@ test('non-localhost onListen encapsulation should be called in order', { skip: i
     childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
+      childTwo.addHook('onListen', async function (instance) {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
       })
     })
   })
@@ -651,7 +667,7 @@ test('non-localhost onListen encapsulation should be called in order', { skip: i
 })
 
 test('non-localhost onListen encapsulation should be called in order and should log errors as warnings and continue', { skip: isIPv6Missing }, (t, testDone) => {
-  t.plan(7)
+  t.plan(13)
   const stream = split(JSON.parse)
   const fastify = Fastify({
     forceCloseConnections: false,
@@ -674,6 +690,8 @@ test('non-localhost onListen encapsulation should be called in order and should 
     t.assert.strictEqual(++order, 1, 'called in root')
 
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -681,12 +699,16 @@ test('non-localhost onListen encapsulation should be called in order and should 
     childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
+      childTwo.addHook('onListen', async function (instance) {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
         throw new Error('Error in onListen hook of childTwo')
       })
     })
@@ -858,7 +880,7 @@ test('Register onListen hook localhost with callback after a plugin inside a plu
 })
 
 test('onListen localhost with callback encapsulation should be called in order', (t, testDone) => {
-  t.plan(8)
+  t.plan(14)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -867,6 +889,8 @@ test('onListen localhost with callback encapsulation should be called in order',
   fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -874,12 +898,16 @@ test('onListen localhost with callback encapsulation should be called in order',
     childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
+      childTwo.addHook('onListen', async function (instance) {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
       })
     })
   })
@@ -1057,7 +1085,7 @@ test('Register onListen hook non-localhost with callback after a plugin inside a
 })
 
 test('onListen non-localhost with callback encapsulation should be called in order', { skip: isIPv6Missing }, (t, testDone) => {
-  t.plan(8)
+  t.plan(14)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -1066,6 +1094,8 @@ test('onListen non-localhost with callback encapsulation should be called in ord
   fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -1073,12 +1103,16 @@ test('onListen non-localhost with callback encapsulation should be called in ord
     childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
+      childTwo.addHook('onListen', async function (instance) {
         t.assert.strictEqual(++order, 3, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
       })
     })
   })

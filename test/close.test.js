@@ -9,7 +9,7 @@ const split = require('split2')
 const { sleep } = require('./helper')
 
 test('close callback', (t, testDone) => {
-  t.plan(7)
+  t.plan(8)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   function onClose (instance, done) {
@@ -17,6 +17,7 @@ test('close callback', (t, testDone) => {
     t.assert.ok(typeof fastify === typeof instance)
     t.assert.strictEqual(fastify, this)
     t.assert.strictEqual(fastify, instance)
+    t.assert.strictEqual(instance, this)
     done()
   }
 
@@ -32,13 +33,14 @@ test('close callback', (t, testDone) => {
 })
 
 test('inside register', (t, done) => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
   fastify.register(function (f, opts, done) {
     f.addHook('onClose', onClose)
     function onClose (instance, done) {
       t.assert.ok(instance.prototype === fastify.prototype)
       t.assert.strictEqual(instance, f)
+      t.assert.strictEqual(instance, this)
       done()
     }
 
@@ -125,7 +127,7 @@ test('should not throw an error if the server is not listening', (t, done) => {
 })
 
 test('onClose should keep the context', (t, done) => {
-  t.plan(4)
+  t.plan(6)
   const fastify = Fastify()
   fastify.register(plugin)
 
@@ -136,7 +138,9 @@ test('onClose should keep the context', (t, done) => {
 
     function onClose (i, done) {
       t.assert.ok(i.test)
+      t.assert.strictEqual(this, instance)
       t.assert.strictEqual(i, instance)
+      t.assert.strictEqual(i, this)
       done()
     }
 
@@ -618,7 +622,7 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', (t
 })
 
 test('preClose callback', (t, done) => {
-  t.plan(6)
+  t.plan(7)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   let preCloseCalled = false
@@ -631,6 +635,7 @@ test('preClose callback', (t, done) => {
   function preClose (instance, done) {
     t.assert.strictEqual(this, fastify)
     t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     preCloseCalled = true
     done()
   }
@@ -647,7 +652,7 @@ test('preClose callback', (t, done) => {
 })
 
 test('preClose async', async t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   let preCloseCalled = false
@@ -660,6 +665,7 @@ test('preClose async', async t => {
     preCloseCalled = true
     t.assert.strictEqual(this, fastify)
     t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
   }
 
   await fastify.listen({ port: 0 })

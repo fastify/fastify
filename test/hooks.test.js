@@ -489,7 +489,7 @@ test('onRoute hook should be called (encapsulation support) / 6', (t, testDone) 
 })
 
 test('onRoute should keep the context', (t, testDone) => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.decorate('test', true)
@@ -500,6 +500,7 @@ test('onRoute should keep the context', (t, testDone) => {
       t.assert.ok(this.test)
       t.assert.strictEqual(this, instance)
       t.assert.strictEqual(hookInstance, instance)
+      t.assert.strictEqual(hookInstance, this)
     }
 
     instance.get('/', opts, function (req, reply) {
@@ -545,9 +546,10 @@ test('onRoute hook should pass correct route', (t, testDone) => {
 })
 
 test('onRoute hook should pass correct route with custom prefix', (t, testDone) => {
-  t.plan(11)
+  t.plan(14)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRoute', function (instance, route) {
+    t.assert.strictEqual(instance, this)
     t.assert.strictEqual(route.method, 'GET')
     t.assert.strictEqual(route.url, '/v1/foo')
     t.assert.strictEqual(route.path, '/v1/foo')
@@ -557,6 +559,8 @@ test('onRoute hook should pass correct route with custom prefix', (t, testDone) 
 
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (hookInstance, route) {
+      t.assert.strictEqual(hookInstance, instance)
+      t.assert.strictEqual(hookInstance, this)
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/v1/foo')
       t.assert.strictEqual(route.path, '/v1/foo')
@@ -3015,12 +3019,13 @@ test('preSerialization hooks should support encapsulation', async t => {
 })
 
 test('onRegister hook should be called / 1', (t, testDone) => {
-  t.plan(7)
+  t.plan(8)
   const fastify = Fastify()
 
   fastify.addHook('onRegister', function (instance, newInstance, opts, done) {
     t.assert.strictEqual(this, fastify)
     t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     t.assert.ok(newInstance.addHook)
     t.assert.strictEqual(Object.getPrototypeOf(newInstance), fastify)
     t.assert.deepStrictEqual(opts, pluginOpts)

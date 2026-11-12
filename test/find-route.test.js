@@ -50,7 +50,7 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
   t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
-test('findRoute should return null when when url is not passed', t => {
+test('findRoute should return null when url is not passed', t => {
   t.plan(1)
   const fastify = Fastify()
 

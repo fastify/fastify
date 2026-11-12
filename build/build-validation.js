@@ -67,7 +67,7 @@ const schema = {
     },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
-    handlerTimeout: { type: 'integer', default: defaultInitOptions.handlerTimeout },
+    handlerTimeout: { type: 'integer', maximum: 2147483647, default: defaultInitOptions.handlerTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     http2: { type: 'boolean' },
     https: {

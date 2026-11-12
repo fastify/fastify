@@ -312,6 +312,53 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   t.assert.strictEqual(noneTrailingReply.statusCode, 200)
 })
 
+test('Explicit HEAD route on / under a prefix respects default prefixTrailingSlash: \'both\'', async t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.register(async function routes (f) {
+    f.get('/', { exposeHeadRoute: false }, async () => 'get')
+    f.head('/', async (req, reply) => {
+      reply.header('x-explicit-head', 'true')
+      return ''
+    })
+  }, { prefix: '/v1' })
+
+  const getNoSlash = await fastify.inject({ method: 'GET', url: '/v1' })
+  const getSlash = await fastify.inject({ method: 'GET', url: '/v1/' })
+  const headNoSlash = await fastify.inject({ method: 'HEAD', url: '/v1' })
+  const headSlash = await fastify.inject({ method: 'HEAD', url: '/v1/' })
+  const headDoublePrefix = await fastify.inject({ method: 'HEAD', url: '/v1/v1' })
+
+  t.assert.strictEqual(getNoSlash.statusCode, 200)
+  t.assert.strictEqual(getSlash.statusCode, 200)
+  t.assert.strictEqual(headNoSlash.statusCode, 200)
+  t.assert.strictEqual(headNoSlash.headers['x-explicit-head'], 'true')
+  t.assert.strictEqual(headSlash.statusCode, 200)
+  t.assert.strictEqual(headSlash.headers['x-explicit-head'], 'true')
+  t.assert.strictEqual(headDoublePrefix.statusCode, 404)
+})
+
+test('Explicit HEAD route on / under a prefix respects prefixTrailingSlash: \'no-slash\' and \'slash\'', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.register(async function noSlashRoutes (f) {
+    f.head('/', { prefixTrailingSlash: 'no-slash' }, async () => '')
+  }, { prefix: '/no-slash' })
+
+  fastify.register(async function slashRoutes (f) {
+    f.head('/', { prefixTrailingSlash: 'slash' }, async () => '')
+  }, { prefix: '/slash' })
+
+  t.assert.strictEqual((await fastify.inject({ method: 'HEAD', url: '/no-slash' })).statusCode, 200)
+  t.assert.strictEqual((await fastify.inject({ method: 'HEAD', url: '/no-slash/' })).statusCode, 404)
+  t.assert.strictEqual((await fastify.inject({ method: 'HEAD', url: '/slash' })).statusCode, 404)
+  t.assert.strictEqual((await fastify.inject({ method: 'HEAD', url: '/slash/' })).statusCode, 200)
+})
+
 test('GET route with body schema should throw', t => {
   t.plan(1)
 

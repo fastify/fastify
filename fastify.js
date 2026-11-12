@@ -608,8 +608,16 @@ function fastify (serverOptions) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
-    } else if (name === 'onReady' || name === 'onListen') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'preClose' || name === 'onClose') {
+      if (typeof fn === 'function' && fn.constructor.name === 'AsyncFunction' && fn.length > 1) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else if (name === 'onRoute') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length > 2) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else if (name === 'onRegister') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length > 3) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else if (name === 'onRequestAbort') {

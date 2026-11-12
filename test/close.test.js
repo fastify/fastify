@@ -618,7 +618,7 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', (t
 })
 
 test('preClose callback', (t, done) => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   let preCloseCalled = false
@@ -628,8 +628,9 @@ test('preClose callback', (t, done) => {
   }
   fastify.addHook('preClose', preClose)
 
-  function preClose (done) {
-    t.assert.ok(typeof this === typeof fastify)
+  function preClose (instance, done) {
+    t.assert.strictEqual(this, fastify)
+    t.assert.strictEqual(instance, fastify)
     preCloseCalled = true
     done()
   }
@@ -646,7 +647,7 @@ test('preClose callback', (t, done) => {
 })
 
 test('preClose async', async t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   let preCloseCalled = false
@@ -655,9 +656,10 @@ test('preClose async', async t => {
   }
   fastify.addHook('preClose', preClose)
 
-  async function preClose () {
+  async function preClose (instance) {
     preCloseCalled = true
-    t.assert.ok(typeof this === typeof fastify)
+    t.assert.strictEqual(this, fastify)
+    t.assert.strictEqual(instance, fastify)
   }
 
   await fastify.listen({ port: 0 })
@@ -709,7 +711,7 @@ test('preClose execution order', (t, done) => {
     done()
   }
 
-  fastify.addHook('preClose', (done) => {
+  fastify.addHook('preClose', (instance, done) => {
     setTimeout(function () {
       order.push(1)
       done()
@@ -721,7 +723,7 @@ test('preClose execution order', (t, done) => {
     order.push(2)
   })
 
-  fastify.addHook('preClose', (done) => {
+  fastify.addHook('preClose', (instance, done) => {
     setTimeout(function () {
       order.push(3)
       done()

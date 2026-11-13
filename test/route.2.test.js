@@ -15,13 +15,13 @@ test('same route definition object on multiple prefixes', async t => {
   const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
+    f.addHook('onRoute', (instance, routeOptions) => {
       t.assert.strictEqual(routeOptions.url, '/v1/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v1' })
   fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
+    f.addHook('onRoute', (instance, routeOptions) => {
       t.assert.strictEqual(routeOptions.url, '/v2/simple')
     })
     f.route(routeObject)

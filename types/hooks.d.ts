@@ -738,7 +738,7 @@ export type LifecycleHookAsyncLookup<K extends LifecycleHook> = K extends 'onReq
 // Application Hooks
 
 /**
- * Triggered when a new route is registered. Listeners are passed a routeOptions object as the sole parameter. The interface is synchronous, and, as such, the listener does not get passed a callback
+ * Triggered when a new route is registered. Listeners are passed the Fastify instance and a routeOptions object.
  */
 export interface onRouteHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
@@ -752,6 +752,7 @@ export interface onRouteHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       TypeProvider> & { routePath: string; path: string; prefix: string; isGeneratedHeadRoute: boolean }
   ): Promise<unknown> | void;
@@ -773,6 +774,7 @@ export interface onRegisterHookHandler<
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    newInstance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RegisterOptions & Options
   ): Promise<unknown> | void;
 }
@@ -789,6 +791,7 @@ export interface onReadyHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
 }
@@ -802,6 +805,7 @@ export interface onReadyAsyncHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }
 
@@ -817,6 +821,7 @@ export interface onListenHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
 }
@@ -830,6 +835,7 @@ export interface onListenAsyncHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }
 /**
@@ -874,6 +880,7 @@ export interface preCloseHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
 }
@@ -887,6 +894,7 @@ export interface preCloseAsyncHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }
 

@@ -1489,7 +1489,7 @@ test('Check how many AJV instances are built #1', (t, testDone) => {
 })
 
 test('onReady hook has the compilers ready', (t, testDone) => {
-  t.plan(6)
+  t.plan(9)
 
   const fastify = Fastify()
 
@@ -1501,7 +1501,8 @@ test('onReady hook has the compilers ready', (t, testDone) => {
     }
   })
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
+    t.assert.strictEqual(instance, this)
     t.assert.ok(this.validatorCompiler)
     t.assert.ok(this.serializerCompiler)
     done()
@@ -1509,7 +1510,8 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 
   let hookCallCounter = 0
   fastify.register(async (i, o) => {
-    i.addHook('onReady', function (done) {
+    i.addHook('onReady', function (instance, done) {
+      t.assert.strictEqual(instance, this)
       t.assert.ok(this.validatorCompiler)
       t.assert.ok(this.serializerCompiler)
       done()
@@ -1517,7 +1519,8 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 
     i.register(async (i, o) => { })
 
-    i.addHook('onReady', function (done) {
+    i.addHook('onReady', function (instance, done) {
+      t.assert.strictEqual(instance, this)
       hookCallCounter++
       done()
     })
@@ -1675,7 +1678,7 @@ test('Schema controller setter', t => {
 })
 
 test('Schema controller bucket', (t, testDone) => {
-  t.plan(10)
+  t.plan(16)
 
   let added = 0
   let builtBucket = 0
@@ -1710,13 +1713,17 @@ test('Schema controller bucket', (t, testDone) => {
 
   fastify.register(async (instance) => {
     instance.addSchema({ $id: 'b', type: 'string' })
-    instance.addHook('onReady', function (done) {
+    instance.addHook('onReady', function (hookInstance, done) {
+      t.assert.strictEqual(hookInstance, instance)
+      t.assert.strictEqual(hookInstance, this)
       t.assert.strictEqual(instance.getSchemas().size, 2)
       done()
     })
     instance.register(async (subinstance) => {
       subinstance.addSchema({ $id: 'c', type: 'string' })
-      subinstance.addHook('onReady', function (done) {
+      subinstance.addHook('onReady', function (hookInstance, done) {
+        t.assert.strictEqual(hookInstance, subinstance)
+        t.assert.strictEqual(hookInstance, this)
         t.assert.strictEqual(subinstance.getSchemas().size, 3)
         done()
       })
@@ -1724,7 +1731,9 @@ test('Schema controller bucket', (t, testDone) => {
   })
 
   fastify.register(async (instance) => {
-    instance.addHook('onReady', function (done) {
+    instance.addHook('onReady', function (hookInstance, done) {
+      t.assert.strictEqual(hookInstance, instance)
+      t.assert.strictEqual(hookInstance, this)
       t.assert.strictEqual(instance.getSchemas().size, 1)
       done()
     })
@@ -1741,7 +1750,7 @@ test('Schema controller bucket', (t, testDone) => {
 })
 
 test('setSchemaController per instance', (t, testDone) => {
-  t.plan(7)
+  t.plan(9)
   const fastify = Fastify({})
 
   fastify.register(async (instance1) => {
@@ -1782,7 +1791,9 @@ test('setSchemaController per instance', (t, testDone) => {
 
     instance2.addSchema(bSchema)
 
-    instance2.addHook('onReady', function (done) {
+    instance2.addHook('onReady', function (hookInstance, done) {
+      t.assert.strictEqual(hookInstance, instance2)
+      t.assert.strictEqual(hookInstance, this)
       instance2.getSchemas()
       t.assert.deepStrictEqual(instance2.getSchema('b'), bSchema, 'the schema are loaded')
       done()

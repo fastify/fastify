@@ -7,7 +7,7 @@ test('SchemaController are NOT loaded when the controllers are custom', async t 
   const app = Fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: () => () => { },
+        buildInputValidator: () => () => { },
         buildSerializer: () => () => { },
         buildOutputValidator: () => () => { }
       }
@@ -36,15 +36,15 @@ test('isCustomSerializerCompiler flag is set correctly when only buildSerializer
   await app.ready()
 
   const schemaController = app[kSchemaController]
-  t.assert.equal(schemaController.isCustomValidatorCompiler, false, 'isCustomValidatorCompiler should be false')
+  t.assert.equal(schemaController.isCustomInputValidatorCompiler, false, 'isCustomInputValidatorCompiler should be false')
   t.assert.equal(schemaController.isCustomSerializerCompiler, true, 'isCustomSerializerCompiler should be true')
 })
 
-test('isCustomValidatorCompiler flag is set correctly when only buildValidator is provided', async t => {
+test('isCustomInputValidatorCompiler flag is set correctly when only buildInputValidator is provided', async t => {
   const app = Fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: () => () => { }
+        buildInputValidator: () => () => { }
       }
     }
   })
@@ -52,7 +52,7 @@ test('isCustomValidatorCompiler flag is set correctly when only buildValidator i
   await app.ready()
 
   const schemaController = app[kSchemaController]
-  t.assert.equal(schemaController.isCustomValidatorCompiler, true, 'isCustomValidatorCompiler should be true')
+  t.assert.equal(schemaController.isCustomInputValidatorCompiler, true, 'isCustomInputValidatorCompiler should be true')
   t.assert.equal(schemaController.isCustomSerializerCompiler, false, 'isCustomSerializerCompiler should be false')
 })
 

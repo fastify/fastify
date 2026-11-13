@@ -3,7 +3,7 @@ import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
 import Ajv from 'ajv'
 import { expect } from 'tstyche'
 import fastify, { FastifyInstance, FastifySchema } from '../../fastify.js'
-import { FastifyOutputValidatorOptions } from '../../types/schema.js'
+import { FastifyInputValidatorOptions, FastifyOutputValidatorOptions } from '../../types/schema.js'
 
 const server = fastify()
 
@@ -54,7 +54,11 @@ expect(server.get(
   () => { }
 )).type.toBe<FastifyInstance>()
 
-expect(server.setValidatorCompiler(({ schema }) => {
+expect(server.setInputValidatorCompiler(({ schema }) => {
+  return new Ajv().compile(schema)
+})).type.toBe<FastifyInstance>()
+
+expect(server.setOutputValidatorCompiler(({ schema }) => {
   return new Ajv().compile(schema)
 })).type.toBe<FastifyInstance>()
 
@@ -63,7 +67,7 @@ expect(server.setSerializerCompiler(() => {
 })).type.toBe<FastifyInstance>()
 
 expect(server.post('/test', {
-  validatorCompiler: ({ schema }) => {
+  inputValidatorCompiler: ({ schema }) => {
     return data => {
       if (!data || data.constructor !== Object) {
         return { error: new Error('value is not an object') }
@@ -74,7 +78,7 @@ expect(server.post('/test', {
 }, async req => req.body)).type.toBe<FastifyInstance>()
 
 expect(server.post('/test', {
-  validatorCompiler: ({ schema }) => {
+  inputValidatorCompiler: ({ schema }) => {
     return data => {
       if (!data || data.constructor !== Object) {
         return {
@@ -94,7 +98,13 @@ expect(server.post('/test', {
   }
 }, async req => req.body)).type.toBe<FastifyInstance>()
 
-expect(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
+expect(server.setInputValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
+  function ({ schema }) {
+    return new Ajv().compile(schema)
+  }
+)).type.toBe<FastifyInstance>()
+
+expect(server.setOutputValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
   function ({ schema }) {
     return new Ajv().compile(schema)
   }
@@ -114,7 +124,7 @@ expect(server.setSerializerCompiler<FastifySchema & { validate: string }>(
   fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: factory
+        buildInputValidator: factory
       }
     }
   })
@@ -186,6 +196,12 @@ expect(server.setSerializerCompiler<FastifySchema & { validate: string }>(
 // output pool validates *and* shapes with the JSON Schema semantics, so the
 // type does not advertise the JTD mode.
 expect<FastifyOutputValidatorOptions>().type.not.toBeAssignableTo<{ mode: 'JTD' }>()
+
+// The input side keeps the options of the pool builder, the JTD mode included.
+expect<FastifyInputValidatorOptions>().type.toBe<Parameters<BuildCompilerFromPool>[1]>()
+expect(fastify({
+  schemaController: { inputValidatorOptions: { mode: 'JTD', customOptions: { allErrors: true } } }
+})).type.toBeAssignableTo<FastifyInstance>()
 
 fastify({
   schemaController: {

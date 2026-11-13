@@ -14,13 +14,15 @@ const { waitForCb } = require('./helper')
 test('Ajv plugins array parameter', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        allErrors: true
-      },
-      plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
+    schemaController: {
+      inputValidatorOptions: {
+        customOptions: {
+          allErrors: true
+        },
+        plugins: [
+          [ajvErrors, { singleError: '@@@@' }]
+        ]
+      }
     }
   })
 
@@ -62,10 +64,12 @@ test('Ajv plugins array parameter', (t, testDone) => {
 test('Should handle root $merge keywords in header', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+    schemaController: {
+      inputValidatorOptions: {
+        plugins: [
+          ajvMergePatch
+        ]
+      }
     }
   })
 
@@ -114,10 +118,12 @@ test('Should handle root $merge keywords in header', (t, testDone) => {
 test('Should handle root $patch keywords in header', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+    schemaController: {
+      inputValidatorOptions: {
+        plugins: [
+          ajvMergePatch
+        ]
+      }
     }
   })
 
@@ -175,8 +181,10 @@ test('Should handle root $patch keywords in header', (t, testDone) => {
 test('Should handle $merge keywords in body', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [ajvMergePatch]
+    schemaController: {
+      inputValidatorOptions: {
+        plugins: [ajvMergePatch]
+      }
     }
   })
 
@@ -227,8 +235,10 @@ test('Should handle $merge keywords in body', (t, testDone) => {
 test('Should handle $patch keywords in body', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [ajvMergePatch]
+    schemaController: {
+      inputValidatorOptions: {
+        plugins: [ajvMergePatch]
+      }
     }
   })
 
@@ -325,7 +335,7 @@ test("serializer read validator's schemas", (t, testDone) => {
     }
   })
 
-  fastify.setValidatorCompiler(function ({ schema }) {
+  fastify.setInputValidatorCompiler(function ({ schema }) {
     return ajvInstance.compile(schema)
   })
 
@@ -412,7 +422,7 @@ test('setSchemaController in a plugin', (t, testDone) => {
         }
       }
     })
-    server.setValidatorCompiler(function ({ schema }) {
+    server.setInputValidatorCompiler(function ({ schema }) {
       t.assert.ok('the querystring schema is compiled')
       return ajvInstance.compile(schema)
     })
@@ -583,7 +593,7 @@ test('setSchemaController in a plugin with head routes', (t, testDone) => {
         }
       }
     })
-    server.setValidatorCompiler(function ({ schema }) {
+    server.setInputValidatorCompiler(function ({ schema }) {
       if (schema.$id) {
         const stored = ajvInstance.getSchema(schema.$id)
         if (stored) {
@@ -665,7 +675,7 @@ test('JOI validation overwrite request headers', (t, testDone) => {
   }
 
   const fastify = Fastify()
-  fastify.setValidatorCompiler(schemaValidator)
+  fastify.setInputValidatorCompiler(schemaValidator)
 
   fastify.get('/', {
     schema: {
@@ -699,7 +709,7 @@ test('Custom schema object should not trigger FST_ERR_SCH_DUPLICATE', async t =>
         foo: yup.string()
       })
     },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
         // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
         try {
@@ -730,9 +740,9 @@ test('The default schema compilers should not be called when overwritten by the 
   const fastify = Fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: function factory () {
+        buildInputValidator: function factory () {
           t.assert.ok('The custom validator compiler should be called')
-          return function validatorCompiler () {
+          return function inputValidatorCompiler () {
             return () => { return true }
           }
         },
@@ -770,7 +780,7 @@ test('Supports async JOI validation', (t, testDone) => {
   const fastify = Fastify({
     exposeHeadRoutes: false
   })
-  fastify.setValidatorCompiler(schemaValidator)
+  fastify.setInputValidatorCompiler(schemaValidator)
 
   fastify.get('/', {
     schema: {
@@ -825,21 +835,23 @@ test('Supports async AJV validation', (t, testDone) => {
 
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
+    schemaController: {
+      inputValidatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        },
+        plugins: [
+          [ajvErrors, { singleError: '@@@@' }]
         ]
-      },
-      plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
+      }
     }
   })
 
@@ -995,7 +1007,7 @@ test('async validation result must not be treated as an error (error collision)'
 
 test('async custom validator resolving false uses its validation errors', async t => {
   const fastify = Fastify()
-  fastify.setValidatorCompiler(() => {
+  fastify.setInputValidatorCompiler(() => {
     const validate = () => Promise.resolve(false)
     validate.errors = [{
       instancePath: '',
@@ -1023,17 +1035,19 @@ test('async custom validator resolving false uses its validation errors', async 
 test('Check all the async AJV validation paths', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      inputValidatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })
@@ -1137,17 +1151,19 @@ test('Check all the async AJV validation paths', async (t) => {
 test('Check mixed sync and async AJV validations', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      inputValidatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })
@@ -1317,17 +1333,19 @@ test('Check mixed sync and async AJV validations', async (t) => {
 test('Check if hooks and attachValidation work with AJV validations', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      inputValidatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })

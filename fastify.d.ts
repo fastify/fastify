@@ -28,7 +28,7 @@ import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './type
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
-import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler, FastifyOutputValidatorOptions, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler, FastifyInputValidatorOptions, FastifyOutputValidatorOptions, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
@@ -153,14 +153,14 @@ declare namespace fastify {
         getSchemas(): Record<string, unknown>;
       };
       compilersFactory?: {
-        buildValidator?: ValidatorFactory;
+        buildInputValidator?: ValidatorFactory;
         buildSerializer?: SerializerFactory;
         buildOutputValidator?: BuildCompilerFromPool;
       };
+      inputValidatorOptions?: FastifyInputValidatorOptions;
       outputValidatorOptions?: FastifyOutputValidatorOptions;
     };
     return503OnClosing?: boolean,
-    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <
       RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
       TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,

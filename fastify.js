@@ -584,6 +584,7 @@ function fastify (serverOptions) {
         return fastify[kState].readyResolver.reject(err)
       }
 
+      fastify[kState].started = true
       fastify[kState].readyResolver.resolve(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true

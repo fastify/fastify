@@ -183,6 +183,16 @@ rewrite a regular expression. Author them to match lowercase (for example
 written in canonical case will not match, and the assertion it guards will not
 apply.
 
+Normalization applies to the schema object passed as `headers`, including one
+that carries the `$id` of a schema registered with `addSchema()`, such as the
+object returned by `getSchema()`. It does not reach a registered schema that the
+`headers` schema references through an external `$ref` (for example
+`{ $ref: 'shared-headers#' }`), because a registered schema can also be used to
+validate the body, querystring, or params. Fastify emits
+[`FSTSEC002`](./Warnings.md#FSTSEC002) at startup in that case. Pass the schema
+object instead (for example `fastify.getSchema('shared-headers')`), or write
+header names in lowercase.
+
 Example:
 ```js
 const bodyJsonSchema = {
@@ -850,6 +860,15 @@ const schema = {
 
 fastify.post('/url', { schema }, handler)
 ```
+
+> When the route declares a per-content-type response schema through `content`,
+> Fastify matches the response `Content-Type` against the declared keys and falls
+> back to `*/*` (if present). If the response `Content-Type` is not declared and
+> there is no `*/*` key, serialization **fails closed**: Fastify throws
+> `FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN` and replies with a `500` error,
+> instead of silently serializing the payload with `JSON.stringify` (which would
+> bypass the response schema). Every `Content-Type` a route may respond with must
+> be declared, or the route must define a `*/*` catch-all.
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>

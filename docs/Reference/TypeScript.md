@@ -497,7 +497,7 @@ Fastify Plugin in a TypeScript Project.
    ```
 3. Initialize a TypeScript configuration file:
    ```bash
-   npx typescript --init
+   npx tsc --init
    ```
    Once the file is generated, enable the `"declaration"` option in the
    `"compilerOptions"` object.

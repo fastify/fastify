@@ -1,0 +1,34 @@
+name: HTTP/3 example
+
+on:
+  pull_request:
+    paths:
+      - 'examples/http3/**'
+      - 'lib/**'
+      - 'fastify.js'
+      - 'package.json'
+      - '.github/workflows/http3-example.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: [24, 26]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install --ignore-scripts
+      - run: npm install --ignore-scripts --prefix examples/http3
+      - run: npm test --prefix examples/http3

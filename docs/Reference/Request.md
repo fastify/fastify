@@ -275,7 +275,9 @@ re-routing.
 ##### .mediaType
 
 The media type extracted from `Content-Type` header. When `Content-Type` header
-is missing, it will return `undefined`.
+is missing or a custom content-type header parser throws or returns a non-object,
+it will return `undefined`. Requests that parse a body still report parser
+errors through the normal error handler.
 
 ##### .signal
 

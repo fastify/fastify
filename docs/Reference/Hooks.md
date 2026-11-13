@@ -639,13 +639,25 @@ created. The hook will be executed **before** the registered code.
 
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
-this hook is encapsulated.
+this hook is encapsulated. Add the hook before registering the plugins it should
+apply to: it is not called for plugins registered before it.
 
 > ℹ️ Note:
 > This hook will not be called if a plugin is wrapped inside
 > [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
+
+fastify.addHook('onRegister', (instance, opts) => {
+  // Create a new array from the old one
+  // but without keeping the reference
+  // allowing the user to have encapsulated
+  // instances of the `data` property
+  instance.data = instance.data.slice()
+
+  // the options of the new registered instance
+  console.log(opts.prefix)
+})
 
 fastify.register(async (instance, opts) => {
   instance.data.push('hello')
@@ -660,17 +672,6 @@ fastify.register(async (instance, opts) => {
 fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
-
-fastify.addHook('onRegister', (instance, opts) => {
-  // Create a new array from the old one
-  // but without keeping the reference
-  // allowing the user to have encapsulated
-  // instances of the `data` property
-  instance.data = instance.data.slice()
-
-  // the options of the new registered instance
-  console.log(opts.prefix)
-})
 ```
 
 ## Scope

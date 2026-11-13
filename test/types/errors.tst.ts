@@ -58,6 +58,8 @@ expect(errorCodes.FST_ERR_REQ_INVALID_VALIDATION_INVOCATION).type.toBeAssignable
 expect(errorCodes.FST_ERR_SCH_MISSING_ID).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_ALREADY_PRESENT).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_CONTENT_MISSING_SCHEMA).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_SCH_CONTENT_DUPLICATE).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_DUPLICATE).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_VALIDATION_BUILD).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_SERIALIZATION_BUILD).type.toBeAssignableTo<FastifyErrorConstructor>()

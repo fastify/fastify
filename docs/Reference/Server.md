@@ -1642,6 +1642,8 @@ For example, a TCP socket based server returns
 a base address like `http://127.0.0.1:3000`,
 and a Unix socket server will return the socket
 path, e.g. `fastify.temp.sock`.
+If the server is not currently listening, it returns
+an empty string `''`.
 
 #### log
 <a id="log"></a>

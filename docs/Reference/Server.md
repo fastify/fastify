@@ -234,7 +234,8 @@ Defines the maximum number of milliseconds allowed for processing a request
 through the entire route lifecycle (from routing through onRequest, parsing,
 validation, handler execution, and serialization). If the response is not sent
 within this time, a `503 Service Unavailable` error is returned and
-`request.signal` is aborted.
+`request.signal` is aborted. The value must be at most `2147483647`, the longest
+delay a Node.js timer supports.
 
 Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
 level), `handlerTimeout` is an application-level timeout that works correctly

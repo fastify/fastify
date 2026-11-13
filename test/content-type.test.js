@@ -135,6 +135,15 @@ describe('ContentType class', () => {
     t.assert.equal(found.parameters.size, 0)
   })
 
+  test('lowercases the charset value but keeps other parameter values', (t) => {
+    const found = new ContentType('text/plain; charset=UTF-8; foo=BaR')
+    t.assert.deepStrictEqual(
+      Array.from(found.parameters.entries()),
+      [['charset', 'utf-8'], ['foo', 'BaR']]
+    )
+    t.assert.equal(found.toString(), 'text/plain; charset="utf-8"; foo="BaR"')
+  })
+
   test('returns a media type instance with parameters', (t) => {
     const found = new ContentType('Application/JSON ; charset=utf-8; foo=BaR;baz=" 42"')
     t.assert.equal(found.isEmpty, false)

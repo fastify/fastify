@@ -1,4 +1,6 @@
+import { Buffer } from 'node:buffer'
 import { IncomingHttpHeaders } from 'node:http'
+import { Readable } from 'node:stream'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 import { Type, TSchema, Static } from 'typebox'
 import { expect } from 'tstyche'
@@ -11,6 +13,7 @@ import fastify, {
   FastifyError,
   SafePromiseLike
 } from '../../fastify.js'
+import { FastifyReplyPreSerializedPayload } from '../../types/type-provider.js'
 
 const server = fastify()
 
@@ -479,9 +482,17 @@ server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
-    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
-    expect(res.code(500).send).type.toBe<((...args: [payload: { error: string }]) => typeof res)>()
+    expect(res.code(200).send).type.toBe<
+      ((...args: [payload: string | FastifyReplyPreSerializedPayload]) => typeof res)
+    >()
+    expect(res.code(400).send).type.toBe<
+      ((...args: [payload: number | FastifyReplyPreSerializedPayload]) => typeof res)
+    >()
+    expect(res.code(500).send).type.toBe<
+      ((...args: [
+        payload: { error: string } | FastifyReplyPreSerializedPayload
+      ]) => typeof res)
+    >()
   }
 )
 
@@ -712,10 +723,22 @@ server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
-    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
+    res.code(200).send(Buffer.from('payload'))
+    res.code(200).send(new Uint16Array([1, 2, 3]))
+    res.code(200).send(new Readable())
+    res.code(200).send(new ReadableStream())
+    expect(res.code(200).send).type.not.toBeCallableWith(42)
+    expect(res.code(200).send).type.not.toBeCallableWith({ getReader: 'not a function' })
+    expect(res.code(200).send).type.toBe<
+      ((...args: [payload: string | FastifyReplyPreSerializedPayload]) => typeof res)
+    >()
+    expect(res.code(400).send).type.toBe<
+      ((...args: [payload: number | FastifyReplyPreSerializedPayload]) => typeof res)
+    >()
     expect(res.code(500).send).type.toBe<
-      ((...args: [payload: { [x: string]: unknown; error?: string }]) => typeof res)
+      ((...args: [
+        payload: { [x: string]: unknown; error?: string } | FastifyReplyPreSerializedPayload
+      ]) => typeof res)
     >()
   }
 )

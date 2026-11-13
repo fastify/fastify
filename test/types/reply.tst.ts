@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { Readable } from 'node:stream'
 import { expect } from 'tstyche'
 import fastify, {
   FastifyContextConfig,
@@ -14,6 +15,7 @@ import { FastifyInstance } from '../../types/instance.js'
 import { FastifyBaseLogger } from '../../types/logger.js'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply.js'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
+import { FastifyReplyPreSerializedPayload } from '../../types/type-provider.js'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils.js'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
@@ -88,6 +90,10 @@ interface ReplyArrayPayload {
   Reply: string[]
 }
 
+interface ReplyString {
+  Reply: string
+}
+
 interface ReplyUnion {
   Reply: {
     success: boolean;
@@ -134,8 +140,8 @@ interface ReplyHttpCodesWithNoContent {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   // When Reply type is specified, send() requires a payload argument
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
-  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | FastifyReplyPreSerializedPayload]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | FastifyReplyPreSerializedPayload]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 }
 
 const server = fastify()
@@ -143,6 +149,14 @@ server.get('/get', getHandler)
 server.get('/typed', typedHandler)
 server.get<ReplyPayload>('/get-generic-send', async function handler (request, reply) {
   reply.send({ test: true })
+})
+server.get<ReplyString>('/get-generic-pre-serialized-send', async function handler (request, reply) {
+  reply.send(Buffer.from('payload'))
+  reply.send(new Uint16Array([1, 2, 3]))
+  reply.send(new Readable())
+  reply.send(new ReadableStream())
+  expect(reply.send).type.not.toBeCallableWith(42)
+  expect(reply.send).type.not.toBeCallableWith({ pipe: 'not a function' })
 })
 // When Reply type is specified, send() requires a payload - calling without arguments should error
 server.get<ReplyPayload>('/get-generic-send-missing-payload', async function handler (request, reply) {
@@ -155,7 +169,7 @@ server.get<ReplyPayload>('/get-generic-return', async function handler (request,
 })
 server.get<ReplyPayload>('/get-generic-send-error', async function handler (request, reply) {
   reply.send({
-    // @ts-expect-error  'foo' does not exist in type '{ test: boolean; }'.
+    // @ts-expect-error  'foo' does not exist in type '{ test: boolean; } | FastifyReplyPreSerializedPayload'.
     foo: 'bar'
   })
 })
@@ -179,7 +193,7 @@ server.get<ReplyUnion>('/get-generic-union-return', async function handler (requ
 })
 server.get<ReplyUnion>('/get-generic-union-send-error-1', async function handler (request, reply) {
   reply.send({
-    // @ts-expect-error  'successes' does not exist in type '{ success: boolean; } | { error: string; }'.
+    // @ts-expect-error  'successes' does not exist in type '{ success: boolean; } | { error: string; } | FastifyReplyPreSerializedPayload'.
     successes: true
   })
 })
@@ -205,12 +219,12 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handle
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
   reply.code(200)
-  // @ts-expect-error  Argument of type '"def"' is not assignable to parameter of type '"abc"'.
+  // @ts-expect-error  Argument of type '"def"' is not assignable to parameter of type '"abc" | FastifyReplyPreSerializedPayload'.
     .send('def')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-2', async function handler (request, reply) {
   reply.code(201)
-  // @ts-expect-error  Argument of type 'number' is not assignable to parameter of type 'boolean'.
+  // @ts-expect-error  Argument of type '0' is not assignable to parameter of type 'boolean | FastifyReplyPreSerializedPayload'.
     .send(0)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
@@ -221,7 +235,7 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async functio
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
   reply.code(100)
-  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type 'number'.
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type 'number | FastifyReplyPreSerializedPayload'.
     .send('asdasd')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
@@ -237,7 +251,7 @@ server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler 
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
   reply.code(200)
-  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type '{ '1xx': number; 200: string; 999: boolean; }'.
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type '{ '1xx': number; 200: string; 999: boolean; } | FastifyReplyPreSerializedPayload'.
     .send('')
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {

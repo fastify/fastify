@@ -3232,12 +3232,15 @@ test('reply.send should throw if undefined error is thrown at onSend hook', (t, 
 })
 
 test('onTimeout should be triggered', async t => {
-  t.plan(4)
+  t.plan(7)
   const fastify = Fastify({ connectionTimeout: 500 })
   t.after(() => { fastify.close() })
 
   fastify.addHook('onTimeout', function (req, res, done) {
     t.assert.ok('called', 'onTimeout')
+    t.assert.strictEqual(this, fastify)
+    t.assert.strictEqual(req.server, fastify)
+    t.assert.strictEqual(res.server, fastify)
     done()
   })
 
@@ -3256,6 +3259,43 @@ test('onTimeout should be triggered', async t => {
   t.assert.strictEqual(result1.status, 200)
 
   await t.assert.rejects(() => fetch(fastifyServer + '/timeout'))
+})
+
+test('onTimeout should support encapsulation and expose instance via this and req.server', async t => {
+  t.plan(7)
+  const fastify = Fastify({ connectionTimeout: 100 })
+  t.after(() => { fastify.close() })
+
+  let child
+  const completion = waitForCb({ steps: 2 })
+
+  fastify.addHook('onTimeout', function (req, reply, done) {
+    t.assert.strictEqual(this, child)
+    t.assert.strictEqual(req.server, child)
+    t.assert.strictEqual(reply.server, child)
+    completion.stepIn()
+    done()
+  })
+
+  fastify.register(async function (_child) {
+    child = _child
+
+    child.addHook('onTimeout', async (req, reply) => {
+      t.assert.strictEqual(req.server, child)
+      t.assert.strictEqual(reply.server, child)
+      completion.stepIn()
+    })
+
+    child.get('/timeout', async (_req, reply) => {
+      return reply
+    })
+  })
+
+  const address = await fastify.listen({ port: 0 })
+  t.assert.notStrictEqual(child, fastify)
+
+  await t.assert.rejects(() => fetch(address + '/timeout'))
+  await completion.patience
 })
 
 test('onTimeout should be triggered and socket _meta is set', async t => {
@@ -3430,14 +3470,16 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
   let order = 0
   let child
 
-  t.plan(6)
+  t.plan(14)
   t.after(() => fastify.close())
 
-  const completion = waitForCb({ steps: 2 })
+  const completion = waitForCb({ steps: 3 })
   completion.patience.then(testDone)
 
   fastify.addHook('onRequestAbort', function (req, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
+    t.assert.strictEqual(this, child)
+    t.assert.strictEqual(req.server, child)
     t.assert.deepStrictEqual(this.pluginName, child.pluginName)
     completion.stepIn()
     done()
@@ -3448,7 +3490,15 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
 
     fastify.addHook('onRequestAbort', async function (req) {
       t.assert.strictEqual(++order, 2, 'called in child')
+      t.assert.strictEqual(this, child)
+      t.assert.strictEqual(req.server, child)
       t.assert.deepStrictEqual(this.pluginName, child.pluginName)
+      completion.stepIn()
+    })
+
+    child.addHook('onRequestAbort', async (req) => {
+      t.assert.strictEqual(++order, 3, 'called in child arrow hook')
+      t.assert.strictEqual(req.server, child)
       completion.stepIn()
     })
 
@@ -3459,8 +3509,10 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
         await sleep(1000)
         return { hello: 'world' }
       },
-      async onRequestAbort (_req) {
-        t.assert.strictEqual(++order, 3, 'called in route')
+      async onRequestAbort (req) {
+        t.assert.strictEqual(++order, 4, 'called in route')
+        t.assert.strictEqual(this, child)
+        t.assert.strictEqual(req.server, child)
       }
     })
   })

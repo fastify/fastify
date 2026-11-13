@@ -51,6 +51,10 @@ It is easy to understand where each hook is executed by looking at the
 Hooks are affected by Fastify's encapsulation, and can thus be applied to
 selected routes. See the [Scopes](#scope) section for more information.
 
+All Request/Reply hooks are invoked with `this` bound to the route's
+encapsulated Fastify instance. Arrow functions can access the same instance via
+`request.server` (or `reply.server` when `reply` is available).
+
 There are ten different hooks that you can use in Request/Reply *(in order of
 execution)*:
 
@@ -303,7 +307,8 @@ fastify.addHook('onRequestAbort', async (request) => {
 ```
 The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been processed. Therefore, you will not be able to send
-data to the client.
+data to the client. Hook functions have `this` bound to the route's encapsulated
+Fastify instance, which is also accessible via `request.server`.
 
 > ℹ️ Note:
 > Client abort detection is not completely reliable.

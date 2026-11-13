@@ -469,6 +469,10 @@ section.
   instances in Fastify.
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin
   to markdown support.
+- [`fastify-mcp-routes`](https://github.com/kyoresuas/fastify-mcp-routes)
+  Plugin that exposes your routes as [Model Context
+  Protocol](https://modelcontextprotocol.io) tools over Streamable HTTP, with no
+  codegen and no OpenAPI file. Read-only by default.
 - [`fastify-method-override`](https://github.com/corsicanec82/fastify-method-override)
   Plugin for Fastify, which allows the use of HTTP verbs, such as DELETE, PATCH,
   HEAD, PUT, OPTIONS in case the client doesn't support them.

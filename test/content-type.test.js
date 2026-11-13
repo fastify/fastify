@@ -209,6 +209,42 @@ describe('ContentType class', () => {
     t.assert.equal(found.isValid, true)
     t.assert.equal(found.parameters.get('name'), 'he said "hi"')
   })
+
+  test('handles non-empty parameter section with no valid key=value pairs lazily', (t) => {
+    const withInvalid = new ContentType('Application/JSON ; invalid')
+    t.assert.equal(withInvalid.isValid, true)
+    t.assert.equal(withInvalid.isEmpty, false)
+    t.assert.equal(withInvalid.hasParameters, true)
+    t.assert.equal(withInvalid.mediaType, 'application/json')
+    t.assert.equal(withInvalid.toString(), 'application/json')
+    t.assert.equal(withInvalid.parameters.size, 0)
+
+    const withWhitespace = new ContentType('Application/JSON ;   ')
+    t.assert.equal(withWhitespace.isValid, true)
+    t.assert.equal(withWhitespace.toString(), 'application/json')
+    t.assert.equal(withWhitespace.parameters.size, 0)
+  })
+
+  test('handles invalid content type string toString and parameters', (t) => {
+    const invalid = new ContentType('invalid')
+    t.assert.equal(invalid.isValid, false)
+    t.assert.equal(invalid.hasParameters, false)
+    t.assert.equal(invalid.toString(), '/')
+    t.assert.equal(invalid.parameters.size, 0)
+  })
+
+  test('defers parameter parsing until accessed while exposing mediaType and hasParameters', (t) => {
+    const plain = new ContentType('application/json')
+    t.assert.equal(plain.hasParameters, false)
+    t.assert.equal(plain.mediaType, 'application/json')
+    t.assert.equal(plain.toString(), 'application/json')
+
+    const multipart = new ContentType('Multipart/Form-Data; boundary=----Boundary123')
+    t.assert.equal(multipart.hasParameters, true)
+    t.assert.equal(multipart.mediaType, 'multipart/form-data')
+    t.assert.equal(multipart.toString(), 'multipart/form-data; boundary="----Boundary123"')
+    t.assert.equal(multipart.parameters.get('boundary'), '----Boundary123')
+  })
 })
 
 describe('ContentType class cache', () => {

@@ -142,6 +142,20 @@ test('getParser', async t => {
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
   })
 
+  await t.test('should return matching parser for string with parameters via mediaType fallback and cache it', t => {
+    t.plan(5)
+
+    const fastify = Fastify()
+    fastify.addContentTypeParser('text/html', first)
+
+    const ctp = fastify[keys.kContentTypeParser]
+    t.assert.strictEqual(ctp.cache.size, 0)
+    t.assert.strictEqual(ctp.getParser('text/html').fn, first)
+    t.assert.strictEqual(ctp.getParser('text/html; charset=utf-8').fn, first)
+    t.assert.strictEqual(ctp.cache.size, 2)
+    t.assert.strictEqual(ctp.getParser('text/html').fn, first)
+  })
+
   await t.test('should return undefined if no matching parser exist', t => {
     t.plan(2)
 
@@ -864,5 +878,185 @@ test('a synchronous throw in a custom parser is handled like a route error, not 
     fastify.post('/', (req, reply) => reply.send('ok'))
     const res = await fastify.inject({ method: 'POST', url: '/', headers: { 'content-type': 'application/json' }, payload: '{}' })
     t.assert.strictEqual(res.statusCode, 413)
+  })
+})
+
+test('parameterized parser tracking and fast-path ContentType lookup', async t => {
+  await t.test('remove updates parameterized parser tracking accurately', t => {
+    const fastify = Fastify()
+    const ctp = fastify[keys.kContentTypeParser]
+
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], false)
+
+    fastify.addContentTypeParser('application/json; charset=utf8', first)
+    fastify.addContentTypeParser('text/plain; charset=utf8', second)
+    fastify.addContentTypeParser(/^image\/.*/, third)
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], true)
+
+    t.assert.ok(ctp.remove(/^image\/.*/))
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], true)
+
+    t.assert.ok(ctp.remove('application/json'))
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], true)
+
+    t.assert.ok(ctp.remove('application/json; charset=utf8'))
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], true)
+
+    t.assert.ok(ctp.remove('text/plain; charset=utf8'))
+    t.assert.strictEqual(ctp[keys.kHasParameterizedParsers], false)
+  })
+
+  await t.test('handles parameterized and fallback routes with ContentType instances', async t => {
+    const fastify = Fastify()
+    fastify.addContentTypeParser('text/plain; charset=utf8', { parseAs: 'string' }, (req, body, done) => {
+      done(null, `param:${body}`)
+    })
+    fastify.addContentTypeParser('*', { parseAs: 'string' }, (req, body, done) => {
+      done(null, `catchall:${body}`)
+    })
+    fastify.post('/', async (req) => req.body)
+
+    const jsonNoParams = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'application/json' },
+      payload: '{"ok":true}'
+    })
+    t.assert.deepStrictEqual(jsonNoParams.json(), { ok: true })
+
+    const jsonWithParams = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'application/json; foo=bar' },
+      payload: '{"ok":2}'
+    })
+    t.assert.deepStrictEqual(jsonWithParams.json(), { ok: 2 })
+
+    const plainParameterized = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'text/plain; charset=utf8' },
+      payload: 'hello'
+    })
+    t.assert.strictEqual(plainParameterized.body, 'param:hello')
+
+    const catchAll = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'image/png' },
+      payload: 'img'
+    })
+    t.assert.strictEqual(catchAll.body, 'catchall:img')
+  })
+
+  await t.test('skips parser cache pollution for unique multipart ContentType instances', async t => {
+    const fastify = Fastify()
+    fastify.addContentTypeParser('multipart/form-data', { parseAs: 'string' }, (req, body, done) => {
+      done(null, req.headers['content-type'])
+    })
+    fastify.post('/upload', async (req) => req.body)
+
+    for (let i = 0; i < 5; i++) {
+      const ct = `multipart/form-data; boundary=----Boundary${i}`
+      const res = await fastify.inject({
+        method: 'POST',
+        url: '/upload',
+        headers: { 'content-type': ct },
+        payload: 'data'
+      })
+      t.assert.strictEqual(res.statusCode, 200)
+      t.assert.strictEqual(res.body, ct)
+    }
+
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
+  })
+
+  await t.test('preserves parameterized parser tracking across plugin encapsulation', async t => {
+    const fastify = Fastify()
+    fastify.addContentTypeParser('application/vnd.test+json; version=1', { parseAs: 'string' }, (req, body, done) => {
+      done(null, `parent:${body}`)
+    })
+
+    fastify.post('/parent', async (req) => req.body)
+
+    fastify.register(async function child (instance) {
+      t.assert.strictEqual(instance[keys.kContentTypeParser][keys.kHasParameterizedParsers], true)
+      instance.post('/child-keep', async (req) => req.body)
+
+      instance.register(async function grandchild (gc) {
+        gc.removeContentTypeParser('application/vnd.test+json; version=1')
+        t.assert.strictEqual(gc[keys.kContentTypeParser][keys.kHasParameterizedParsers], false)
+        gc.post('/grandchild-removed', async (req) => req.body)
+      })
+    })
+
+    const res1 = await fastify.inject({
+      method: 'POST',
+      url: '/child-keep',
+      headers: { 'content-type': 'application/vnd.test+json; version=1' },
+      payload: 'v1'
+    })
+    t.assert.strictEqual(res1.statusCode, 200)
+    t.assert.strictEqual(res1.body, 'parent:v1')
+
+    const res2 = await fastify.inject({
+      method: 'POST',
+      url: '/grandchild-removed',
+      headers: { 'content-type': 'application/vnd.test+json; version=1' },
+      payload: 'v1'
+    })
+    t.assert.strictEqual(res2.statusCode, 415)
+
+    const resParent = await fastify.inject({
+      method: 'POST',
+      url: '/parent',
+      headers: { 'content-type': 'application/vnd.test+json; version=1' },
+      payload: 'v1'
+    })
+    t.assert.strictEqual(resParent.statusCode, 200)
+    t.assert.strictEqual(resParent.body, 'parent:v1')
+  })
+
+  await t.test('handles fallback, 415, and regexp + mediaType requests via ContentType fast path', async t => {
+    const fastifyDefault = Fastify()
+    fastifyDefault.addContentTypeParser('*', { parseAs: 'string' }, (req, body, done) => {
+      done(null, `wildcard:${body}`)
+    })
+    fastifyDefault.post('/', async (req) => req.body)
+
+    const wildcardRes = await fastifyDefault.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'application/custom' },
+      payload: 'raw'
+    })
+    t.assert.strictEqual(wildcardRes.statusCode, 200)
+    t.assert.strictEqual(wildcardRes.body, 'wildcard:raw')
+
+    const fastifyMixed = Fastify()
+    fastifyMixed.addContentTypeParser(/^image\/.*/, { parseAs: 'string' }, (req, body, done) => {
+      done(null, `img:${body}`)
+    })
+    fastifyMixed.addContentTypeParser('multipart/form-data', { parseAs: 'string' }, (req, body, done) => {
+      done(null, `mp:${body}`)
+    })
+    fastifyMixed.post('/', async (req) => req.body)
+
+    const mpRes = await fastifyMixed.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'multipart/form-data; boundary=----Test1' },
+      payload: 'part'
+    })
+    t.assert.strictEqual(mpRes.statusCode, 200)
+    t.assert.strictEqual(mpRes.body, 'mp:part')
+
+    const notSupportedRes = await fastifyMixed.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'video/mp4' },
+      payload: 'bin'
+    })
+    t.assert.strictEqual(notSupportedRes.statusCode, 415)
   })
 })

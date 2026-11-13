@@ -1,0 +1,24 @@
+name: Release the package
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver:
+        description: 'Release bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions: {}
+
+jobs:
+  release:
+    permissions:
+      id-token: write # required for npm provenance via OIDC
+      contents: write # required to push the release commit and the tag
+    uses: fastify/workflows/.github/workflows/reusable-release.yml@731d0cca9a6a5b9586dad6b0326d49001ab9216f # v7.2.0
+    with:
+      semver: ${{ inputs.semver }}

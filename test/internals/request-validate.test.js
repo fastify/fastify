@@ -45,7 +45,7 @@ const requestSchema = {
 }
 
 test('#compileValidationSchema', async subtest => {
-  subtest.plan(7)
+  subtest.plan(9)
 
   await subtest.test('Should return a function - Route without schema', async t => {
     const fastify = Fastify()
@@ -233,6 +233,71 @@ test('#compileValidationSchema', async subtest => {
   )
 
   await subtest.test(
+    'Should compile a new validate fn when the httpPart changes',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        if (httpPart === 'headers') {
+          return input => input.role === 'admin'
+        }
+        return input => input === 'fixed-value'
+      }
+
+      t.plan(7)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const first = req.compileValidationSchema(defaultSchema, 'headers')
+        const second = req.compileValidationSchema(defaultSchema, 'querystring')
+        const fromCache = req.compileValidationSchema(defaultSchema, 'headers')
+
+        t.assert.notStrictEqual(first, second)
+        t.assert.strictEqual(first, fromCache)
+        t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
+        t.assert.ok(first({ role: 'admin' }))
+        t.assert.ok(!first({ role: 'user' }))
+        t.assert.ok(second('fixed-value'))
+        t.assert.ok(!second('other-value'))
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should compile the schema once with the default compiler',
+    async t => {
+      const fastify = Fastify()
+
+      t.plan(4)
+
+      fastify.get('/', (req, reply) => {
+        const first = req.compileValidationSchema(defaultSchema, 'querystring')
+        const second = req.compileValidationSchema(defaultSchema, 'headers')
+        const third = req.compileValidationSchema(defaultSchema)
+
+        t.assert.strictEqual(first, second)
+        t.assert.strictEqual(first, third)
+        t.assert.ok(first({ hello: 'world' }))
+        t.assert.strictEqual(req.getValidationFunction(defaultSchema), first)
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
     'Should instantiate a WeakMap when executed for first time',
     async t => {
       const fastify = Fastify()
@@ -258,7 +323,7 @@ test('#compileValidationSchema', async subtest => {
 })
 
 test('#getValidationFunction', async subtest => {
-  subtest.plan(6)
+  subtest.plan(7)
 
   await subtest.test('Should return a validation function', async t => {
     const fastify = Fastify()
@@ -441,10 +506,40 @@ test('#getValidationFunction', async subtest => {
       method: 'GET'
     })
   })
+
+  await subtest.test('Should return the first compiled function when reading by schema', async t => {
+    const fastify = Fastify()
+    const compiledParts = []
+    const custom = ({ httpPart }) => {
+      compiledParts.push(httpPart)
+      if (httpPart === 'headers') {
+        return input => input.role === 'admin'
+      }
+      return input => false
+    }
+
+    t.plan(3)
+
+    fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      const first = req.compileValidationSchema(defaultSchema, 'headers')
+      req.compileValidationSchema(defaultSchema, 'querystring')
+
+      t.assert.strictEqual(req.getValidationFunction(defaultSchema), first)
+      t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
+      t.assert.ok(req.getValidationFunction(defaultSchema)({ role: 'admin' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('#validate', async subtest => {
-  subtest.plan(7)
+  subtest.plan(9)
 
   await subtest.test(
     'Should return true/false if input valid - Route without schema',
@@ -475,11 +570,12 @@ test('#validate', async subtest => {
     async t => {
       const fastify = Fastify()
       let called = 0
+      const compiledParts = []
       const custom = ({ schema, httpPart, url, method }) => {
         t.assert.strictEqual(schema, defaultSchema)
         t.assert.strictEqual(url, '/')
         t.assert.strictEqual(method, 'GET')
-        t.assert.strictEqual(httpPart, 'querystring')
+        compiledParts.push(httpPart)
 
         return input => {
           called++
@@ -488,7 +584,7 @@ test('#validate', async subtest => {
         }
       }
 
-      t.plan(9)
+      t.plan(12)
 
       fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
         const ok = req.validateInput(
@@ -501,6 +597,76 @@ test('#validate', async subtest => {
         t.assert.ok(ok)
         t.assert.ok(ok2)
         t.assert.strictEqual(called, 2)
+        t.assert.deepStrictEqual(compiledParts, ['querystring', null])
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should not reuse a part specific validator when no part is given',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        return input => input === httpPart
+      }
+
+      t.plan(4)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const partOk = req.validateInput('querystring', defaultSchema, 'querystring')
+        // no part: a fn compiled without a part is used instead
+        const noPartOk = req.validateInput('querystring', defaultSchema)
+        // and that fn is reused on the next call
+        const again = req.validateInput(null, defaultSchema)
+
+        t.assert.ok(partOk)
+        t.assert.ok(!noPartOk)
+        t.assert.ok(again)
+        t.assert.deepStrictEqual(compiledParts, ['querystring', null])
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should use the validator compiled for the requested part',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        if (httpPart === 'headers') {
+          return input => input.role === 'admin'
+        }
+        return input => input === 'fixed-value'
+      }
+
+      t.plan(4)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const headersOk = req.validateInput({ role: 'admin' }, defaultSchema, 'headers')
+        const queryOk = req.validateInput('fixed-value', defaultSchema, 'querystring')
+        const headersAgain = req.validateInput({ role: 'admin' }, defaultSchema, 'headers')
+
+        t.assert.ok(headersOk)
+        t.assert.ok(queryOk)
+        t.assert.ok(headersAgain)
+        t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
 
         reply.send({ hello: 'world' })
       })
@@ -1260,11 +1426,12 @@ test('Nested Context', async subtest => {
             return () => true
           }
 
+          const compiledParts = []
           const customChild = ({ schema, httpPart, url, method }) => {
             t.assert.strictEqual(schema, defaultSchema)
             t.assert.strictEqual(url, '/')
             t.assert.strictEqual(method, 'GET')
-            t.assert.strictEqual(httpPart, 'querystring')
+            compiledParts.push(httpPart)
 
             return input => {
               childCalled++
@@ -1273,7 +1440,7 @@ test('Nested Context', async subtest => {
             }
           }
 
-          t.plan(10)
+          t.plan(13)
 
           fastify.setValidatorCompiler(customParent)
 
@@ -1293,6 +1460,7 @@ test('Nested Context', async subtest => {
                 t.assert.ok(ok2)
                 t.assert.strictEqual(childCalled, 2)
                 t.assert.strictEqual(parentCalled, 0)
+                t.assert.deepStrictEqual(compiledParts, ['querystring', null])
 
                 reply.send({ hello: 'world' })
               }

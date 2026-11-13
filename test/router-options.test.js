@@ -148,6 +148,21 @@ test('Should set is404 flag for unmatched paths', (t, done) => {
   })
 })
 
+test('request.signal is available in frameworkErrors', async t => {
+  const fastify = Fastify({
+    frameworkErrors: (err, request, reply) => {
+      t.assert.ok(err instanceof FST_ERR_BAD_URL)
+      t.assert.ok(request.signal instanceof AbortSignal)
+      reply.code(400).send()
+    }
+  })
+
+  fastify.get('/test/:id', () => {})
+
+  const response = await fastify.inject({ method: 'GET', url: '/test/%c0' })
+  t.assert.strictEqual(response.statusCode, 400)
+})
+
 test('Should honor frameworkErrors option - FST_ERR_BAD_URL', (t, done) => {
   t.plan(3)
   const fastify = Fastify({

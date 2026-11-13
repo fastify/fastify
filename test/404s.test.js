@@ -5,7 +5,49 @@ const fp = require('fastify-plugin')
 const errors = require('http-errors')
 const split = require('split2')
 const Fastify = require('..')
+const { kFourOhFour } = require('../lib/symbols')
 const { getServerUrl } = require('./helper')
+
+test('request.signal is available in the 404 fallback', async t => {
+  let signal
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      serializers: {
+        req (request) {
+          if (request.is404) signal = request.signal
+          return { url: request.raw.url }
+        }
+      }
+    }
+  })
+
+  fastify.get('/trigger-fallback', (request, reply) => {
+    fastify[kFourOhFour].router.defaultRoute(request.raw, reply.raw)
+  })
+
+  const response = await fastify.inject('/trigger-fallback')
+  t.assert.strictEqual(response.statusCode, 404)
+  t.assert.ok(signal instanceof AbortSignal)
+})
+
+test('request.signal is available in a custom not found handler', async t => {
+  let handlerCalled = false
+  let signal
+  const fastify = Fastify()
+  fastify.setNotFoundHandler((request, reply) => {
+    handlerCalled = true
+    signal = request.signal
+    reply.code(404).send()
+  })
+  t.after(() => fastify.close())
+
+  const response = await fastify.inject('/missing')
+  t.assert.strictEqual(handlerCalled, true)
+  t.assert.strictEqual(response.statusCode, 404)
+  t.assert.ok(signal instanceof AbortSignal)
+})
 
 test('default 404', async t => {
   t.plan(4)

@@ -192,7 +192,35 @@ test('Different schema per content type', (t, testDone) => {
   completion.patience.then(testDone)
 })
 
-test('Skip validation if no schema for content type', (t, testDone) => {
+test('A body schema without content validates every parsed media type', async t => {
+  const fastify = Fastify()
+
+  const jsonParser = (_request, body, done) => {
+    done(null, JSON.parse(body))
+  }
+  fastify.addContentTypeParser(/^application\/.+\+json$/, { parseAs: 'string' }, jsonParser)
+  fastify.addContentTypeParser('*', { parseAs: 'string' }, jsonParser)
+
+  fastify.post('/', {
+    schema: { body: schemaArtist }
+  }, async function (req, reply) {
+    return reply.send(req.body)
+  })
+
+  for (const contentType of ['application/vnd.api+json', 'application/x-custom']) {
+    const response = await fastify.inject({
+      url: '/',
+      method: 'POST',
+      headers: { 'content-type': contentType },
+      payload: JSON.stringify({ name: 'michelangelo' })
+    })
+
+    t.assert.strictEqual(response.statusCode, 400)
+    t.assert.strictEqual(response.json().code, 'FST_ERR_VALIDATION')
+  }
+})
+
+test('Reject content type if no schema is defined for it', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -217,13 +245,13 @@ test('Skip validation if no schema for content type', (t, testDone) => {
     body: 'AAAAAAAA'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type' })
+    t.assert.strictEqual(res.statusCode, 415)
     testDone()
   })
 })
 
-test('Skip validation if no content type schemas', (t, testDone) => {
+test('Reject content type if no content type schemas are defined', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -245,10 +273,54 @@ test('Skip validation if no content type schemas', (t, testDone) => {
     body: 'AAAAAAAA'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 415, code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE', error: 'Unsupported Media Type', message: 'Unsupported Media Type' })
+    t.assert.strictEqual(res.statusCode, 415)
     testDone()
   })
+})
+
+test('Reject content types accepted by RegExp and catch-all parsers but absent from the schema', async t => {
+  const fastify = Fastify()
+  let handlerCalls = 0
+
+  const jsonParser = (_request, body, done) => {
+    done(null, JSON.parse(body))
+  }
+  fastify.addContentTypeParser(/^application\/.+\+json$/, { parseAs: 'string' }, jsonParser)
+  fastify.addContentTypeParser('*', { parseAs: 'string' }, jsonParser)
+
+  fastify.post('/', {
+    attachValidation: true,
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: schemaArtist
+          }
+        }
+      }
+    }
+  }, async function (req, reply) {
+    handlerCalls++
+    return reply.send(req.body)
+  })
+
+  for (const contentType of ['application/vnd.api+json', 'application/x-custom']) {
+    const response = await fastify.inject({
+      url: '/',
+      method: 'POST',
+      headers: { 'content-type': contentType },
+      payload: JSON.stringify({ name: 'michelangelo' })
+    })
+
+    t.assert.strictEqual(response.statusCode, 415)
+    t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  }
+
+  const response = await fastify.inject({ method: 'POST', url: '/' })
+  t.assert.strictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  t.assert.strictEqual(handlerCalls, 0)
 })
 
 test('External AJV instance', (t, testDone) => {
@@ -1353,9 +1425,7 @@ test('Custom validator builder override by custom validator compiler in child in
   t.assert.strictEqual(two.statusCode, 200)
 })
 
-test('Schema validation when no content type is provided', async t => {
-  // this case should not be happened in normal use-case,
-  // it is added for the completeness of code branch
+test('Reject a parsed body when preValidation removes its content type', async t => {
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -1391,7 +1461,8 @@ test('Schema validation when no content type is provided', async t => {
     },
     body: { invalid: 'string' }
   })
-  t.assert.strictEqual(invalid.statusCode, 200)
+  t.assert.strictEqual(invalid.statusCode, 415)
+  t.assert.strictEqual(invalid.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
 
 test('Schema validation will not be bypass by different content type', async t => {

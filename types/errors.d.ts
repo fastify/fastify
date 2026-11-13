@@ -94,5 +94,5 @@ export type FastifyErrorCodes = Record<
   'FST_ERR_PLUGIN_NOT_VALID' |
   'FST_ERR_ROOT_PLG_BOOTED' |
   'FST_ERR_PARENT_PLUGIN_BOOTED' |
-  'FST_ERR_PLUGIN_TIMEOUT'
-  , FastifyErrorConstructor>
+  'FST_ERR_PLUGIN_TIMEOUT',
+  FastifyErrorConstructor>

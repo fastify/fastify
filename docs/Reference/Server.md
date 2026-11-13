@@ -1075,9 +1075,14 @@ multi) routes by using `maxParamLength` option; the default value is 100
 characters. If the maximum length limit is reached, the not found route will
 be invoked.
 
-This can be useful especially if you have a regex-based route, protecting you
-against [ReDoS
+For regex routes, the limit applies to the values captured by the regular
+expression, and it is checked only after the expression has run against the
+whole path segment. `maxParamLength` therefore does not limit the input a route
+regex processes and does not protect against [ReDoS
 attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+To guard against ReDoS, keep [`allowUnsafeRegex`](#allow-unsafe-regex)
+disabled so that potentially catastrophic regular expressions are rejected when
+the route is registered.
 
 
 ### `onBadUrl`

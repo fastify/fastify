@@ -1328,3 +1328,32 @@ test('Request.setDecorator should update an existing decorator', (t, done) => {
     })
   })
 })
+
+test('getDecorator should evaluate a getter once', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  let calls = 0
+  fastify.decorate('value', {
+    getter () {
+      return ++calls
+    }
+  })
+
+  t.assert.strictEqual(fastify.getDecorator('value'), 1)
+  t.assert.strictEqual(calls, 1)
+})
+
+test('getDecorator should bind the function returned by a getter once', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  let calls = 0
+  fastify.decorate('method', {
+    getter () {
+      calls++
+      return function () { return this }
+    }
+  })
+
+  t.assert.strictEqual(fastify.getDecorator('method')(), fastify)
+  t.assert.strictEqual(calls, 1)
+})

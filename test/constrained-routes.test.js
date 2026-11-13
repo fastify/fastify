@@ -607,7 +607,7 @@ test('Should allow registering constrained routes in a prefixed plugin', (t, don
 })
 
 test('Should allow registering a constrained GET route after a constrained HEAD route', (t, done) => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.route({
@@ -637,7 +637,9 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
     }
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.payload, 'custom HEAD response')
+    // A HEAD response has no body, so check the headers set by the custom HEAD handler
+    t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+    t.assert.strictEqual(res.headers['content-length'], String(Buffer.byteLength('custom HEAD response')))
     t.assert.strictEqual(res.statusCode, 200)
     done()
   })

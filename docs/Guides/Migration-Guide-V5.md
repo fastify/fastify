@@ -405,7 +405,7 @@ fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 console.log(fastify.hasRoute({
   method: 'GET',
   url: '/example/12345.png'
-)); // true
+})); // true
 ```
 
 ```js
@@ -416,7 +416,7 @@ fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 console.log(fastify.hasRoute({
   method: 'GET',
   url: '/example/:file(^\\d+).png'
-)); // true
+})); // true
 ```
 
 ### Removal of some non-standard HTTP methods

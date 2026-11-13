@@ -13,7 +13,7 @@ const { waitForCb } = require('./helper')
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
 
-  ;['addSchema', 'getSchema', 'getSchemas', 'setInputValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+  ;['addSchema', 'getSchema', 'getSchemas', 'setInputValidatorCompiler'].forEach(f => {
   test(`Should expose ${f} function`, t => {
     t.plan(1)
     const fastify = Fastify()
@@ -21,7 +21,7 @@ const echoBody = (req, reply) => { reply.send(req.body) }
   })
 })
 
-;['setInputValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+;['setInputValidatorCompiler'].forEach(f => {
   test(`cannot call ${f} after binding`, (t, testDone) => {
     t.plan(2)
     const fastify = Fastify()
@@ -101,21 +101,8 @@ test('Get inputValidatorCompiler after setInputValidatorCompiler', (t, testDone)
   })
 })
 
-test('Get serializerCompiler after setSerializerCompiler', (t, testDone) => {
-  t.plan(2)
-  const myCompiler = () => { }
-  const fastify = Fastify()
-  fastify.setSerializerCompiler(myCompiler)
-  const sc = fastify.serializerCompiler
-  t.assert.ok(Object.is(myCompiler, sc))
-  fastify.ready(err => {
-    t.assert.ifError(err)
-    testDone()
-  })
-})
-
 test('Get compilers is empty when settle on routes', (t, testDone) => {
-  t.plan(3)
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -131,8 +118,7 @@ test('Get compilers is empty when settle on routes', (t, testDone) => {
         }
       }
     },
-    inputValidatorCompiler: ({ schema, method, url, httpPart }) => { },
-    serializerCompiler: ({ schema, method, url, httpPart }) => { }
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => { }
   }, function (req, reply) {
     reply.send('ok')
   })
@@ -144,7 +130,6 @@ test('Get compilers is empty when settle on routes', (t, testDone) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.strictEqual(fastify.inputValidatorCompiler, undefined)
-    t.assert.strictEqual(fastify.serializerCompiler, undefined)
     testDone()
   })
 })
@@ -266,8 +251,8 @@ test('Should throw of the schema does not exists in output', (t, testDone) => {
   })
 
   fastify.ready(err => {
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.assert.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-stringify
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_OUTPUT_VALIDATION_BUILD')
+    t.assert.match(err.message, /^Failed building the output validation schema for GET: \/:id, due to error can't resolve reference #notExist.*/) // error from ajv
     testDone()
   })
 })
@@ -638,7 +623,8 @@ test('First level $ref', (t, testDone) => {
     type: 'object',
     properties: {
       id: { type: 'number' }
-    }
+    },
+    additionalProperties: false
   })
 
   fastify.get('/:id', {
@@ -801,7 +787,8 @@ test('Customize validator compiler in instance and route', t => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200) // the validation is always true
-    t.assert.deepStrictEqual(res.json(), {})
+    // the response schema does not declare `additionalProperties: false`
+    t.assert.deepStrictEqual(res.json(), { id: 'should-be-a-num' })
     stepIn()
   })
 
@@ -1503,7 +1490,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 
   fastify.addHook('onReady', function (done) {
     t.assert.ok(this.inputValidatorCompiler)
-    t.assert.ok(this.serializerCompiler)
+    t.assert.ok(this.outputValidatorCompiler)
     done()
   })
 
@@ -1511,7 +1498,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
   fastify.register(async (i, o) => {
     i.addHook('onReady', function (done) {
       t.assert.ok(this.inputValidatorCompiler)
-      t.assert.ok(this.serializerCompiler)
+      t.assert.ok(this.outputValidatorCompiler)
       done()
     })
 
@@ -1882,7 +1869,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
   t.assert.strictEqual(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
-test('setSchemaController: Inherits buildSerializer from parent if not present within the instance', async t => {
+test('setSchemaController: Inherits buildOutputValidator from parent if not present within the instance', async t => {
   t.plan(6)
   const customAjv = new Ajv({ coerceTypes: false })
   const someSchema = {
@@ -1904,18 +1891,13 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
       }
     }
   }
-  let rootSerializerCalled = 0
+  let rootOutputValidatorCalled = 0
   let rootValidatorCalled = 0
   let childValidatorCalled = 0
-  const rootBuildSerializer = function (externalSchemas) {
-    rootSerializerCalled++
-    return function serializer () {
-      return data => {
-        return JSON.stringify({
-          statusCode: data.statusCode,
-          message: data.message
-        })
-      }
+  const rootBuildOutputValidator = function (externalSchemas) {
+    rootOutputValidatorCalled++
+    return function outputValidatorCompiler () {
+      return () => true
     }
   }
   const rootBuildValidator = function (externalSchemas) {
@@ -1928,7 +1910,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     schemaController: {
       compilersFactory: {
         buildInputValidator: rootBuildValidator,
-        buildSerializer: rootBuildSerializer
+        buildOutputValidator: rootBuildOutputValidator
       }
     }
   })
@@ -1992,7 +1974,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
 
   t.assert.strictEqual(json.statusCode, 400)
   t.assert.strictEqual(json.message, 'querystring/msg must be array')
-  t.assert.strictEqual(rootSerializerCalled, 1, 'Should be called from the child')
+  t.assert.strictEqual(rootOutputValidatorCalled, 1, 'Should be called from the child')
   t.assert.strictEqual(rootValidatorCalled, 0, 'Should not be called from the child')
   t.assert.strictEqual(childValidatorCalled, 1, 'Should be called from the child')
   t.assert.strictEqual(res.statusCode, 400, 'Should not coerce the string into array')
@@ -2020,13 +2002,13 @@ test('setSchemaController: Inherits buildInputValidator from parent if not prese
       }
     }
   }
-  let rootSerializerCalled = 0
+  let rootOutputValidatorCalled = 0
   let rootValidatorCalled = 0
-  let childSerializerCalled = 0
-  const rootBuildSerializer = function (externalSchemas) {
-    rootSerializerCalled++
-    return function serializer () {
-      return data => JSON.stringify(data)
+  let childOutputValidatorCalled = 0
+  const rootBuildOutputValidator = function (externalSchemas) {
+    rootOutputValidatorCalled++
+    return function outputValidatorCompiler () {
+      return () => true
     }
   }
   const rootBuildValidator = function (externalSchemas) {
@@ -2045,7 +2027,7 @@ test('setSchemaController: Inherits buildInputValidator from parent if not prese
     schemaController: {
       compilersFactory: {
         buildInputValidator: rootBuildValidator,
-        buildSerializer: rootBuildSerializer
+        buildOutputValidator: rootBuildOutputValidator
       }
     }
   })
@@ -2054,15 +2036,10 @@ test('setSchemaController: Inherits buildInputValidator from parent if not prese
     instance.register((subInstance, _, subDone) => {
       subInstance.setSchemaController({
         compilersFactory: {
-          buildSerializer: function (externalSchemas) {
-            childSerializerCalled++
-            return function serializerCompiler () {
-              return data => {
-                return JSON.stringify({
-                  statusCode: data.statusCode,
-                  message: data.message
-                })
-              }
+          buildOutputValidator: function (externalSchemas) {
+            childOutputValidatorCalled++
+            return function outputValidatorCompiler () {
+              return () => true
             }
           }
         }
@@ -2112,9 +2089,9 @@ test('setSchemaController: Inherits buildInputValidator from parent if not prese
 
   t.assert.strictEqual(json.statusCode, 400)
   t.assert.strictEqual(json.message, 'querystring/msg must be array')
-  t.assert.strictEqual(rootSerializerCalled, 0, 'Should be called from the child')
-  t.assert.strictEqual(rootValidatorCalled, 1, 'Should not be called from the child')
-  t.assert.strictEqual(childSerializerCalled, 1, 'Should be called from the child')
+  t.assert.strictEqual(rootOutputValidatorCalled, 0, 'Should not be called from the child')
+  t.assert.strictEqual(rootValidatorCalled, 1, 'Should be called from the child')
+  t.assert.strictEqual(childOutputValidatorCalled, 1, 'Should be called from the child')
   t.assert.strictEqual(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
@@ -2295,8 +2272,8 @@ test('Should return a human-friendly error if response status codes are not spec
   })
 
   fastify.ready(err => {
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.assert.strictEqual(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_OUTPUT_VALIDATION_BUILD')
+    t.assert.strictEqual(err.message, 'Failed building the output validation schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
     testDone()
   })
 })

@@ -4,8 +4,7 @@ const { test } = require('node:test')
 const Ajv = require('ajv')
 const Fastify = require('..')
 
-// `minimum` is ignored by fast-json-stringify: a response that violates it can
-// only be rejected by the output validator.
+// A response that violates `minimum` is rejected by the output validator.
 const atLeastTen = {
   200: {
     type: 'object',
@@ -172,7 +171,7 @@ test('the output validator is selected by content type', async t => {
   t.assert.deepStrictEqual((await fastify.inject('/v2')).json(), { n: 1 })
 })
 
-test('the payloads that do not reach fast-json-stringify are not validated', async t => {
+test('the payloads that are not stringified are not validated', async t => {
   t.plan(3)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -188,7 +187,75 @@ test('the payloads that do not reach fast-json-stringify are not validated', asy
   t.assert.strictEqual((await fastify.inject('/custom')).payload, '{"n":1}')
 })
 
-test('the default output pool shapes the handler payload before fast-json-stringify', async t => {
+test('a custom reply serializer receives the payload without output validation', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const strict = {
+    200: {
+      type: 'object',
+      properties: { n: { type: 'number', minimum: 10 } },
+      additionalProperties: false
+    }
+  }
+  fastify.get('/reply', { schema: { response: strict } }, (request, reply) => {
+    reply.serializer(JSON.stringify).send({ n: 1, extra: true })
+  })
+  fastify.register(async function (instance) {
+    instance.setReplySerializer(JSON.stringify)
+    instance.get('/instance', { schema: { response: strict } }, () => ({ n: 1, extra: true }))
+  })
+
+  t.assert.strictEqual((await fastify.inject('/reply')).payload, '{"n":1,"extra":true}')
+  t.assert.strictEqual((await fastify.inject('/instance')).payload, '{"n":1,"extra":true}')
+})
+
+test('only the errors of the serialization step are marked with error.serialization', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.setErrorHandler((error, request, reply) => {
+    reply.code(500).type('text/plain').send(`${error.code ?? error.message}:${error.serialization !== undefined}`)
+  })
+
+  fastify.get('/validation', { schema: { response: atLeastTen } }, () => ({ n: 1 }))
+  fastify.get('/stringify', { schema: { response: atLeastTen } }, () => ({ n: 10, big: 1n }))
+  fastify.get('/content-type', {
+    schema: { response: { 200: { content: { 'application/json': { schema: atLeastTen[200] } } } } }
+  }, (request, reply) => {
+    reply.type('application/vnd.other+json').send({ n: 10 })
+  })
+
+  t.assert.strictEqual((await fastify.inject('/validation')).payload, 'FST_ERR_SCH_OUTPUT_VALIDATION:false')
+  t.assert.strictEqual((await fastify.inject('/stringify')).payload, 'Do not know how to serialize a BigInt:true')
+  t.assert.strictEqual((await fastify.inject('/content-type')).payload, 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN:true')
+})
+
+test('an error body that cannot be stringified fails with FST_ERR_FAILED_ERROR_SERIALIZATION', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', {
+    schema: { response: { 500: { type: 'object', properties: { message: { type: 'string' } } } } }
+  }, () => {
+    const error = new Error('boom')
+    error.code = 1n
+    throw error
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.deepStrictEqual(res.json(), {
+    statusCode: 500,
+    code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
+    message: 'Failed to serialize an error. Error: Do not know how to serialize a BigInt. Original error: boom'
+  })
+})
+
+test('the default output pool shapes the handler payload before JSON.stringify', async t => {
   t.plan(3)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -217,6 +284,21 @@ test('the default output pool shapes the handler payload before fast-json-string
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.deepStrictEqual(res.json(), { n: 42, a: 'x', o: { b: 7 } })
   t.assert.deepStrictEqual(payload, { n: 42, a: 'x', o: { b: 7 } }, 'the payload is shaped in place')
+})
+
+test('the undeclared properties are sent unless the schema declares additionalProperties: false', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const properties = { n: { type: 'number' } }
+  fastify.get('/open', { schema: { response: { 200: { type: 'object', properties } } } }, () => ({ n: 1, extra: true }))
+  fastify.get('/closed', {
+    schema: { response: { 200: { type: 'object', additionalProperties: false, properties } } }
+  }, () => ({ n: 1, extra: true }))
+
+  t.assert.deepStrictEqual((await fastify.inject('/open')).json(), { n: 1, extra: true })
+  t.assert.deepStrictEqual((await fastify.inject('/closed')).json(), { n: 1 })
 })
 
 test('the default output pool does not validate the formats', async t => {

@@ -17,6 +17,7 @@ test('use fluent-json-schema object', async (t) => {
       body: S.object().prop('name', S.string().required()),
       response: {
         200: S.object()
+          .additionalProperties(false)
           .prop('name', S.string())
           .prop('surname', S.string())
       }

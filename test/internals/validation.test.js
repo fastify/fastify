@@ -78,7 +78,7 @@ test('validate passes null for an undefined request part and preserves other val
 
 test('Symbols', t => {
   t.plan(5)
-  t.assert.strictEqual(typeof symbols.responseSchema, 'symbol')
+  t.assert.strictEqual(typeof symbols.outputValidatorSchema, 'symbol')
   t.assert.strictEqual(typeof symbols.bodySchema, 'symbol')
   t.assert.strictEqual(typeof symbols.querystringSchema, 'symbol')
   t.assert.strictEqual(typeof symbols.paramsSchema, 'symbol')
@@ -86,20 +86,20 @@ test('Symbols', t => {
 })
 
 ;['compileSchemasForValidation',
-  'compileSchemasForSerialization'].forEach(func => {
+  'compileSchemasForResponseValidation'].forEach(func => {
   test(`${func} schema - missing schema`, t => {
     t.plan(2)
     const context = {}
     validation[func](context)
     t.assert.strictEqual(typeof context[symbols.bodySchema], 'undefined')
-    t.assert.strictEqual(typeof context[symbols.responseSchema], 'undefined')
+    t.assert.strictEqual(typeof context[symbols.outputValidatorSchema], 'undefined')
   })
 
   test(`${func} schema - missing output schema`, t => {
     t.plan(1)
     const context = { schema: {} }
     validation[func](context, null)
-    t.assert.strictEqual(typeof context[symbols.responseSchema], 'undefined')
+    t.assert.strictEqual(typeof context[symbols.outputValidatorSchema], 'undefined')
   })
 })
 
@@ -123,9 +123,9 @@ test('build schema - output schema', t => {
       }
     }
   }
-  validation.compileSchemasForSerialization(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
-  t.assert.strictEqual(typeof opts[symbols.responseSchema]['2xx'], 'function')
-  t.assert.strictEqual(typeof opts[symbols.responseSchema]['201'], 'function')
+  validation.compileSchemasForResponseValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
+  t.assert.strictEqual(typeof opts[symbols.outputValidatorSchema]['2xx'], 'function')
+  t.assert.strictEqual(typeof opts[symbols.outputValidatorSchema]['201'], 'function')
 })
 
 test('build schema - body schema', t => {

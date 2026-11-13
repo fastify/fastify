@@ -232,6 +232,63 @@ test('reply.serialize should serialize payload with Fastify instance', (t, done)
   })
 })
 
+test('reply.serialize validates and shapes the payload with the response schema', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const schema = {
+    type: 'object',
+    properties: { n: { type: 'integer' } },
+    required: ['n'],
+    additionalProperties: false
+  }
+  fastify.get('/', { schema: { response: { '2xx': schema } } }, (req, reply) => {
+    reply.code(201).type('text/plain').send(reply.serialize({ n: '1', extra: true }))
+  })
+  fastify.get('/invalid', { schema: { response: { 200: schema } } }, (req, reply) => {
+    reply.type('text/plain').send(reply.serialize({}))
+  })
+
+  t.assert.strictEqual((await fastify.inject('/')).payload, '{"n":1}')
+  t.assert.strictEqual((await fastify.inject('/invalid')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
+})
+
+test('reply.serialize selects the response schema by the reply content type', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const schema = {
+    type: 'object',
+    properties: { n: { type: 'integer' } },
+    additionalProperties: false
+  }
+  fastify.get('/json', {
+    schema: { response: { 200: { content: { 'application/json': { schema } } } } }
+  }, (req, reply) => {
+    reply.type('application/json').send(reply.serialize({ n: '1', extra: true }))
+  })
+  fastify.get('/wildcard', {
+    schema: { response: { 200: { content: { '*/*': { schema } } } } }
+  }, (req, reply) => {
+    // no content type is set yet: the */* schema applies
+    const payload = reply.serialize({ n: '1', extra: true })
+    reply.type('application/json').send(payload)
+  })
+  fastify.get('/undeclared', {
+    schema: { response: { 200: { content: { 'application/json': { schema } } } } }
+  }, (req, reply) => {
+    reply.send(reply.serialize({ n: 1 }))
+  })
+
+  t.assert.strictEqual((await fastify.inject('/json')).payload, '{"n":1}')
+  t.assert.strictEqual((await fastify.inject('/wildcard')).payload, '{"n":1}')
+  const res = await fastify.inject('/undeclared')
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(res.json().code, 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN')
+})
+
 test('within an instance', async t => {
   const fastify = Fastify()
   t.after(() => fastify.close())

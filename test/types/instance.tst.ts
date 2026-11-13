@@ -18,7 +18,7 @@ import { FindMyWayVersion } from '../../types/instance.js'
 import { Bindings, ChildLoggerOptions } from '../../types/logger.js'
 import { FastifyReply } from '../../types/reply.js'
 import { FastifyRequest } from '../../types/request.js'
-import { FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler } from '../../types/schema.js'
+import { FastifySchemaCompiler, FastifySchemaControllerOptions } from '../../types/schema.js'
 
 const server = fastify()
 
@@ -598,4 +598,5 @@ expect(server.inputValidatorCompiler).type.toBe<FastifySchemaCompiler<any> | und
 expect(server).type.not.toHaveProperty('validatorCompiler')
 expect(server).type.not.toHaveProperty('setValidatorCompiler')
 expect(server.outputValidatorCompiler).type.toBe<FastifySchemaCompiler<any> | undefined>()
-expect(server.serializerCompiler).type.toBe<FastifySerializerCompiler<any> | undefined>()
+expect(server).type.not.toHaveProperty('serializerCompiler')
+expect(server).type.not.toHaveProperty('setSerializerCompiler')

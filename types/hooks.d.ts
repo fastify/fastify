@@ -75,9 +75,10 @@ export type onRequestMetaHookHandler<
   Return extends ReturnType<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onRequestAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
-  = ReturnType<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    TypeProvider, Logger>> = ReturnType<
+      onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -140,9 +141,10 @@ export type preParsingMetaHookHandler<
   Return extends ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<preParsingAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -202,9 +204,10 @@ export type preValidationMetaHookHandler<
   Return extends ReturnType<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -264,9 +267,10 @@ export type preHandlerMetaHookHandler<
   Return extends ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -339,8 +343,8 @@ export type preSerializationMetaHookHandler<
   Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
     RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
-    RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
+    RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
     ContextConfig, SchemaCompiler, TypeProvider, Logger>>
 > = Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
   RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
@@ -407,9 +411,10 @@ export type onSendMetaHookHandler<
   Return extends ReturnType<onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric,
     ContextConfig, SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onSendAsyncHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      SchemaCompiler, TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric,
   ContextConfig, SchemaCompiler, TypeProvider, Logger>>
   ? onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
@@ -470,9 +475,10 @@ export type onResponseMetaHookHandler<
   Return extends ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onResponseAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -533,9 +539,10 @@ export type onTimeoutMetaHookHandler<
   Return extends ReturnType<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onTimeoutAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
-  = ReturnType<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    TypeProvider, Logger>> = ReturnType<
+      onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
@@ -603,9 +610,10 @@ export type onErrorMetaHookHandler<
   Return extends ReturnType<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onErrorAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
   SchemaCompiler, TypeProvider, Logger>>
   ? onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError, SchemaCompiler,
@@ -665,9 +673,10 @@ export type onRequestAbortMetaHookHandler<
   Return extends ReturnType<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
     | ReturnType<onRequestAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    SchemaCompiler, TypeProvider, Logger>>
-  = ReturnType<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    SchemaCompiler, TypeProvider, Logger>> = ReturnType<
+      onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider, Logger>
+    >
 > = Return extends ReturnType<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
   SchemaCompiler, TypeProvider, Logger>>
   ? onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
@@ -923,13 +932,13 @@ export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'o
           ? preCloseAsyncHookHandler
           : never
 
-export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+export type HookLookup<K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
   ? ApplicationHookLookup<K>
   : K extends LifecycleHook
     ? LifecycleHookLookup<K>
     : never
 
-export type HookAsyncLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+export type HookAsyncLookup<K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
   ? ApplicationHookAsyncLookup<K>
   : K extends LifecycleHook
     ? LifecycleHookAsyncLookup<K>

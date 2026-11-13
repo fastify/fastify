@@ -25,7 +25,7 @@ export type {
 }
 
 export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace' | 'silent'> {
-  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
+  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger;
 }
 
 export interface FastifyLoggerStreamDestination {
@@ -96,8 +96,8 @@ export interface FastifyLoggerOptions<
 }
 
 export interface LogControllerOptions {
-  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
-  requestIdLogLabel?: string
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean);
+  requestIdLogLabel?: string;
 }
 
 export declare class LogController {
@@ -143,5 +143,5 @@ export interface FastifyChildLoggerFactory<
     bindings: Bindings,
     childLoggerOpts: ChildLoggerOptions,
     rawReq: RawRequest
-  ): Logger
+  ): Logger;
 }

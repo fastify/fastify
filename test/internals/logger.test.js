@@ -372,6 +372,47 @@ test('serializerError should log error with status code', t => {
   logController.serializerError(err, request, reply, { statusCode: 500 })
 })
 
+test('headStreamError should not log when logging is disabled (boolean)', t => {
+  t.plan(1)
+  const logController = new LogController({ disableRequestLogging: true })
+  const log = {
+    error: () => { t.assert.fail('error should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  logController.headStreamError(new Error('stream failed'), request, reply)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('headStreamError should not log when logging is disabled (function)', t => {
+  t.plan(1)
+  const logController = new LogController({ disableRequestLogging: () => true })
+  const log = {
+    error: () => { t.assert.fail('error should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  logController.headStreamError(new Error('stream failed'), request, reply)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('headStreamError should log error with message', t => {
+  t.plan(2)
+  const logController = new LogController({ disableRequestLogging: false })
+  const err = new Error('stream failed')
+  const request = {}
+  const reply = {
+    request,
+    log: {
+      error: (data, msg) => {
+        t.assert.strictEqual(msg, 'Error on Stream found for HEAD route')
+        t.assert.strictEqual(data.err, err)
+      }
+    }
+  }
+  logController.headStreamError(err, request, reply)
+})
+
 test('createLogController should use LogController instance directly', t => {
   t.plan(2)
   const custom = new LogController({ disableRequestLogging: true, requestIdLogLabel: 'traceId' })

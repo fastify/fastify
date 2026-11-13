@@ -443,12 +443,21 @@ function fastify (serverOptions) {
           // point becomes idle later, and would otherwise keep close() waiting
           // until keepAliveTimeout, so reap those too.
           let reaper = null
+          let closed = false
           if (forceCloseConnections === 'idle' && fastify[kState].listening) {
-            reaper = setInterval(() => instance.server.closeIdleConnections(), 250)
+            reaper = setInterval(() => {
+              /* c8 ignore next 4 */
+              if (closed) {
+                clearInterval(reaper)
+                return
+              }
+              instance.server.closeIdleConnections()
+            }, 250)
             reaper.unref()
           }
 
           instance.server.close(function (err) {
+            closed = true
             clearInterval(reaper)
             /* c8 ignore next 6 */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {

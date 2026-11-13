@@ -778,7 +778,7 @@ test('does not destroy connections with in-flight requests (default options)', a
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })
 
-test('close() does not wait for keepAliveTimeout when a connection becomes idle after close() was called', async t => {
+test('close() does not wait for keepAliveTimeout when a connection becomes idle after close() was called', { timeout: 5000 }, async t => {
   const fastify = Fastify({ keepAliveTimeout: 60000 })
   let release
   let handling
@@ -793,6 +793,7 @@ test('close() does not wait for keepAliveTimeout when a connection becomes idle 
   await fastify.listen({ port: 0, host: '127.0.0.1' })
 
   const client = net.createConnection({ port: fastify.server.address().port, host: '127.0.0.1' })
+  t.after(() => client.destroy())
   let received = ''
   client.on('data', (chunk) => { received += chunk })
   const closed = new Promise((resolve) => client.once('close', resolve))
@@ -808,14 +809,8 @@ test('close() does not wait for keepAliveTimeout when a connection becomes idle 
     check()
   })
   release()
-  let timer
-  await Promise.race([
-    closePromise,
-    new Promise((resolve, reject) => {
-      timer = setTimeout(() => reject(new Error('close() waited for the keep-alive timeout')), 5000)
-    })
-  ])
-  clearTimeout(timer)
+  // without the fix, close() waits for keepAliveTimeout and the test times out
+  await closePromise
 
   // the server reaps the connection once it becomes idle
   await closed

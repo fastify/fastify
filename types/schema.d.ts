@@ -1,4 +1,4 @@
-import { ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { FastifyInstance, SafePromiseLike } from '../fastify'
 /**
@@ -44,6 +44,19 @@ export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) =
 
 export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
 
+/**
+ * The options of the output validator pool.
+ *
+ * The output side validates *and* shapes the response payload with the JSON
+ * Schema semantics: the `mode: 'JTD'` of the input side cannot work there
+ * (the output pool shapes the payload with the JSON Schema keywords), so the
+ * type does not advertise it.
+ */
+export type FastifyOutputValidatorOptions =
+  NonNullable<Parameters<BuildCompilerFromPool>[1]> extends infer Options
+    ? (Options extends { mode: 'JTD' } ? never : Options)
+    : never
+
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
     add(schema: unknown): FastifyInstance;
@@ -53,7 +66,9 @@ export interface FastifySchemaControllerOptions {
   compilersFactory?: {
     buildValidator?: ValidatorFactory;
     buildSerializer?: SerializerFactory;
+    buildOutputValidator?: BuildCompilerFromPool;
   };
+  outputValidatorOptions?: FastifyOutputValidatorOptions;
 }
 
 export type SchemaErrorDataVar = 'body' | 'headers' | 'params' | 'querystring'

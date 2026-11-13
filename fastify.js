@@ -335,6 +335,10 @@ function fastify (serverOptions) {
       configurable: true,
       get () { return this[kSchemaController].getValidatorCompiler() }
     },
+    outputValidatorCompiler: {
+      configurable: true,
+      get () { return this[kSchemaController].getOutputValidatorCompiler() }
+    },
     serializerCompiler: {
       configurable: true,
       get () { return this[kSchemaController].getSerializerCompiler() }

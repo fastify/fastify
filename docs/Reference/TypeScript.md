@@ -1101,7 +1101,9 @@ server.get('/', async (request, reply) => {
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L8)
 
 Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' |
-'OPTIONS'`
+'OPTIONS' | 'QUERY' | 'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' |
+'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH' | 'REPORT' | 'MKCALENDAR'` and their
+lowercase forms. Any other string is accepted as well.
 
 ##### fastify.RawServerBase
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L13)
@@ -1537,8 +1539,8 @@ This interface is passed to instance of FastifyError.
 `onRequest` is the first hook to be executed in the request lifecycle. There was
 no previous hook, the next hook will be `preParsing`.
 
-Notice: in the `onRequest` hook, request.body will always be null, because the
-body parsing happens before the `preHandler` hook.
+Notice: in the `onRequest` hook, request.body will always be undefined, because
+the body parsing happens before the `preValidation` hook.
 
 ##### fastify.preParsingHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
@@ -1547,8 +1549,8 @@ body parsing happens before the `preHandler` hook.
 `preParsing` is the second hook to be executed in the request lifecycle. The
 previous hook was `onRequest`, the next hook will be `preValidation`.
 
-Notice: in the `preParsing` hook, request.body will always be null, because the
-body parsing happens before the `preValidation` hook.
+Notice: in the `preParsing` hook, request.body will always be undefined, because
+the body parsing happens before the `preValidation` hook.
 
 Notice: you should also add `receivedEncodedLength` property to the returned
 stream. This property is used to correctly match the request payload with the
@@ -1590,7 +1592,7 @@ next hook will be `onResponse`.
 
 > ℹ️ Note:
 >  If you change the payload, you may only change it to a string,
-> a Buffer, a stream, or null.
+> a Buffer, a stream, a ReadableStream, a Response, or null.
 
 ##### fastify.onResponseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 

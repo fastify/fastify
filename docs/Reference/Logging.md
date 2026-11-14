@@ -102,6 +102,35 @@ const fastify = require('fastify')({
 })
 ```
 
+#### Windows Terminal Encoding
+
+Unicode characters in logs may display incorrectly in Windows terminals,
+including Command Prompt and PowerShell, when the terminal code page is not
+UTF-8. Pino's default destination uses SonicBoom to write directly to a file
+descriptor. See Pino's [Unicode and Windows terminal
+ documentation](https://github.com/pinojs/pino/blob/main/docs/help.md#windows)
+for details.
+
+To use UTF-8 in the current terminal session, run the following command before
+starting the application:
+
+```console
+chcp 65001
+```
+
+Alternatively, pass `process.stdout` as a custom stream:
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    stream: process.stdout
+  }
+})
+```
+
+This bypasses Pino's default SonicBoom destination and may affect logging
+performance. Prefer configuring the terminal code page when possible.
+
 ### Advanced Logger Configuration
 
 <a id="logging-request-id"></a>

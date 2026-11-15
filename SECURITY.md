@@ -55,6 +55,20 @@ parser has a matching validation schema entry. This is a configuration concern,
 not a framework vulnerability (see
 [Validation and Serialization](./docs/Reference/Validation-and-Serialization.md)
 and [Content-Type Parser](./docs/Reference/ContentTypeParser.md))
+- **Non-canonical `content` schema keys**: Per-content-type schemas
+(`schema.body.content` and `schema.response[code].content`) are selected by an
+exact match on the essence MIME type of the request or reply: lowercase,
+without parameters or whitespace (e.g. `application/json`). The only other
+supported key is the `*/*` catch-all for response schemas. Any other spelling,
+such as `Application/JSON`, `application/json; charset=utf-8`,
+` application/json `, or `application/*`, never matches. Body validation for
+that entry is skipped, and the response is serialized without that schema (or
+rejected with an error on releases that fail closed). The key is part of the
+trusted route schema, so this is a configuration concern, not a framework
+vulnerability. A route that uses the canonical key keeps validating no matter
+what casing, parameters, or whitespace the client sends in the
+`Content-Type` header. Bypasses against canonical keys remain in scope (see
+[Validation and Serialization](./docs/Reference/Validation-and-Serialization.md))
 - **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
 Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
 `false`

@@ -808,6 +808,9 @@ test('close() does not wait for keepAliveTimeout when a connection becomes idle 
     const check = () => (fastify.server.listening ? setImmediate(check) : resolve())
     check()
   })
+  // the request stays in flight for longer than a tick of the reaper
+  await sleep(400)
+  t.assert.strictEqual(client.destroyed, false)
   release()
   // without the fix, close() waits for keepAliveTimeout and the test times out
   await closePromise
@@ -815,4 +818,48 @@ test('close() does not wait for keepAliveTimeout when a connection becomes idle 
   // the server reaps the connection once it becomes idle
   await closed
   t.assert.match(received, /^HTTP\/1\.1 200 OK/)
+  t.assert.strictEqual(received.split('\r\n\r\n')[1], '{"hello":"world"}')
+})
+
+test('reaps a connection of a secondary binding once it becomes idle after close() was called', { timeout: 5000 }, async t => {
+  const fastify = Fastify({ keepAliveTimeout: 60000 })
+  let release
+  let handling
+  const requested = new Promise((resolve) => { handling = resolve })
+  fastify.get('/', () => new Promise((resolve) => {
+    release = () => resolve({ hello: 'world' })
+    handling()
+  }))
+  // "localhost" is bound on every address it resolves to
+  await fastify.listen({ port: 0 })
+  const main = fastify.server.address()
+  const secondary = fastify.addresses().find((addr) => addr.address !== main.address)
+  if (secondary === undefined) {
+    await fastify.close()
+    t.skip('localhost resolves to a single address')
+    return
+  }
+
+  const client = net.createConnection({ port: secondary.port, host: secondary.address })
+  t.after(() => client.destroy())
+  let received = ''
+  client.on('data', (chunk) => { received += chunk })
+  const closed = new Promise((resolve) => client.once('close', resolve))
+  await new Promise((resolve) => client.once('connect', resolve))
+  client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\nConnection: keep-alive\r\n\r\n')
+  await requested
+
+  // the main server has no connection, so it closes, and the secondary one
+  // with it, while this request is still in flight
+  await fastify.close()
+  // the request stays in flight for longer than a tick of the reaper
+  await sleep(400)
+  t.assert.strictEqual(client.destroyed, false)
+  release()
+
+  // without the fix, the connection stays open until keepAliveTimeout and the
+  // test times out
+  await closed
+  t.assert.match(received, /^HTTP\/1\.1 200 OK/)
+  t.assert.strictEqual(received.split('\r\n\r\n')[1], '{"hello":"world"}')
 })

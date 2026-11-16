@@ -26,6 +26,13 @@ module.exports = [
     }
   },
   {
+    files: ['**/*.d.ts', '**/*.tst.ts'],
+    rules: {
+      '@stylistic/indent': 'off',
+      '@stylistic/operator-linebreak': 'off'
+    }
+  },
+  {
     files: ['**/*.d.ts'],
     rules: {
       '@stylistic/indent-binary-ops': ['error', 2]

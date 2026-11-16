@@ -559,8 +559,13 @@ const fastify = require('fastify')({
 + `true/false`: Trust all proxies (`true`) or do not trust any proxies
   (`false`).
 + `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of
-  comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
-+ `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
+  comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`). The pre-defined
+  names `loopback`, `linklocal` and `uniquelocal` are also accepted (e.g.
+  `'loopback'`, which is `127.0.0.0/8` and `::1`, for a proxy on the same
+  host). Host names such as `'localhost'` are not resolved: they throw an
+  `invalid IP address` error when the Fastify instance is created.
++ `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`). The
+  same pre-defined names are accepted (e.g. `['loopback', '10.0.0.1']`).
 + `number`: Hop-count-only trust is disabled because it cannot validate the
   immediate peer and lets direct clients spoof `X-Forwarded-*` values. Use an
   IP/CIDR string, array, or custom function that validates the proxy address

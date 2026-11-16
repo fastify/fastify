@@ -401,6 +401,17 @@ The optional parameter `httpPart`, if provided, is forwarded to the
 `ValidationCompiler`, allowing it to compile the validation function if a custom
 `ValidationCompiler` is provided for the route.
 
+The schema is compiled as given, and the returned function validates whatever
+data is passed to it. Unlike a route `headers` schema, header names are not
+[normalized to lowercase](./Validation-and-Serialization.md#header-name-case),
+even when `httpPart` is `'headers'`. Node.js exposes `request.headers` with
+lowercase names, so a schema used to validate them must write header names in
+lowercase (for example `required: ['x-api-key']`, not
+`required: ['X-Api-Key']`). Otherwise assertions such as `dependencies` or a
+`propertyNames` deny-list never match and are silently skipped. To reuse the
+normalized validator of the route `headers` schema, call
+`request.validateInput(data, 'headers')`.
+
 This function has an `errors` property. Errors encountered during the last
 validation are assigned to `errors`.
 
@@ -483,7 +494,9 @@ This function validates the input based on the provided schema or HTTP part. If
 both are provided, the `httpPart` parameter takes precedence.
 
 If no validation function exists for a given `schema`, a new validation function
-will be compiled, forwarding the `httpPart` if provided.
+will be compiled, forwarding the `httpPart` if provided. A schema compiled this
+way is not header-name normalized; see
+[.compileValidationSchema(schema, [httpPart])](#compilevalidationschema).
 
 ```js
 request

@@ -670,6 +670,9 @@ section.
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API
   Gateway plugin for Fastify, a low footprint implementation that uses the
   `fastify-reply-from` HTTP proxy library.
+- [`medicus`](https://github.com/arthurfiorette/medicus) Health check library.
+  Its Fastify plugin registers a `/health` route backed by custom checkers and
+  supports `@fastify/under-pressure`.
 - [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL
   server implementation for Fastify.
 - [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get

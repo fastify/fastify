@@ -96,6 +96,68 @@ test('HEAD route should handle ReadableStream.cancel() error', (t, done) => {
   })
 })
 
+test('HEAD route should handle web Response return value', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      return new Response('Hello from web response!', {
+        status: 200,
+        headers: {
+          'x-custom-header': 'fastify-test',
+          'content-type': 'text/plain'
+        }
+      })
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['x-custom-header'], 'fastify-test')
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.body, '')
+})
+
+test('HEAD route should handle reply.send(new Response())', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response-send',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      reply.send(new Response('Hello from send!', {
+        status: 201,
+        headers: {
+          'x-custom-header': 'sent-response',
+          'content-type': 'text/plain'
+        }
+      }))
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-send'
+  })
+
+  t.assert.strictEqual(res.statusCode, 201)
+  t.assert.strictEqual(res.headers['x-custom-header'], 'sent-response')
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.body, '')
+})
+
 test('HEAD route should be exposed by default', async t => {
   t.plan(5)
 

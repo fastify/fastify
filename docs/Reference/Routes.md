@@ -118,7 +118,7 @@ fastify.route(options)
 * `handlerTimeout`: maximum number of milliseconds for the route's full
   lifecycle. Overrides the server-level
   [`handlerTimeout`](./Server.md#factory-handler-timeout). Must be a positive
-  integer. When the timeout fires, `request.signal` is aborted and a 503 error
+  integer <= 2147483647 (the maximum 32-bit signed integer delay supported by Node.js timers). When the timeout fires, `request.signal` is aborted and a 503 error
   is sent through the error handler (which can be customized per-route).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.

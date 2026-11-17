@@ -41,6 +41,21 @@ test('route-level handlerTimeout rejects invalid values', async t => {
   }, { code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT' })
 })
 
+test('route-level handlerTimeout rejects values above the Node.js timer limit', async t => {
+  const fastify = Fastify()
+
+  t.assert.doesNotThrow(() => {
+    fastify.get('/max', { handlerTimeout: 2147483647 }, async () => 'ok')
+  })
+
+  t.assert.throws(() => {
+    fastify.get('/too-large', { handlerTimeout: 2147483648 }, async () => 'ok')
+  }, {
+    code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT',
+    message: "'handlerTimeout' option must be an integer > 0 and <= 2147483647. Got '2147483648'"
+  })
+})
+
 // --- Lazy signal without handlerTimeout ---
 
 test('when handlerTimeout is 0 (default), request.signal is lazily created', async t => {

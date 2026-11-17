@@ -742,7 +742,8 @@ possible to override one or more of those handlers with custom code using this
 option.
 
 > ℹ️ Note:
-> Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
+> Only `FST_ERR_BAD_URL`, `FST_ERR_MAX_PARAM_LENGTH` and
+> `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
 
 ```js
 const fastify = require('fastify')({
@@ -1072,8 +1073,9 @@ fastify.get('/bar', function (req, reply) {
 
 You can set a custom length for parameters in parametric (standard, regex, and
 multi) routes by using `maxParamLength` option; the default value is 100
-characters. If the maximum length limit is reached, the not found route will
-be invoked.
+characters. If the maximum length limit is reached, Fastify responds with a
+`414 URI Too Long` error (`FST_ERR_MAX_PARAM_LENGTH`), which can be handled
+with [`frameworkErrors`](#framework-errors).
 
 For regex routes, the limit applies to the values captured by the regular
 expression, and it is checked only after the expression has run against the

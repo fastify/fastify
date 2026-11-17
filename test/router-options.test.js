@@ -92,6 +92,12 @@ test('Should honor maxParamLength option', async (t) => {
     url: '/test/123456789abcd'
   })
   t.assert.strictEqual(resError.statusCode, 414)
+  t.assert.deepStrictEqual(resError.json(), {
+    error: 'URI Too Long',
+    code: 'FST_ERR_MAX_PARAM_LENGTH',
+    message: "'/test/123456789abcd' is exceeding the max param length",
+    statusCode: 414
+  })
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {

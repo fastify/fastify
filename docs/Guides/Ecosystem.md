@@ -245,6 +245,10 @@ section.
   method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`@usagerail/node`](https://github.com/usagerail/sdk/tree/main/node)
+  Fastify 5 plugin from [UsageRail](https://usagerail.com/docs/fastify) that
+  checks API keys, rate limits and quotas per customer and meters usage for
+  Stripe billing.
 - [`@validex/fastify`](https://github.com/chiptoma/validex/tree/main/packages/fastify)
   Zod 4 validation plugin with 25 typed rules, structured error codes, and
   `request.validate()` decorator.

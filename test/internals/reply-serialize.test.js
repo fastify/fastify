@@ -732,3 +732,195 @@ test('Reply#compileSerializationSchema omits absent metadata instead of passing 
 
   await fastify.inject({ path: '/', method: 'GET' })
 })
+
+test('Reply#serialize with a content-keyed response schema', async t => {
+  t.plan(5)
+
+  await t.test(
+    'should serialize with the application/json serializer when no content type is set',
+    async t => {
+      t.plan(2)
+
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            200: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { foo: { type: 'string' } },
+                    required: ['foo'],
+                    additionalProperties: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.send(reply.serialize({ foo: 'bar', ignored: true }))
+      })
+
+      const result = await fastify.inject({ method: 'GET', url: '/' })
+
+      t.assert.strictEqual(result.statusCode, 200)
+      t.assert.strictEqual(result.body, '{"foo":"bar"}')
+    }
+  )
+
+  await t.test(
+    'should use the serializer of the reply content type',
+    async t => {
+      t.plan(2)
+
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            200: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { json: { type: 'boolean' } },
+                    required: ['json'],
+                    additionalProperties: false
+                  }
+                },
+                'text/plain': {
+                  schema: {
+                    type: 'object',
+                    properties: { text: { type: 'string' } },
+                    required: ['text'],
+                    additionalProperties: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.type('text/plain')
+        reply.send(reply.serialize({ json: true, text: 'selected' }))
+      })
+
+      const result = await fastify.inject({ method: 'GET', url: '/' })
+
+      t.assert.strictEqual(result.statusCode, 200)
+      t.assert.strictEqual(result.body, '{"text":"selected"}')
+    }
+  )
+
+  await t.test(
+    'should fall back to the default JSON serialization when no serializer matches',
+    async t => {
+      t.plan(2)
+
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            200: {
+              content: {
+                'text/plain': {
+                  schema: {
+                    type: 'object',
+                    properties: { text: { type: 'string' } },
+                    required: ['text'],
+                    additionalProperties: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.send(reply.serialize({ foo: 'bar', extra: 1 }))
+      })
+
+      const result = await fastify.inject({ method: 'GET', url: '/' })
+
+      t.assert.strictEqual(result.statusCode, 200)
+      t.assert.strictEqual(result.body, '{"foo":"bar","extra":1}')
+    }
+  )
+
+  await t.test(
+    'should default to the application/json serializer when the reply content type is invalid',
+    async t => {
+      t.plan(2)
+
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            200: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { foo: { type: 'string' } },
+                    required: ['foo'],
+                    additionalProperties: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.type('invalid')
+        reply.send(reply.serialize({ foo: 'bar', ignored: true }))
+      })
+
+      const result = await fastify.inject({ method: 'GET', url: '/' })
+
+      t.assert.strictEqual(result.statusCode, 200)
+      t.assert.strictEqual(result.body, '{"foo":"bar"}')
+    }
+  )
+
+  await t.test(
+    'should serialize errors with the application/json serializer when the reply content type is invalid',
+    async t => {
+      t.plan(2)
+
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            '4xx': {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { message: { type: 'string' } },
+                    required: ['message'],
+                    additionalProperties: false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.type('invalid')
+        const error = new Error('boom')
+        error.statusCode = 404
+        throw error
+      })
+
+      const result = await fastify.inject({ method: 'GET', url: '/' })
+
+      t.assert.strictEqual(result.statusCode, 404)
+      t.assert.strictEqual(result.body, '{"message":"boom"}')
+    }
+  )
+})

@@ -970,7 +970,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
     allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
     buildPrettyMeta: defaultBuildPrettyMeta,
     useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
-  })
+  }, initialConfig)
 
   return {
     options,

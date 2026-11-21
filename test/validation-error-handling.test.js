@@ -358,7 +358,12 @@ test('should handle response validation error', async (t) => {
   })
 
   t.assert.strictEqual(injectResponse.statusCode, 500)
-  t.assert.strictEqual(injectResponse.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+  t.assert.deepStrictEqual(injectResponse.json(), {
+    statusCode: 500,
+    code: 'FST_ERR_SCH_OUTPUT_VALIDATION',
+    error: 'Internal Server Error',
+    message: "Response validation failed. Errors: must have required property 'name'"
+  })
 })
 
 test('should handle response validation error with promises', async (t) => {
@@ -388,7 +393,12 @@ test('should handle response validation error with promises', async (t) => {
   })
 
   t.assert.strictEqual(injectResponse.statusCode, 500)
-  t.assert.strictEqual(injectResponse.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+  t.assert.deepStrictEqual(injectResponse.json(), {
+    statusCode: 500,
+    code: 'FST_ERR_SCH_OUTPUT_VALIDATION',
+    error: 'Internal Server Error',
+    message: "Response validation failed. Errors: must have required property 'name'"
+  })
 })
 
 test('should return a defined output message parsing AJV errors', async (t) => {

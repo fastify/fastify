@@ -118,8 +118,9 @@ test('start server and run tests', async (t) => {
     t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
     t.assert.deepStrictEqual(JSON.parse(body), {
       statusCode: 500,
+      code: 'FST_ERR_SCH_OUTPUT_VALIDATION',
       error: 'Internal Server Error',
-      message: 'The value "world" cannot be converted to a number.'
+      message: 'Response validation failed. Errors: /hello must be number'
     })
   })
 

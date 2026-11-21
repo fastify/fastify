@@ -254,6 +254,23 @@ test('ready should resolve in order when called multiply times (mixed)', async (
   t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
+test('fastify instance should return empty string for listeningOrigin before listen', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.assert.strictEqual(fastify.listeningOrigin, '')
+})
+
+test('fastify instance should return empty string for listeningOrigin after close', async t => {
+  t.plan(2)
+  const port = 3000
+  const host = '127.0.0.1'
+  const fastify = Fastify()
+  await fastify.listen({ port, host })
+  t.assert.strictEqual(fastify.listeningOrigin, `http://${host}:${port}`)
+  await fastify.close()
+  t.assert.strictEqual(fastify.listeningOrigin, '')
+})
+
 test('fastify instance should contains listeningOrigin property (with port and host)', async t => {
   t.plan(1)
   const port = 3000

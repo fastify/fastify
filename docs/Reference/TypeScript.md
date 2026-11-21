@@ -459,8 +459,8 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
     }
     */
 
-    request.body.name // will not throw type error
-    request.body.notthere // will throw type error
+    request.body.name // inferred as string
+    request.body.notthere // allowed, but inferred as unknown
 
     reply.status(201).send();
   },
@@ -1370,8 +1370,8 @@ const plugin: FastifyPluginCallback<{
   option2: boolean;
 }> = function (instance, opts, done) { }
 
-server().register(plugin, {}) // Error - options object is missing required properties
-server().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
+server.register(plugin, {}) // Error - options object is missing required properties
+server.register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
 ```
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples

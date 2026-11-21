@@ -23,9 +23,9 @@ request](./Request.md) object, accessible via `request.body`.
 > **Important:** When using a body schema with the
 > [`content`](./Validation-and-Serialization.md#body-content-type-validation)
 > property to validate per content type, only content types listed in the schema
-> will be validated. If you add a custom content type parser but do not include
-> its content type in the body schema's `content` property, the incoming data
-> will be parsed but **not validated**.
+> are accepted. If you add a custom content type parser but do not include its
+> content type in the body schema's `content` property, the request will be
+> rejected with a `415 Unsupported Media Type` response.
 
 Note that for `GET` and `HEAD` requests, the payload is never parsed. For
 `OPTIONS` and `DELETE` requests, the payload is parsed only if a valid
@@ -42,10 +42,10 @@ parsed.
 >
 > Additionally, if the route uses per-content-type body validation via
 > `schema.body.content`, the schema is selected by an **exact match** on the
-> essence MIME type, not by the parser's regex. A regex parser that accepts
-> content types with no matching key in the `content` schema map will result
-> in those requests **not being validated**. Ensure every content type matched
-> by the regex has a corresponding entry in the schema's `content` map. See
+> essence MIME type, not by the parser's regex. Requests accepted by a regex
+> parser with no matching key in the `content` schema map are rejected with a
+> `415 Unsupported Media Type` response. Ensure every content type matched by
+> the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
 > ℹ️ Note:

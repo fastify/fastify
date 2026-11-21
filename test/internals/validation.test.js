@@ -48,16 +48,18 @@ for (const [part, symbol] of [
   }
 }
 
-test('validate skips a body without a matching content-type schema', t => {
+test('validate rejects a body without a matching content-type schema', t => {
   const context = { [symbols.bodySchema]: { 'application/json': () => true } }
   const request = {
     mediaType: 'text/plain',
     get body () {
-      t.assert.fail('an unvalidated body must not be read')
+      t.assert.fail('an unsupported body must not be read')
     }
   }
 
-  t.assert.strictEqual(validation.validate(context, request), false)
+  const error = validation.validate(context, request)
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  t.assert.strictEqual(error.statusCode, 415)
 })
 
 test('validate passes null for an undefined request part and preserves other values', t => {

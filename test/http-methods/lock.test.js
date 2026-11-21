@@ -45,8 +45,7 @@ test('can be created - lock', t => {
                   </D:lockroot>
                 </D:activelock>
               </D:lockdiscovery>
-            </D:prop>`
-          )
+            </D:prop>`)
       }
     })
     t.assert.ok(true)

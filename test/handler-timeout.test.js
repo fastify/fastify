@@ -39,6 +39,18 @@ test('route-level handlerTimeout rejects invalid values', async t => {
   t.assert.throws(() => {
     fastify.get('/d', { handlerTimeout: 0 }, async () => 'ok')
   }, { code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT' })
+
+  t.assert.throws(() => {
+    fastify.get('/e', { handlerTimeout: 2147483648 }, async () => 'ok')
+  }, {
+    code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT',
+    message: "'handlerTimeout' option must be an integer between 1 and 2147483647. Got '2147483648'"
+  })
+
+  // Boundary case: 2147483647 (max 32-bit signed int) is accepted
+  t.assert.doesNotThrow(() => {
+    fastify.get('/valid-boundary', { handlerTimeout: 2147483647 }, async () => 'ok')
+  })
 })
 
 // --- Lazy signal without handlerTimeout ---

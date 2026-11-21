@@ -69,7 +69,7 @@ jobs:
 
       - name: Install with yarn
         run: |
-          curl -o- -L https://yarnpkg.com/install.sh | bash
+          corepack enable
           yarn install --ignore-engines --ignore-scripts
 
       - run: yarn

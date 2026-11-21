@@ -748,10 +748,10 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'auth.fastify.dev'
+    'Host': 'auth.fastify.example'
   }
 }, (err, res) => {
-  // => 'hello world from auth.fastify.dev'
+  // => 'hello world from auth.fastify.example'
 })
 ```
 
@@ -762,7 +762,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.example
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

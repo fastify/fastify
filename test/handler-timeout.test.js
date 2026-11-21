@@ -425,6 +425,49 @@ test('handlerTimeout firing after the reply ended but before it finished is a no
   t.assert.strictEqual(signal.aborted, false)
 })
 
+// Deterministic variant of the test above: socket buffer sizes vary across
+// platforms (e.g. Windows auto-tunes them), so filling them is not a reliable
+// way to keep the response from finishing. Hold back 'finish' instead, so the
+// timer fires while reply.sent === true and the response has not finished.
+test('handlerTimeout firing after the reply ended but before finish is a no-op (deterministic)', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ handlerTimeout: 50 })
+
+  let signal
+  let timerFiredAfterEnd = false
+  fastify.get('/', async (request, reply) => {
+    signal = request.signal
+    const raw = reply.raw
+    const emit = raw.emit
+    // Release 'finish' (and the 'close' that follows it) only after the
+    // handler timeout has elapsed, preserving their order.
+    const held = []
+    raw.emit = function (event, ...args) {
+      if (event === 'finish' || event === 'close') {
+        if (held.push([event, args]) === 1) {
+          setTimeout(() => {
+            timerFiredAfterEnd = raw.writableEnded === true && signal.aborted === false
+            raw.emit = emit
+            for (const [e, a] of held) emit.call(raw, e, ...a)
+          }, 150)
+        }
+        return true
+      }
+      return emit.call(raw, event, ...args)
+    }
+    return 'ok'
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.payload, 'ok')
+
+  await new Promise(resolve => setTimeout(resolve, 200))
+  t.assert.strictEqual(timerFiredAfterEnd, true)
+  t.assert.strictEqual(signal.aborted, false)
+})
+
 // --- SSE with reply.hijack() ---
 
 test('reply.hijack() clears timeout timer', async t => {

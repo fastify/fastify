@@ -843,3 +843,84 @@ test('Should not mutate user-provided routerOptions object', async t => {
   t.assert.strictEqual(routerOptions.defaultRoute, undefined)
   t.assert.strictEqual(routerOptions.onBadUrl, undefined)
 })
+
+test('Should honor routerOptions in encapsulated not found handlers', async t => {
+  function build (routerOptions) {
+    const fastify = Fastify({ routerOptions })
+    fastify.register(async (api) => {
+      api.addHook('onRequest', async (req, reply) => {
+        reply.header('x-api-hook', 'ran')
+      })
+      api.get('/known', async () => 'ok')
+      api.setNotFoundHandler((req, reply) => {
+        reply.code(404).send('API 404')
+      })
+    }, { prefix: '/api' })
+    fastify.setNotFoundHandler((req, reply) => {
+      reply.code(404).send('ROOT 404')
+    })
+    return fastify
+  }
+
+  await t.test('caseSensitive', async t => {
+    const fastify = build({ caseSensitive: false })
+    t.after(() => fastify.close())
+
+    const known = await fastify.inject('/API/known')
+    t.assert.strictEqual(known.statusCode, 200)
+
+    const res = await fastify.inject('/API/missing')
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.strictEqual(res.payload, 'API 404')
+    t.assert.strictEqual(res.headers['x-api-hook'], 'ran')
+  })
+
+  await t.test('ignoreDuplicateSlashes', async t => {
+    const fastify = build({ ignoreDuplicateSlashes: true })
+    t.after(() => fastify.close())
+
+    const known = await fastify.inject('//api//known')
+    t.assert.strictEqual(known.statusCode, 200)
+
+    const res = await fastify.inject('//api//missing')
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.strictEqual(res.payload, 'API 404')
+    t.assert.strictEqual(res.headers['x-api-hook'], 'ran')
+  })
+
+  await t.test('useSemicolonDelimiter', async t => {
+    const fastify = build({ useSemicolonDelimiter: true })
+    t.after(() => fastify.close())
+
+    const known = await fastify.inject('/api/known;foo=bar')
+    t.assert.strictEqual(known.statusCode, 200)
+
+    const res = await fastify.inject('/api;a=1')
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.strictEqual(res.payload, 'API 404')
+  })
+
+  await t.test('maxParamLength', async t => {
+    const fastify = Fastify({ routerOptions: { maxParamLength: 500 } })
+    t.after(() => fastify.close())
+
+    fastify.register(async (tenant) => {
+      tenant.get('/info', async () => 'ok')
+      tenant.setNotFoundHandler((req, reply) => {
+        reply.code(404).send('TENANT 404')
+      })
+    }, { prefix: '/t/:tenant' })
+    fastify.setNotFoundHandler((req, reply) => {
+      reply.code(404).send('ROOT 404')
+    })
+
+    const tenantId = 'a'.repeat(200)
+
+    const known = await fastify.inject(`/t/${tenantId}/info`)
+    t.assert.strictEqual(known.statusCode, 200)
+
+    const res = await fastify.inject(`/t/${tenantId}/missing`)
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.strictEqual(res.payload, 'TENANT 404')
+  })
+})

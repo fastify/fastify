@@ -228,6 +228,10 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@openreceive/fastify`](https://github.com/OpenReceive/openreceive/tree/master/packages/js/fastify)
+  Self-hosted Bitcoin Lightning checkout that pays into your own wallet over a
+  receive-only Nostr Wallet Connect (NWC) connection, with optional USDT and
+  USDC swaps.
 - [`@pompelmi/fastify-plugin`](https://github.com/pompelmi/pompelmi/tree/main/packages/fastify-plugin)
   In-process file upload scanning for Fastify with MIME/magic-byte
   validation, ZIP bomb protection, size limits, and optional YARA.

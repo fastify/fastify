@@ -1298,6 +1298,9 @@ fastify.ready().then(() => {
 })
 ```
 
+Once `ready()` has completed, the instance is started: adding hooks, routes or
+decorators throws an error.
+
 #### listen
 <a id="listen"></a>
 

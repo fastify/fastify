@@ -713,7 +713,7 @@ function fastify (serverOptions) {
       return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
     }
     const body = JSON.stringify({
-      error: 'Bad Request',
+      error: 'URI Too Long',
       code: 'FST_ERR_MAX_PARAM_LENGTH',
       message: `'${path}' is exceeding the max param length`,
       statusCode: 414

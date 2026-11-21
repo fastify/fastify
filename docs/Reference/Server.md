@@ -763,7 +763,15 @@ possible to override one or more of those handlers with custom code using this
 option.
 
 > ℹ️ Note:
-> Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
+> Only `FST_ERR_BAD_URL`, `FST_ERR_MAX_PARAM_LENGTH` and
+> `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
+
+These errors are raised by the router before a route is matched, so they are
+handled outside the regular request lifecycle: hooks (such as `onRequest` and
+`onSend`) and the handler set with
+[`setErrorHandler`](#seterrorhandler) are not invoked for them. Use
+`frameworkErrors` to customize the response, for example to add headers that
+would otherwise be set by a hook.
 
 ```js
 const fastify = require('fastify')({

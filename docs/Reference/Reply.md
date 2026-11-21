@@ -83,9 +83,9 @@ since the request was received by Fastify.
   serialization function for the specified schema or http status, if any of
   either are set.
 - `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles
-  the specified schema and returns a serialization function using the default
-  (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded
-  to the `SerializerCompiler` if provided, default to `undefined`.
+  the specified schema with the response validator and returns a serialization
+  function. The optional `httpStatus` is forwarded to the response validator
+  compiler if provided, default to `undefined`.
 - `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes
   the specified data using the specified schema and returns the serialized payload.
   If the optional `httpStatus`, and `contentType` are provided, the function
@@ -256,9 +256,9 @@ end user.
 <a id="send-object"></a>
 
 As noted above, if you are sending JSON objects, `send` will serialize the
-object with
-[fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you
-set an output schema, otherwise, `JSON.stringify()` will be used.
+object with `JSON.stringify()`. If you set an output schema, the object is
+[validated](./Validation-and-Serialization.md#output-validation) against it
+first.
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })
@@ -467,6 +467,19 @@ To customize the JSON error output you can do it by:
 Notice that if the returned status code is not in the response schema list, the
 default behavior will be applied.
 
+The body is built from the own enumerable properties of the `Error` instance
+plus `statusCode`, `code`, `error` and `message`, then it is validated against
+the schema and sent with `JSON.stringify`. If the body does not match the
+schema, Fastify answers with
+[`FST_ERR_FAILED_ERROR_SERIALIZATION`](./Errors.md#fst_err_failed_error_serialization).
+
+> ⚠ Warning:
+> Without `additionalProperties: false`, every own enumerable property of the
+> `Error` instance is sent to the client, including the ones the schema does
+> not declare, such as `validation` or a custom property holding internal
+> data. Declare `additionalProperties: false` on the error schemas, as in the
+> example below.
+
 ```js
 fastify.get('/', {
   schema: {
@@ -479,7 +492,8 @@ fastify.get('/', {
           error: { type: 'string' },
           message: { type: 'string' },
           time: { type: 'string' }
-        }
+        },
+        additionalProperties: false
       }
     }
   }
@@ -976,13 +990,18 @@ for more information on how to compile serialization schemas.
 
 This function will compile a serialization schema and
 return a function that can be used to serialize data.
-The function returned (a.k.a. _serialization function_) returned is compiled
-by using the provided `SerializerCompiler`. Also this is cached by using
-a `WeakMap` for reducing compilation calls.
+The schema is compiled by the
+[response validator](./Validation-and-Serialization.md#output-validation)
+of the context, and the function returned (a.k.a. _serialization function_)
+validates the data, throwing a
+[`FST_ERR_SCH_OUTPUT_VALIDATION`](./Errors.md#fst_err_sch_output_validation)
+error if it does not match, and then serializes it with `JSON.stringify`. Also
+this is cached by using a `WeakMap` for reducing compilation calls.
 
 The optional parameters `httpStatus` and `contentType`, if provided,
-are forwarded directly to the `SerializerCompiler`, so it can be used
-to compile the serialization function if a custom `SerializerCompiler` is used.
+are forwarded directly to the response validator compiler, so they can be used
+by a compiler set with
+[`setOutputValidatorCompiler`](./Server.md#set-output-validator-compiler).
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.

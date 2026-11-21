@@ -68,7 +68,6 @@
     - [FST_ERR_SCH_CONTENT_MISSING_SCHEMA](#fst_err_sch_content_missing_schema)
     - [FST_ERR_SCH_DUPLICATE](#fst_err_sch_duplicate)
     - [FST_ERR_SCH_VALIDATION_BUILD](#fst_err_sch_validation_build)
-    - [FST_ERR_SCH_SERIALIZATION_BUILD](#fst_err_sch_serialization_build)
     - [FST_ERR_SCH_OUTPUT_VALIDATION_BUILD](#fst_err_sch_output_validation_build)
     - [FST_ERR_SCH_OUTPUT_VALIDATION](#fst_err_sch_output_validation)
     - [FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX](#fst_err_sch_response_schema_not_nested_2xx)
@@ -229,9 +228,8 @@ contexts, see
 [the next section](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler).
 
 Note that a route-level response schema is still applied to whatever the error
-handler sends, and will reshape the payload accordingly — including properties
-the built-in error serializer would have omitted, such as `stack`. See
-[Serialization](./Validation-and-Serialization.md#serialization).
+handler sends: the payload is validated against it and can be changed in
+place. See [Serialization](./Validation-and-Serialization.md#serialization).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 
@@ -434,7 +432,6 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_sch_content_missing_schema">FST_ERR_SCH_CONTENT_MISSING_SCHEMA</a> | A schema is missing for the corresponding content type. | Add a schema. | [#4264](https://github.com/fastify/fastify/pull/4264) |
 | <a id="fst_err_sch_duplicate">FST_ERR_SCH_DUPLICATE</a> | Schema with the same attribute already present! | Use a different attribute. | [#1954](https://github.com/fastify/fastify/pull/1954) |
 | <a id="fst_err_sch_validation_build">FST_ERR_SCH_VALIDATION_BUILD</a> | The JSON schema provided for validation to a route is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
-| <a id="fst_err_sch_serialization_build">FST_ERR_SCH_SERIALIZATION_BUILD</a> | The JSON schema provided for serialization of a route response is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_output_validation_build">FST_ERR_SCH_OUTPUT_VALIDATION_BUILD</a> | The JSON schema provided for the output validation of a route response is not valid. | Fix the JSON schema. | [#548](https://github.com/Eomm/fastify/pull/548) |
 | <a id="fst_err_sch_output_validation">FST_ERR_SCH_OUTPUT_VALIDATION</a> | The response payload does not match the route response schema. | Fix the handler payload or the response schema. | [#548](https://github.com/Eomm/fastify/pull/548) |
 | <a id="fst_err_sch_response_schema_not_nested_2xx">FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX</a> | Response schemas should be nested under a valid status code (2XX). | Use a valid status code. | [#4554](https://github.com/fastify/fastify/pull/4554) |

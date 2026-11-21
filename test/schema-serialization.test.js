@@ -19,7 +19,8 @@ test('basic test', (t, testDone) => {
           properties: {
             name: { type: 'string' },
             work: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         }
       }
     }
@@ -30,36 +31,6 @@ test('basic test', (t, testDone) => {
   fastify.inject('/', (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(res.json(), { name: 'Foo', work: 'Bar' })
-    t.assert.strictEqual(res.statusCode, 200)
-    testDone()
-  })
-})
-
-test('custom serializer options', (t, testDone) => {
-  t.plan(3)
-
-  // the output validator accepts every payload: the test covers the serializer
-  const fastify = Fastify({
-    serializerOpts: {
-      rounding: 'ceil'
-    },
-    schemaController: { compilersFactory: { buildOutputValidator: () => () => () => true } }
-  })
-  fastify.get('/', {
-    schema: {
-      response: {
-        '2xx': {
-          type: 'integer'
-        }
-      }
-    }
-  }, function (req, reply) {
-    reply.send(4.2)
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, '5', 'it must use the ceil rounding')
     t.assert.strictEqual(res.statusCode, 200)
     testDone()
   })
@@ -79,7 +50,8 @@ test('reuse parsed content type when selecting response serializer', async t => 
                 type: 'object',
                 properties: {
                   hello: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             }
           }
@@ -98,7 +70,7 @@ test('reuse parsed content type when selecting response serializer', async t => 
 })
 
 test('Different content types', (t, testDone) => {
-  t.plan(46)
+  t.plan(42)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -108,7 +80,8 @@ test('Different content types', (t, testDone) => {
       name: { type: 'string' },
       age: { type: 'number' },
       verified: { type: 'boolean' }
-    }
+    },
+    additionalProperties: false
   })
 
   fastify.get('/', {
@@ -123,7 +96,8 @@ test('Different content types', (t, testDone) => {
                   name: { type: 'string' },
                   image: { type: 'string' },
                   address: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             },
             'application/vnd.v1+json': {
@@ -156,7 +130,8 @@ test('Different content types', (t, testDone) => {
                 properties: {
                   fullName: { type: 'string' },
                   phone: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             }
           }
@@ -168,7 +143,8 @@ test('Different content types', (t, testDone) => {
                 type: 'object',
                 properties: {
                   details: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             }
           }
@@ -180,7 +156,8 @@ test('Different content types', (t, testDone) => {
                 type: 'object',
                 properties: {
                   details: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             },
             '*/*': {
@@ -189,7 +166,8 @@ test('Different content types', (t, testDone) => {
                 properties: {
                   desc: { type: 'string' },
                   details: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             }
           }
@@ -253,10 +231,6 @@ test('Different content types', (t, testDone) => {
   })
 
   fastify.get('/test', {
-    serializerCompiler: ({ contentType }) => {
-      t.assert.strictEqual(contentType, 'application/json')
-      return data => JSON.stringify(data)
-    },
     schema: {
       response: {
         200: {
@@ -280,7 +254,8 @@ test('Different content types', (t, testDone) => {
                 type: 'object',
                 properties: {
                   details: { type: 'string' }
-                }
+                },
+                additionalProperties: false
               }
             }
           }
@@ -447,7 +422,8 @@ test('Use the same schema id in different places', (t, testDone) => {
     type: 'object',
     properties: {
       id: { type: 'number' }
-    }
+    },
+    additionalProperties: false
   })
 
   fastify.get('/:id', {
@@ -503,7 +479,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', (t, testDo
       test: { $ref: 'http://foo/test#' },
       address: { $ref: '#address' }
     },
-    required: ['address', 'test']
+    required: ['address', 'test'],
+    additionalProperties: false
   }
 
   fastify.post('/', {
@@ -578,6 +555,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       },
       location: { $ref: 'http://fastify.test/point.json#' }
     },
+    additionalProperties: false,
     definitions: {
       inner: {
         $id: '#innerId',
@@ -665,184 +643,8 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
   })
 })
 
-test('Custom setSerializerCompiler', (t, testDone) => {
-  t.plan(7)
-  const fastify = Fastify({ exposeHeadRoutes: false })
-
-  const outSchema = {
-    $id: 'test',
-    type: 'object',
-    whatever: 'need to be parsed by the custom serializer'
-  }
-
-  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    t.assert.strictEqual(method, 'GET')
-    t.assert.strictEqual(url, '/foo/:id')
-    t.assert.strictEqual(httpStatus, '200')
-    t.assert.deepStrictEqual(schema, outSchema)
-    return data => JSON.stringify(data)
-  })
-
-  fastify.register((instance, opts, done) => {
-    instance.get('/:id', {
-      handler (req, reply) {
-        reply.send({ id: 1 })
-      },
-      schema: {
-        response: {
-          200: outSchema
-        }
-      }
-    })
-    t.assert.ok(instance.serializerCompiler, 'the serializer is set by the parent')
-    done()
-  }, { prefix: '/foo' })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/123'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, JSON.stringify({ id: 1 }))
-    testDone()
-  })
-})
-
-test('Custom setSerializerCompiler returns bad serialized output', (t, testDone) => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  const outSchema = {
-    $id: 'test',
-    type: 'object',
-    whatever: 'need to be parsed by the custom serializer'
-  }
-
-  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    return data => {
-      t.assert.ok('returning an invalid serialization')
-      return { not: 'a string' }
-    }
-  })
-
-  fastify.get('/:id', {
-    handler (req, reply) { throw new Error('ops') },
-    schema: {
-      response: {
-        500: outSchema
-      }
-    }
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/123'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.deepStrictEqual(res.json(), {
-      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
-      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
-      statusCode: 500
-    })
-    testDone()
-  })
-})
-
-test('Custom setSerializerCompiler with addSchema', (t, testDone) => {
-  t.plan(6)
-  const fastify = Fastify({ exposeHeadRoutes: false })
-
-  const outSchema = {
-    $id: 'test',
-    type: 'object',
-    whatever: 'need to be parsed by the custom serializer'
-  }
-
-  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    t.assert.strictEqual(method, 'GET')
-    t.assert.strictEqual(url, '/foo/:id')
-    t.assert.strictEqual(httpStatus, '200')
-    t.assert.deepStrictEqual(schema, outSchema)
-    return _data => JSON.stringify({ id: 2 })
-  })
-
-  // provoke re-creation of serialization compiler in setupSerializer
-  fastify.addSchema({ $id: 'dummy', type: 'object' })
-
-  fastify.get('/foo/:id', {
-    handler (_req, reply) {
-      reply.send({ id: 1 })
-    },
-    schema: {
-      response: {
-        200: outSchema
-      }
-    }
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/123'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, JSON.stringify({ id: 2 }))
-    testDone()
-  })
-})
-
-test('Custom serializer per route', async t => {
-  const fastify = Fastify()
-
-  const outSchema = {
-    $id: 'test',
-    type: 'object',
-    properties: {
-      mean: { type: 'string' }
-    }
-  }
-
-  fastify.get('/default', {
-    handler (req, reply) { reply.send({ mean: 'default' }) },
-    schema: { response: { 200: outSchema } }
-  })
-
-  let hit = 0
-  fastify.register((instance, opts, done) => {
-    instance.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-      hit++
-      return data => JSON.stringify({ mean: 'custom' })
-    })
-    instance.get('/custom', {
-      handler (req, reply) { reply.send({}) },
-      schema: { response: { 200: outSchema } }
-    })
-    instance.get('/route', {
-      handler (req, reply) { reply.send({}) },
-      serializerCompiler: ({ schema, method, url, httpPart }) => {
-        hit++
-        return data => JSON.stringify({ mean: 'route' })
-      },
-      schema: { response: { 200: outSchema } }
-    })
-
-    done()
-  })
-
-  let res = await fastify.inject('/default')
-  t.assert.strictEqual(res.json().mean, 'default')
-
-  res = await fastify.inject('/custom')
-  t.assert.strictEqual(res.json().mean, 'custom')
-
-  res = await fastify.inject('/route')
-  t.assert.strictEqual(res.json().mean, 'route')
-
-  t.assert.strictEqual(hit, 4, 'the custom and route serializer has been called')
-})
-
 test('Reply serializer win over serializer ', (t, testDone) => {
-  t.plan(6)
+  t.plan(4)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
@@ -860,13 +662,6 @@ test('Reply serializer win over serializer ', (t, testDone) => {
             work: { type: 'string' }
           }
         }
-      }
-    },
-    serializerCompiler: ({ schema, method, url, httpPart }) => {
-      t.assert.ok(method, 'the custom compiler has been created')
-      return () => {
-        t.assert.fail('the serializer must not be called when there is a reply serializer')
-        return 'fail'
       }
     }
   }, function (req, reply) {
@@ -882,7 +677,7 @@ test('Reply serializer win over serializer ', (t, testDone) => {
 })
 
 test('Reply serializer win over serializer ', (t, testDone) => {
-  t.plan(6)
+  t.plan(4)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
@@ -900,13 +695,6 @@ test('Reply serializer win over serializer ', (t, testDone) => {
             work: { type: 'string' }
           }
         }
-      }
-    },
-    serializerCompiler: ({ schema, method, url, httpPart }) => {
-      t.assert.ok(method, 'the custom compiler has been created')
-      return () => {
-        t.assert.fail('the serializer must not be called when there is a reply serializer')
-        return 'fail'
       }
     }
   }, function (req, reply) {
@@ -969,7 +757,8 @@ test('The schema changes the default error handler output', async t => {
           type: 'object',
           properties: {
             message: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         },
         '5xx': {
           type: 'object',
@@ -977,7 +766,8 @@ test('The schema changes the default error handler output', async t => {
             customId: { type: 'number' },
             error: { type: 'string' },
             message: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         }
       }
     }
@@ -1039,7 +829,7 @@ test('do not crash if status code serializer errors', async t => {
   t.assert.deepStrictEqual(res.json(), {
     statusCode: 500,
     code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
-    message: 'Failed to serialize an error. Error: "customCode" is required!. ' +
+    message: 'Failed to serialize an error. Error: Response validation failed. Errors: must have required property \'customCode\'. ' +
       'Original error: querystring must have required property \'foo\''
   })
 })
@@ -1056,7 +846,8 @@ test('custom schema serializer error, empty message', async t => {
           type: 'object',
           properties: {
             message: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         }
       }
     }
@@ -1071,47 +862,10 @@ test('custom schema serializer error, empty message', async t => {
   t.assert.deepStrictEqual(res.json(), { message: '' })
 })
 
-test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION_BUILD error', (t, testDone) => {
-  t.plan(3)
-
-  const fastify = Fastify()
-
-  fastify.get('/', {
-    schema: {
-      response: {
-        '2xx': {
-          type: 'object',
-          properties: {
-            some: { type: 'string' }
-          }
-        },
-        500: {
-          type: 'object',
-          properties: {
-            message: { type: 'string' }
-          }
-        }
-      }
-    },
-    serializerCompiler: () => {
-      throw new Error('CUSTOM_ERROR')
-    }
-  }, function (req, reply) {
-    reply.code(200).send({ some: 'thing' })
-  })
-
-  fastify.ready((err) => {
-    t.assert.strictEqual(err.message, 'Failed building the serialization schema for GET: /, due to error CUSTOM_ERROR')
-    t.assert.strictEqual(err.statusCode, 500)
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    testDone()
-  })
-})
-
 test('Errors in serializer send to errorHandler', async t => {
   let savedError
 
-  // the output validator accepts every payload: the test covers the serializer
+  // the output validator accepts every payload: the test covers JSON.stringify
   const fastify = Fastify({
     schemaController: { compilersFactory: { buildOutputValidator: () => () => () => true } }
   })
@@ -1130,7 +884,7 @@ test('Errors in serializer send to errorHandler', async t => {
     }
 
   }, function (req, reply) {
-    reply.code(200).send({ no: 'thing' })
+    reply.code(200).send({ name: 'thing', big: 1n })
   })
   fastify.setErrorHandler((error, request, reply) => {
     savedError = error
@@ -1145,7 +899,7 @@ test('Errors in serializer send to errorHandler', async t => {
   t.assert.deepStrictEqual(res.json(), {
     statusCode: 500,
     error: 'Internal Server Error',
-    message: '"name" is required!'
+    message: 'Do not know how to serialize a BigInt'
   })
   t.assert.ok(savedError, 'error presents')
   t.assert.ok(savedError.serialization, 'Serialization sign presents')
@@ -1163,7 +917,8 @@ test('capital X', (t, testDone) => {
           properties: {
             name: { type: 'string' },
             work: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         }
       }
     }
@@ -1193,7 +948,8 @@ test('allow default as status code and used as last fallback', (t, testDone) => 
           properties: {
             name: { type: 'string' },
             work: { type: 'string' }
-          }
+          },
+          additionalProperties: false
         }
       }
     },

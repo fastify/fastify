@@ -85,9 +85,9 @@ Otherwise, the data flows as follows:
 
 `reply sent` means the JSON payload will be serialized by one of the following:
 - The [reply serializer](./Server.md#setreplyserializer) if set
-- The [serializer compiler](./Server.md#setserializercompiler) if a JSON schema
-  is set for the HTTP status code
-- The default `JSON.stringify` function
+- The default `JSON.stringify` function. If a JSON schema is set for the HTTP
+  status code, the payload is first checked by the
+  [output validation](./Validation-and-Serialization.md#output-validation)
 
 ## Shutdown Lifecycle
 <a id="shutdown-lifecycle"></a>

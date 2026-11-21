@@ -95,6 +95,49 @@ test('reuse parsed content type when selecting response serializer', async t => 
   t.assert.ok(ContentType.cache.get(normalizedContentType))
 })
 
+test('select response serializer from a content type set on reply.raw', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            },
+            'application/vnd.v2+json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  fullName: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (request, reply) {
+    reply.raw.setHeader('content-type', request.query.type)
+    return { name: 'a', fullName: 'b', ignored: true }
+  })
+
+  const v1 = await fastify.inject({ url: '/', query: { type: 'application/json; charset=utf-8' } })
+  t.assert.strictEqual(v1.statusCode, 200)
+  t.assert.deepStrictEqual(v1.json(), { name: 'a' })
+
+  const v2 = await fastify.inject({ url: '/', query: { type: 'application/vnd.v2+json; charset=utf-8' } })
+  t.assert.strictEqual(v2.statusCode, 200)
+  t.assert.deepStrictEqual(v2.json(), { fullName: 'b' })
+})
+
 test('Different content types', (t, testDone) => {
   t.plan(46)
 

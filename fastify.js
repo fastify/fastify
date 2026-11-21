@@ -855,6 +855,8 @@ function fastify (serverOptions) {
   }
 
   function addHttpMethod (method, { hasBody = false, overrideExisting = false } = {}) {
+    throwIfAlreadyStarted('Cannot call "addHttpMethod"!')
+
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
     }

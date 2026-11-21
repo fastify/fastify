@@ -63,7 +63,7 @@ export interface RouteShorthandOptions<
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
 
-  validatorCompiler?: FastifySchemaCompiler<NoInfer<SchemaCompiler>>;
+  inputValidatorCompiler?: FastifySchemaCompiler<NoInfer<SchemaCompiler>>;
   serializerCompiler?: FastifySerializerCompiler<NoInfer<SchemaCompiler>>;
   bodyLimit?: number;
   handlerTimeout?: number;

@@ -23,6 +23,8 @@ This table of contents is in alphabetical order.
   written with a fluent API and used in Fastify.
 + [Getting Started](./Getting-Started.md): Introduction tutorial for Fastify.
   This is where beginners should start.
++ [Migration Guide (v6)](./Migration-Guide-V6.md): Details how to migrate to
+  Fastify v6 from v5.
 + [Migration Guide (v4)](./Migration-Guide-V4.md): Details how to migrate to
   Fastify v4 from earlier versions.
 + [Migration Guide (v3)](./Migration-Guide-V3.md): Details how to migrate to

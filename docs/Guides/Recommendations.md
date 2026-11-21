@@ -304,7 +304,7 @@ These patterns can increase latency or reduce throughput in production:
   can do more work per request and make denial-of-service attacks easier on
   untrusted inputs.
   See also:
-  - [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
+  - [Validation and Serialization - Input Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
   - [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
 
 ## Kubernetes

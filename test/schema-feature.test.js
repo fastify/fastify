@@ -13,7 +13,7 @@ const { waitForCb } = require('./helper')
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
 
-  ;['addSchema', 'getSchema', 'getSchemas', 'setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+  ;['addSchema', 'getSchema', 'getSchemas', 'setInputValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
   test(`Should expose ${f} function`, t => {
     t.plan(1)
     const fastify = Fastify()
@@ -21,7 +21,7 @@ const echoBody = (req, reply) => { reply.send(req.body) }
   })
 })
 
-;['setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+;['setInputValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
   test(`cannot call ${f} after binding`, (t, testDone) => {
     t.plan(2)
     const fastify = Fastify()
@@ -88,12 +88,12 @@ test('The schema should be accessible by id via getSchema', (t, testDone) => {
   })
 })
 
-test('Get validatorCompiler after setValidatorCompiler', (t, testDone) => {
+test('Get inputValidatorCompiler after setInputValidatorCompiler', (t, testDone) => {
   t.plan(2)
   const myCompiler = () => { }
   const fastify = Fastify()
-  fastify.setValidatorCompiler(myCompiler)
-  const sc = fastify.validatorCompiler
+  fastify.setInputValidatorCompiler(myCompiler)
+  const sc = fastify.inputValidatorCompiler
   t.assert.ok(Object.is(myCompiler, sc))
   fastify.ready(err => {
     t.assert.ifError(err)
@@ -131,7 +131,7 @@ test('Get compilers is empty when settle on routes', (t, testDone) => {
         }
       }
     },
-    validatorCompiler: ({ schema, method, url, httpPart }) => { },
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => { },
     serializerCompiler: ({ schema, method, url, httpPart }) => { }
   }, function (req, reply) {
     reply.send('ok')
@@ -143,7 +143,7 @@ test('Get compilers is empty when settle on routes', (t, testDone) => {
     url: '/'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(fastify.validatorCompiler, undefined)
+    t.assert.strictEqual(fastify.inputValidatorCompiler, undefined)
     t.assert.strictEqual(fastify.serializerCompiler, undefined)
     testDone()
   })
@@ -489,7 +489,7 @@ test('Default validator compiler is initialized for a route whose only schema is
   })
 
   t.assert.strictEqual(res.statusCode, 400)
-  t.assert.ok(fastify.validatorCompiler, 'validator compiler is initialized')
+  t.assert.ok(fastify.inputValidatorCompiler, 'validator compiler is initialized')
 })
 
 test('Boolean false request schemas reject every request and no handler executes', async (t) => {
@@ -548,7 +548,7 @@ test('Custom validator compiler receives the literal boolean false schema', asyn
   fastify.post('/body', {
     handler: async () => ({ ok: true }),
     schema: { body: false },
-    validatorCompiler: ({ schema, httpPart }) => {
+    inputValidatorCompiler: ({ schema, httpPart }) => {
       received.push({ schema, httpPart })
       return () => { throw new Error('should not validate') }
     }
@@ -667,7 +667,7 @@ test('Customize validator compiler in instance and route', t => {
   t.plan(28)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
-  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+  fastify.setInputValidatorCompiler(({ schema, method, url, httpPart }) => {
     t.assert.strictEqual(method, 'POST') // run 4 times
     t.assert.strictEqual(url, '/:id') // run 4 times
     switch (httpPart) {
@@ -743,7 +743,7 @@ test('Customize validator compiler in instance and route', t => {
 
   fastify.get('/wow/:id', {
     handler: echoParams,
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       t.assert.strictEqual(method, 'GET') // run 3 times (params, headers, query)
       t.assert.strictEqual(url, '/wow/:id') // run 4 times
       return () => { return true } // ignore the validation
@@ -1454,21 +1454,21 @@ test('Check how many AJV instances are built #1', (t, testDone) => {
   t.plan(12)
   const fastify = Fastify()
   addRandomRoute(fastify) // this trigger the schema validation creation
-  t.assert.ok(!fastify.validatorCompiler, 'validator not initialized')
+  t.assert.ok(!fastify.inputValidatorCompiler, 'validator not initialized')
 
   const instances = []
   fastify.register((instance, opts, done) => {
-    t.assert.ok(!fastify.validatorCompiler, 'validator not initialized')
+    t.assert.ok(!fastify.inputValidatorCompiler, 'validator not initialized')
     instances.push(instance)
     done()
   })
   fastify.register((instance, opts, done) => {
-    t.assert.ok(!fastify.validatorCompiler, 'validator not initialized')
+    t.assert.ok(!fastify.inputValidatorCompiler, 'validator not initialized')
     addRandomRoute(instance)
     instances.push(instance)
     done()
     instance.register((instance, opts, done) => {
-      t.assert.ok(!fastify.validatorCompiler, 'validator not initialized')
+      t.assert.ok(!fastify.inputValidatorCompiler, 'validator not initialized')
       addRandomRoute(instance)
       instances.push(instance)
       done()
@@ -1478,11 +1478,11 @@ test('Check how many AJV instances are built #1', (t, testDone) => {
   fastify.ready(err => {
     t.assert.ifError(err)
 
-    t.assert.ok(fastify.validatorCompiler, 'validator initialized on preReady')
-    fastify.validatorCompiler.checkPointer = true
+    t.assert.ok(fastify.inputValidatorCompiler, 'validator initialized on preReady')
+    fastify.inputValidatorCompiler.checkPointer = true
     instances.forEach(i => {
-      t.assert.ok(i.validatorCompiler, 'validator initialized on preReady')
-      t.assert.strictEqual(i.validatorCompiler.checkPointer, true, 'validator is only one for all the instances')
+      t.assert.ok(i.inputValidatorCompiler, 'validator initialized on preReady')
+      t.assert.strictEqual(i.inputValidatorCompiler.checkPointer, true, 'validator is only one for all the instances')
     })
     testDone()
   })
@@ -1502,7 +1502,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
   })
 
   fastify.addHook('onReady', function (done) {
-    t.assert.ok(this.validatorCompiler)
+    t.assert.ok(this.inputValidatorCompiler)
     t.assert.ok(this.serializerCompiler)
     done()
   })
@@ -1510,7 +1510,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
   let hookCallCounter = 0
   fastify.register(async (i, o) => {
     i.addHook('onReady', function (done) {
-      t.assert.ok(this.validatorCompiler)
+      t.assert.ok(this.inputValidatorCompiler)
       t.assert.ok(this.serializerCompiler)
       done()
     })
@@ -1533,36 +1533,36 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 test('Check how many AJV instances are built #2 - verify validatorPool', (t, testDone) => {
   t.plan(13)
   const fastify = Fastify()
-  t.assert.ok(!fastify.validatorCompiler, 'validator not initialized')
+  t.assert.ok(!fastify.inputValidatorCompiler, 'validator not initialized')
 
   fastify.register(function sibling1 (instance, opts, done) {
     addRandomRoute(instance)
-    t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+    t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
     instance.ready(() => {
-      t.assert.ok(instance.validatorCompiler, 'validator is initialized')
-      instance.validatorCompiler.sharedPool = 1
+      t.assert.ok(instance.inputValidatorCompiler, 'validator is initialized')
+      instance.inputValidatorCompiler.sharedPool = 1
     })
     instance.after(() => {
-      t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+      t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
     })
     done()
   })
 
   fastify.register(function sibling2 (instance, opts, done) {
     addRandomRoute(instance)
-    t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+    t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
     instance.ready(() => {
-      t.assert.strictEqual(instance.validatorCompiler.sharedPool, 1, 'this context must share the validator with the same schemas')
-      instance.validatorCompiler.sharedPool = 2
+      t.assert.strictEqual(instance.inputValidatorCompiler.sharedPool, 1, 'this context must share the validator with the same schemas')
+      instance.inputValidatorCompiler.sharedPool = 2
     })
     instance.after(() => {
-      t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+      t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
     })
 
     instance.register((instance, opts, done) => {
-      t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+      t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
       instance.ready(() => {
-        t.assert.strictEqual(instance.validatorCompiler.sharedPool, 2, 'this context must share the validator of the parent')
+        t.assert.strictEqual(instance.inputValidatorCompiler.sharedPool, 2, 'this context must share the validator of the parent')
       })
       done()
     })
@@ -1575,10 +1575,10 @@ test('Check how many AJV instances are built #2 - verify validatorPool', (t, tes
     // this trigger to don't reuse the same compiler pool
     instance.addSchema({ $id: 'diff', type: 'object' })
 
-    t.assert.ok(!instance.validatorCompiler, 'validator not initialized')
+    t.assert.ok(!instance.inputValidatorCompiler, 'validator not initialized')
     instance.ready(() => {
-      t.assert.ok(instance.validatorCompiler, 'validator is initialized')
-      t.assert.ok(!instance.validatorCompiler.sharedPool, 'this context has its own compiler')
+      t.assert.ok(instance.inputValidatorCompiler, 'validator is initialized')
+      t.assert.ok(!instance.inputValidatorCompiler.sharedPool, 'this context has its own compiler')
     })
     done()
   })
@@ -1825,7 +1825,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
   server.register((instance, _, done) => {
     instance.setSchemaController({
       compilersFactory: {
-        buildValidator: function (externalSchemas) {
+        buildInputValidator: function (externalSchemas) {
           const schemaKeys = Object.keys(externalSchemas)
           t.assert.strictEqual(schemaKeys.length, 2, 'Contains same number of schemas')
           t.assert.deepStrictEqual([someSchema, errorResponseSchema], Object.values(externalSchemas), 'Contains expected schemas')
@@ -1834,7 +1834,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
               customAjv.addSchema(externalSchemas[key], key)
             }
           }
-          return function validatorCompiler ({ schema }) {
+          return function inputValidatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
         }
@@ -1920,14 +1920,14 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
   }
   const rootBuildValidator = function (externalSchemas) {
     rootValidatorCalled++
-    return function validatorCompiler ({ schema }) {
+    return function inputValidatorCompiler ({ schema }) {
       return customAjv.compile(schema)
     }
   }
   const server = Fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: rootBuildValidator,
+        buildInputValidator: rootBuildValidator,
         buildSerializer: rootBuildSerializer
       }
     }
@@ -1939,7 +1939,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
   server.register((instance, _, done) => {
     instance.setSchemaController({
       compilersFactory: {
-        buildValidator: function (externalSchemas) {
+        buildInputValidator: function (externalSchemas) {
           childValidatorCalled++
           const schemaKeys = Object.keys(externalSchemas)
           for (const key of schemaKeys) {
@@ -1947,7 +1947,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
               customAjv.addSchema(externalSchemas[key], key)
             }
           }
-          return function validatorCompiler ({ schema }) {
+          return function inputValidatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
         }
@@ -1998,7 +1998,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
   t.assert.strictEqual(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
-test('setSchemaController: Inherits buildValidator from parent if not present within the instance', async t => {
+test('setSchemaController: Inherits buildInputValidator from parent if not present within the instance', async t => {
   t.plan(6)
   const customAjv = new Ajv({ coerceTypes: false })
   const someSchema = {
@@ -2037,14 +2037,14 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
         customAjv.addSchema(externalSchemas[key], key)
       }
     }
-    return function validatorCompiler ({ schema }) {
+    return function inputValidatorCompiler ({ schema }) {
       return customAjv.compile(schema)
     }
   }
   const server = Fastify({
     schemaController: {
       compilersFactory: {
-        buildValidator: rootBuildValidator,
+        buildInputValidator: rootBuildValidator,
         buildSerializer: rootBuildSerializer
       }
     }
@@ -2135,7 +2135,7 @@ test('Should throw if not default validator passed', async t => {
   const plugin = fp(function (pluginInstance, _, pluginDone) {
     pluginInstance.setSchemaController({
       compilersFactory: {
-        buildValidator: function (externalSchemas) {
+        buildInputValidator: function (externalSchemas) {
           const schemaKeys = Object.keys(externalSchemas)
           t.assert.strictEqual(schemaKeys.length, 2)
           t.assert.deepStrictEqual(schemaKeys, ['some', 'another'])
@@ -2145,7 +2145,7 @@ test('Should throw if not default validator passed', async t => {
               customAjv.addSchema(externalSchemas[key], key)
             }
           }
-          return function validatorCompiler ({ schema }) {
+          return function inputValidatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
         }
@@ -2308,7 +2308,7 @@ test('setSchemaController: custom validator instance should not mutate headers s
 
   fastify.setSchemaController({
     compilersFactory: {
-      buildValidator: function () {
+      buildInputValidator: function () {
         return ({ schema, method, url, httpPart }) => {
           t.assert.ok(schema instanceof Headers)
           return () => { }

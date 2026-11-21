@@ -8,7 +8,7 @@ test('does not mutate joi schemas', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify()
-  function validatorCompiler ({ schema, method, url, httpPart }) {
+  function inputValidatorCompiler ({ schema, method, url, httpPart }) {
     // Needed to extract the params part,
     // without the JSON-schema encapsulation
     // that is automatically added by the short
@@ -22,7 +22,7 @@ test('does not mutate joi schemas', (t, done) => {
     }
   }
 
-  fastify.setValidatorCompiler(validatorCompiler)
+  fastify.setInputValidatorCompiler(inputValidatorCompiler)
 
   fastify.route({
     path: '/foo/:an_id',

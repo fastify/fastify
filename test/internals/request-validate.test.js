@@ -213,7 +213,7 @@ test('#compileValidationSchema', async subtest => {
 
       t.plan(10)
 
-      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      fastify.get('/', { inputValidatorCompiler: custom }, (req, reply) => {
         const first = req.compileValidationSchema(defaultSchema, 'querystring')
         const second = req.compileValidationSchema(defaultSchema, 'querystring')
 
@@ -490,7 +490,7 @@ test('#validate', async subtest => {
 
       t.plan(9)
 
-      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      fastify.get('/', { inputValidatorCompiler: custom }, (req, reply) => {
         const ok = req.validateInput(
           { hello: 'world' },
           defaultSchema,
@@ -880,7 +880,7 @@ test('Nested Context', async subtest => {
               }
             }
 
-            fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+            fastify.get('/', { inputValidatorCompiler: custom }, (req, reply) => {
               const first = req.compileValidationSchema(
                 defaultSchema,
                 'querystring'
@@ -929,7 +929,7 @@ test('Nested Context', async subtest => {
 
         t.plan(4)
 
-        fastify.setValidatorCompiler(custom)
+        fastify.setInputValidatorCompiler(custom)
 
         fastify.register((instance, opts, next) => {
           instance.get('/', { schema: schemaWithHeaders }, (req, reply) => {
@@ -1097,7 +1097,7 @@ test('Nested Context', async subtest => {
 
         t.plan(6)
 
-        fastify.setValidatorCompiler(custom)
+        fastify.setInputValidatorCompiler(custom)
 
         fastify.register((instance, opts, next) => {
           instance.get('/', (req, reply) => {
@@ -1128,7 +1128,7 @@ test('Nested Context', async subtest => {
 
           t.plan(3)
 
-          fastify.setValidatorCompiler(custom)
+          fastify.setInputValidatorCompiler(custom)
 
           fastify.get('/', (req, reply) => {
             const validate = req.compileValidationSchema(defaultSchema)
@@ -1177,7 +1177,7 @@ test('Nested Context', async subtest => {
 
         t.plan(5)
 
-        fastify.setValidatorCompiler(customParent)
+        fastify.setInputValidatorCompiler(customParent)
 
         fastify.get('/', (req, reply) => {
           validateParent = req.compileValidationSchema(defaultSchema)
@@ -1192,7 +1192,7 @@ test('Nested Context', async subtest => {
             instance.get(
               '/',
               {
-                validatorCompiler: customChild
+                inputValidatorCompiler: customChild
               },
               (req, reply) => {
                 const validate1 = req.compileValidationSchema(defaultSchema)
@@ -1275,12 +1275,12 @@ test('Nested Context', async subtest => {
 
           t.plan(10)
 
-          fastify.setValidatorCompiler(customParent)
+          fastify.setInputValidatorCompiler(customParent)
 
           fastify.register((instance, opts, next) => {
             instance.get(
               '/',
-              { validatorCompiler: customChild },
+              { inputValidatorCompiler: customChild },
               (req, reply) => {
                 const ok = req.validateInput(
                   { hello: 'world' },
@@ -1334,9 +1334,9 @@ test('Nested Context', async subtest => {
 
           t.plan(13)
 
-          fastify.setValidatorCompiler(parent)
+          fastify.setInputValidatorCompiler(parent)
           fastify.register((instance, opts, next) => {
-            instance.setValidatorCompiler(child)
+            instance.setInputValidatorCompiler(child)
             instance.post(
               '/:id',
               {

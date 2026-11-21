@@ -7,8 +7,6 @@ expect(errorCodes.FST_ERR_OPTIONS_NOT_OBJ).type.toBeAssignableTo<FastifyErrorCon
 expect(errorCodes.FST_ERR_QSP_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()
-expect(errorCodes.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ).type.toBeAssignableTo<FastifyErrorConstructor>()
-expect(errorCodes.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_VALIDATION).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_LISTEN_OPTIONS_INVALID).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ERROR_HANDLER_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()

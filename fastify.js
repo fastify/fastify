@@ -438,7 +438,27 @@ function fastify (serverOptions) {
         // otherwise memory will be leaked.
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
+          // server.close() only reaps the keep-alive connections that are idle
+          // when it is called. A connection that is serving a request at that
+          // point becomes idle later, and would otherwise keep close() waiting
+          // until keepAliveTimeout, so reap those too.
+          let reaper = null
+          let closed = false
+          if (forceCloseConnections === 'idle' && fastify[kState].listening) {
+            reaper = setInterval(() => {
+              /* c8 ignore next 4 */
+              if (closed) {
+                clearInterval(reaper)
+                return
+              }
+              instance.server.closeIdleConnections()
+            }, 250)
+            reaper.unref()
+          }
+
           instance.server.close(function (err) {
+            closed = true
+            clearInterval(reaper)
             /* c8 ignore next 6 */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
               done(null)

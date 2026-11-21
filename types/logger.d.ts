@@ -116,6 +116,7 @@ export declare class LogController {
   ): void
   defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  headStreamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void

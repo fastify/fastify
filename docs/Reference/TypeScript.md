@@ -632,7 +632,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/types/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!
@@ -1618,20 +1618,22 @@ This hook will be executed before the customErrorHandler.
 Notice: unlike the other hooks, pass an error to the done function is not
 supported.
 
-##### fastify.onRouteHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(opts: [RouteOptions][RouteOptions] & \{ path: string; prefix: string }): Promise\<unknown\> | void
+##### fastify.onRouteHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(instance: [FastifyInstance][FastifyInstance], opts: [RouteOptions][RouteOptions] & \{ routePath: string; path: string; prefix: string; isGeneratedHeadRoute: boolean }): Promise\<unknown\> | void
 
-[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L174)
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L743)
 
-Triggered when a new route is registered. Listeners are passed a routeOptions
-object as the sole parameter. The interface is synchronous, and, as such, the
-listener does not get passed a callback
+Triggered when a new route is registered. Listeners are passed the Fastify
+`instance` and a `routeOptions` object. The interface is synchronous, and, as
+such, the listener does not get passed a callback.
 
-##### fastify.onRegisterHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.onRegisterHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], newInstance: [FastifyInstance][FastifyInstance], opts: [FastifyRegisterOptions][FastifyRegisterOptions] & [FastifyPluginOptions][FastifyPluginOptions]): Promise\<unknown\> | void
 
-[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L191)
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L766)
 
 Triggered when a new plugin is registered and a new encapsulation context is
-created. The hook will be executed before the registered code.
+created. Listeners receive the parent `instance` (also bound to `this`), the
+newly created encapsulated `newInstance`, and the plugin registration `opts`.
+The hook will be executed before the registered code.
 
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context.
@@ -1639,13 +1641,38 @@ plugin context is formed, and you want to operate in that specific context.
 > ℹ️ Note:
 > This hook will not be called if a plugin is wrapped inside fastify-plugin.
 
-##### fastify.onCloseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.onReadyHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): void
 
-[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L206)
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L785)
 
-Triggered when fastify.close() is invoked to stop the server. It is useful when
-plugins need a "shutdown" event, for example to close an open connection to a
-database.
+Triggered when `fastify.listen()` or `fastify.ready()` is invoked to start the
+server. Async handlers use `onReadyAsyncHookHandler` with signature
+`(instance: FastifyInstance): Promise<unknown>`.
+
+##### fastify.onListenHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): void
+
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L815)
+
+Triggered when `fastify.listen()` is invoked and the server starts listening for
+requests. Async handlers use `onListenAsyncHookHandler` with signature
+`(instance: FastifyInstance): Promise<unknown>`.
+
+##### fastify.onCloseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): void
+
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L844)
+
+Triggered when `fastify.close()` is invoked to stop the server. It is useful
+when plugins need a "shutdown" event, for example to close an open connection to
+a database. Async handlers use `onCloseAsyncHookHandler` with signature
+`(instance: FastifyInstance): Promise<unknown>`.
+
+##### fastify.preCloseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): void
+
+[src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L874)
+
+Triggered when `fastify.close()` is invoked before the server stops listening.
+Async handlers use `preCloseAsyncHookHandler` with signature
+`(instance: FastifyInstance): Promise<unknown>`.
 
 
 <!-- Links -->

@@ -5,29 +5,35 @@ const Fastify = require('../fastify')
 const immediate = require('node:util').promisify(setImmediate)
 
 test('onReady should be called in order', (t, done) => {
-  t.plan(7)
+  t.plan(13)
   const fastify = Fastify()
 
   let order = 0
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.strictEqual(order++, 0, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onReady', function (done) {
+    childOne.addHook('onReady', function (instance, done) {
       t.assert.strictEqual(order++, 1, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
       done()
     })
 
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onReady', async function () {
+      childTwo.addHook('onReady', async function (instance) {
         await immediate()
         t.assert.strictEqual(order++, 2, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
       })
     })
   })
@@ -55,29 +61,35 @@ test('onReady should be called once', async (t) => {
 })
 
 test('async onReady should be called in order', async t => {
-  t.plan(7)
+  t.plan(13)
   const fastify = Fastify()
 
   let order = 0
 
-  fastify.addHook('onReady', async function () {
+  fastify.addHook('onReady', async function (instance) {
     await immediate()
     t.assert.strictEqual(order++, 0, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.assert.strictEqual(instance, fastify)
+    t.assert.strictEqual(instance, this)
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onReady', async function () {
+    childOne.addHook('onReady', async function (instance) {
       await immediate()
       t.assert.strictEqual(order++, 1, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.assert.strictEqual(instance, childOne)
+      t.assert.strictEqual(instance, this)
     })
 
     childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onReady', async function () {
+      childTwo.addHook('onReady', async function (instance) {
         await immediate()
         t.assert.strictEqual(order++, 2, 'called in childTwo')
         t.assert.strictEqual(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.assert.strictEqual(instance, childTwo)
+        t.assert.strictEqual(instance, this)
       })
     })
   })
@@ -184,13 +196,13 @@ test('onReady should manage error in sync', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok('called in root')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onReady', function (done) {
+    childOne.addHook('onReady', function (instance, done) {
       t.assert.ok('called in childOne')
       done(new Error('FAIL ON READY'))
     })
@@ -213,7 +225,7 @@ test('onReady should manage error in async', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok('called in root')
     done()
   })
@@ -242,13 +254,13 @@ test('onReady should manage sync error', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok('called in root')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onReady', function (done) {
+    childOne.addHook('onReady', function (instance, done) {
       t.assert.ok('called in childOne')
       throw new Error('FAIL UNWANTED SYNC EXCEPTION')
     })
@@ -268,10 +280,10 @@ test('onReady should manage sync error', (t, done) => {
 })
 
 test('onReady can not add decorators or application hooks', (t, done) => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok('called in root')
     fastify.decorate('test', () => {})
 
@@ -281,8 +293,9 @@ test('onReady can not add decorators or application hooks', (t, done) => {
     done()
   })
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok(this.hasDecorator('test'))
+    t.assert.strictEqual(instance, this)
     done()
   })
 
@@ -296,7 +309,7 @@ test('onReady cannot add lifecycle hooks', (t, done) => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok('called in root')
     try {
       fastify.addHook('onRequest', (request, reply, done) => {})
@@ -323,7 +336,7 @@ test('onReady throw loading error', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addHook('onReady', async function (done) {})
+    fastify.addHook('onReady', async function (instance, done) {})
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
     t.assert.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
@@ -334,7 +347,7 @@ test('onReady does not call done', (t, done) => {
   t.plan(6)
   const fastify = Fastify({ pluginTimeout: 500 })
 
-  fastify.addHook('onReady', function someHookName (done) {
+  fastify.addHook('onReady', function someHookName (instance, done) {
     t.assert.ok('called in root')
     // done() // don't call done to test timeout
   })

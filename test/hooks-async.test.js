@@ -811,6 +811,44 @@ describe('Should log a warning if is an async function with `done`', () => {
       t.assert.strictEqual(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
+
+  test('application hooks async arity validation', t => {
+    const fastify = Fastify()
+
+    for (const hook of ['onReady', 'onListen', 'preClose', 'onClose']) {
+      t.assert.doesNotThrow(() => {
+        fastify.addHook(hook, async () => {})
+        fastify.addHook(hook, async (instance) => {})
+      })
+
+      t.assert.throws(() => {
+        fastify.addHook(hook, async (instance, done) => {})
+      }, {
+        code: 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER',
+        message: 'Async function has too many arguments. Async hooks should not use the \'done\' argument.'
+      })
+    }
+
+    t.assert.doesNotThrow(() => {
+      fastify.addHook('onRoute', async (instance, routeOptions) => {})
+    })
+    t.assert.throws(() => {
+      fastify.addHook('onRoute', async (instance, routeOptions, done) => {})
+    }, {
+      code: 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER',
+      message: 'Async function has too many arguments. Async hooks should not use the \'done\' argument.'
+    })
+
+    t.assert.doesNotThrow(() => {
+      fastify.addHook('onRegister', async (instance, newInstance, opts) => {})
+    })
+    t.assert.throws(() => {
+      fastify.addHook('onRegister', async (instance, newInstance, opts, done) => {})
+    }, {
+      code: 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER',
+      message: 'Async function has too many arguments. Async hooks should not use the \'done\' argument.'
+    })
+  })
 })
 
 test('early termination, onRequest async', async t => {

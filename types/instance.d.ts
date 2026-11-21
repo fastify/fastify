@@ -436,7 +436,7 @@ export interface FastifyInstance<
   // Application addHooks
 
   /**
-   * Triggered when a new route is registered. Listeners are passed a routeOptions object as the sole parameter. The interface is synchronous, and, as such, the listener does not get passed a callback
+   * Triggered when a new route is registered. Listeners are passed the Fastify instance and a routeOptions object.
    */
   addHook<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
@@ -463,10 +463,14 @@ export interface FastifyInstance<
   * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
   */
   addHook<
-    Fn extends onReadyHookHandler | onReadyAsyncHookHandler = onReadyHookHandler
+    Fn extends
+    onReadyHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    | onReadyAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    = onReadyHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
     name: 'onReady',
-    hook: Fn extends unknown ? Fn extends AsyncFunction ? onReadyAsyncHookHandler : onReadyHookHandler : Fn,
+    hook: Fn extends unknown ? Fn extends AsyncFunction ? onReadyAsyncHookHandler<RawServer, RawRequest, RawReply,
+      Logger, TypeProvider> : onReadyHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> : Fn,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
@@ -479,7 +483,8 @@ export interface FastifyInstance<
     = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
     name: 'onListen',
-    hook: Fn extends unknown ? Fn extends AsyncFunction ? onListenAsyncHookHandler : onListenHookHandler : Fn,
+    hook: Fn extends unknown ? Fn extends AsyncFunction ? onListenAsyncHookHandler<RawServer, RawRequest, RawReply,
+      Logger, TypeProvider> : onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> : Fn,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
@@ -490,20 +495,28 @@ export interface FastifyInstance<
     hook: AsyncDisposable | Disposable,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   addHook<
-    Fn extends onCloseHookHandler | onCloseAsyncHookHandler = onCloseHookHandler
+    Fn extends
+    onCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    | onCloseAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    = onCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
     name: 'onClose',
-    hook: Fn extends unknown ? Fn extends AsyncFunction ? onCloseAsyncHookHandler : onCloseHookHandler : Fn,
+    hook: Fn extends unknown ? Fn extends AsyncFunction ? onCloseAsyncHookHandler<RawServer, RawRequest, RawReply,
+      Logger, TypeProvider> : onCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> : Fn,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
   */
   addHook<
-    Fn extends preCloseHookHandler | preCloseAsyncHookHandler = preCloseHookHandler
+    Fn extends
+    preCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    | preCloseAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    = preCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
     name: 'preClose',
-    hook: Fn extends unknown ? Fn extends AsyncFunction ? preCloseAsyncHookHandler : preCloseHookHandler : Fn,
+    hook: Fn extends unknown ? Fn extends AsyncFunction ? preCloseAsyncHookHandler<RawServer, RawRequest, RawReply,
+      Logger, TypeProvider> : preCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> : Fn,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   addHook<

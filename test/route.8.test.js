@@ -100,7 +100,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
   // we update the onRequest hook in onRoute hook
   // if we reuse the same route option
   // that means we will append another function inside the array
-  fastify.addHook('onRoute', function (routeOption) {
+  fastify.addHook('onRoute', function (instance, routeOption) {
     if (Array.isArray(routeOption.onRequest)) {
       routeOption.onRequest.push(() => {})
     } else {
@@ -108,7 +108,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
     }
   })
 
-  fastify.addHook('onRoute', function (routeOption) {
+  fastify.addHook('onRoute', function (instance, routeOption) {
     t.assert.strictEqual(routeOption.onRequest.length, 1)
   })
 
@@ -125,7 +125,7 @@ test('onRoute identifies generated HEAD routes', async t => {
   const fastify = Fastify()
   const routes = []
 
-  fastify.addHook('onRoute', function (routeOptions) {
+  fastify.addHook('onRoute', function (instance, routeOptions) {
     routes.push({
       method: routeOptions.method,
       url: routeOptions.url,

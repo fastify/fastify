@@ -29,6 +29,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.status).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
   expect(reply.code(100 as number).send).type.toBe<(...args: [payload?: unknown]) => FastifyReply>()
   expect(reply.elapsedTime).type.toBe<number>()
+  expect(reply.mediaType).type.toBe<string | undefined>()
   expect(reply.statusCode).type.toBe<number>()
   expect(reply.sent).type.toBe<boolean>()
   expect(reply.writeEarlyHints).type.toBe<

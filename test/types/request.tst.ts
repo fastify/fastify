@@ -71,6 +71,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expect(request.port).type.toBe<number | null>()
   expect(request.ip).type.toBe<string>()
   expect(request.ips).type.toBe<string[] | undefined>()
+  expect(request.mediaType).type.toBe<string | undefined>()
   expect(request.raw).type.toBe<RawRequestDefaultExpression>()
   expect(request.body).type.toBe<RequestBodyDefault>()
   expect(request.params).type.toBe<RequestParamsDefault>()

@@ -777,3 +777,62 @@ test('does not destroy connections with in-flight requests (default options)', a
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })
+
+test('does not destroy connections with in-flight requests on secondary dual-stack listener (#7043)', async t => {
+  const proxyquire = require('proxyquire')
+  const FastifyDual = proxyquire('..', {
+    './lib/server.js': proxyquire('../lib/server.js', {
+      'node:dns': {
+        lookup: function (host, option, callback) {
+          process.nextTick(callback, null, [
+            { address: '127.0.0.1', family: 4 },
+            { address: '::1', family: 6 }
+          ])
+        }
+      }
+    })
+  })
+
+  let inFlightAtOnClose = null
+  let inFlight = 0
+  const fastify = FastifyDual()
+
+  fastify.addHook('onClose', async () => {
+    inFlightAtOnClose = inFlight
+  })
+
+  fastify.get('/slow', async () => {
+    inFlight++
+    await sleep(200)
+    inFlight--
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const mainFamily = fastify.server.address().family
+  const secondaryAddress = fastify.addresses().find(a => a.family !== mainFamily)
+  t.assert.ok(secondaryAddress, 'secondary listener must be bound')
+
+  const host = secondaryAddress.family === 'IPv6'
+    ? `[${secondaryAddress.address}]`
+    : secondaryAddress.address
+  const client = new Client(`http://${host}:${secondaryAddress.port}`)
+  t.after(() => client.close())
+
+  const requestPromise = client.request({
+    path: '/slow',
+    method: 'GET',
+    headers: { connection: 'close' }
+  })
+
+  // Ensure request has reached the secondary server and is in flight
+  await sleep(50)
+
+  await fastify.close()
+
+  t.assert.strictEqual(inFlightAtOnClose, 0)
+  const response = await requestPromise
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})

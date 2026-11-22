@@ -158,6 +158,54 @@ test('HEAD route should handle reply.send(new Response())', async (t) => {
   t.assert.strictEqual(res.body, '')
 })
 
+test('HEAD route should handle Response with ReadableStream.cancel() error', (t, done) => {
+  t.plan(7)
+
+  const logStream = split(JSON.parse)
+  const expectedError = new Error('Response cancel error!')
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response-cancel-error',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      const webStream = new ReadableStream({
+        start (controller) {
+          controller.enqueue('Hello from web stream in response!')
+        },
+        cancel (reason) {
+          t.assert.strictEqual(reason, 'Stream cancelled by HEAD route')
+          throw expectedError
+        }
+      })
+      return new Response(webStream)
+    }
+  })
+
+  logStream.once('data', line => {
+    const { message, stack } = expectedError
+    t.assert.deepStrictEqual(line.err, { type: 'Error', message, stack })
+    t.assert.strictEqual(line.msg, 'Error on Stream found for HEAD route')
+    t.assert.strictEqual(line.level, 50)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-cancel-error'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-type'], undefined)
+    done()
+  })
+})
+
 test('HEAD route should be exposed by default', async t => {
   t.plan(5)
 

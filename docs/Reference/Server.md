@@ -339,7 +339,7 @@ The possible values this property may have are:
 null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging) instance.
 
 + `object`: a standard Pino [options
-  object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
+  object](https://github.com/pinojs/pino/blob/main/docs/api.md#constructor).
   This will be passed directly to the Pino constructor. If the following
   properties are not present on the object, they will be added accordingly:
     * `level`: the minimum logging level. If not set, it will be set to

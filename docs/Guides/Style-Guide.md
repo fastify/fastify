@@ -107,7 +107,8 @@ Less like this: we can use the following plugins.
 
 More like this: You can use the following plugins.
 
-> According to [Wikipedia](#), ***You*** is usually a second person pronoun.
+> According to [Wikipedia](https://en.wikipedia.org/wiki/You), ***You*** is
+> usually a second person pronoun.
 > Also, used to refer to an indeterminate person, as a more common alternative
 > to a very formal indefinite pronoun.
 

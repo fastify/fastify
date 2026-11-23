@@ -1222,7 +1222,7 @@ const refToSharedSchemaDefinitions = {
   Schema](https://json-schema.org/understanding-json-schema/about)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
-- [Ajv documentation](https://github.com/ajv-validator/ajv/blob/master/README.md)
+- [Ajv documentation](https://ajv.js.org/)
 - [Ajv i18n](https://github.com/ajv-validator/ajv-i18n)
 - [Ajv custom errors](https://github.com/ajv-validator/ajv-errors)
 - Custom error handling with core methods with error file dumping

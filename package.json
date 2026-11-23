@@ -5,6 +5,12 @@
   "main": "fastify.js",
   "type": "commonjs",
   "types": "fastify.d.ts",
+  "files": [
+    "fastify.js",
+    "fastify.d.ts",
+    "lib/**/*.js",
+    "types/**/*.d.ts"
+  ],
   "scripts": {
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"autocannon -c 100 -d 30 -p 10 localhost:3000/\"",
@@ -18,7 +24,9 @@
     "lint:fix": "eslint --fix",
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
-    "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=@jsumners/line-reporter && npm run test:validator:integrity && npm run build:sync-version",
+    "prepublishOnly": "node scripts/release/guard.js",
+    "release:check": "node scripts/release/cli.js check",
+    "release:publish": "node scripts/release/cli.js publish",
     "test": "npm run lint && npm run unit && npm run test:types",
     "test:ci": "npm run unit && npm run test:types",
     "test:report": "npm run lint && npm run unit:report && npm run test:types",

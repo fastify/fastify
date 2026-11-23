@@ -1,0 +1,142 @@
+name: release
+
+# The supported way to publish Fastify. See docs/Guides/Releasing.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dist-tag:
+        description: 'npm dist-tag (e.g. latest, next, v4-lts)'
+        required: true
+        type: string
+        default: 'latest'
+      dry-run:
+        description: 'Run every gate, but do not upload to npm'
+        required: true
+        type: boolean
+        default: true
+
+# Never cancel a release half way, and never run two at once.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+
+      - name: Install
+        run: npm install --ignore-scripts
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check generated files
+        run: node scripts/release/cli.js generated
+
+      - name: Type tests
+        run: npm run test:types
+        env:
+          NODE_OPTIONS: no-network-family-autoselection
+
+      - name: Coverage
+        run: npm run coverage:ci-check-coverage
+
+  test:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        node-version: [20, 22, 24, 26]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+
+      - name: Install
+        run: npm install --ignore-scripts
+
+      - name: Run tests
+        run: npm run unit
+
+  package:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/package-validation.yml
+
+  publish:
+    needs:
+      - quality
+      - test
+      - package
+    if: >
+      github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next' ||
+      (startsWith(github.ref, 'refs/heads/') && endsWith(github.ref, '.x'))
+    runs-on: ubuntu-latest
+    # Configure required reviewers on this environment in the repository settings.
+    environment: npm
+    permissions:
+      contents: read
+      # Needed for npm trusted publishing and provenance.
+      id-token: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # Trusted publishing needs npm >= 11.5.1, which ships with Node.js 24.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          check-latest: true
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: package
+          path: ${{ runner.temp }}/package
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: receipt-*
+          path: ${{ runner.temp }}/receipts
+          merge-multiple: true
+
+      - name: Publish the validated tarball
+        env:
+          DIST_TAG: ${{ inputs.dist-tag }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          args=(--artifact "$RUNNER_TEMP/package" --receipts "$RUNNER_TEMP/receipts")
+          args+=(--platforms linux,darwin,win32)
+          # An explicit "--tag latest" would override npm's refusal to move
+          # "latest" back to an older version, so only other tags are passed.
+          if [ "$DIST_TAG" != "latest" ]; then
+            args+=(--tag "$DIST_TAG")
+          fi
+          if [ "$DRY_RUN" = "true" ]; then
+            args+=(--dry-run)
+          else
+            args+=(--provenance)
+          fi
+          node scripts/release/cli.js publish "${args[@]}"

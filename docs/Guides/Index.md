@@ -33,6 +33,8 @@ This table of contents is in alphabetical order.
   prototype poisoning attack works and is mitigated.
 + [Recommendations](./Recommendations.md): Recommendations for how to deploy
   Fastify into production environments.
++ [Releasing](./Releasing.md): For maintainers. How a release is validated and
+  published.
 + [Serverless](./Serverless.md): Details on how to deploy Fastify applications
   in various Function as a Service (FaaS) environments.
 + [Style Guide](./Style-Guide.md): Explains the writing style we use for the

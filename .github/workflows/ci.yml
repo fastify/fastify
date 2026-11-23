@@ -223,6 +223,15 @@ jobs:
         run: |
           cd test/bundler/esbuild && npm run test
 
+  # The packed artifact, consumed as downstream projects would.
+  package-validation:
+    needs:
+      - test-types
+      - test-unit
+    permissions:
+      contents: read
+    uses: ./.github/workflows/package-validation.yml
+
   automerge:
     if: >
         github.event_name == 'pull_request' &&
@@ -232,6 +241,7 @@ jobs:
       - test-types
       - test-unit
       - package
+      - package-validation
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

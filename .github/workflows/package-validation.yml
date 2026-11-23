@@ -1,0 +1,79 @@
+name: package validation
+
+# Packs Fastify once and consumes that exact tarball on every supported Node.js
+# version and operating system. Used by ci.yml and release.yml.
+# See docs/Guides/Releasing.md.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+
+      # No dependencies are needed to pack and inspect.
+      - name: Pack and inspect
+        run: node scripts/release/cli.js pack --out "$RUNNER_TEMP/package"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: package
+          path: ${{ runner.temp }}/package
+          if-no-files-found: error
+          # Allows "Re-run all jobs" to replace the previous attempt's upload.
+          overwrite: true
+
+  verify:
+    needs: pack
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22, 24, 26]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: package
+          path: ${{ runner.temp }}/package
+
+      # Deliberately no `npm install`: nothing from the repository's
+      # dependency tree may take part in consuming the package.
+      - name: Consume the packed artifact
+        shell: bash
+        run: >
+          node scripts/release/cli.js verify
+          --artifact "$RUNNER_TEMP/package"
+          --receipts "$RUNNER_TEMP/receipts"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: receipt-${{ matrix.os }}-node${{ matrix.node-version }}
+          path: ${{ runner.temp }}/receipts
+          if-no-files-found: error
+          overwrite: true

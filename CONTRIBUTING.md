@@ -60,6 +60,10 @@ the organization's efforts for each Fastify's version.
 Declaring formal releases remains the prerogative of the lead maintainers. Do
 not bump version numbers in pull requests.
 
+Releases are published only after the packed package has been validated as
+downstream projects consume it. See the
+[Releasing guide](./docs/Guides/Releasing.md).
+
 ## Plugins
 
 Contributors to Fastify plugins must follow the same rules as the main Fastify repository,

@@ -39,6 +39,14 @@ test('route-level handlerTimeout rejects invalid values', async t => {
   t.assert.throws(() => {
     fastify.get('/d', { handlerTimeout: 0 }, async () => 'ok')
   }, { code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT' })
+
+  t.assert.throws(() => {
+    fastify.get('/e', { handlerTimeout: 2147483648 }, async () => 'ok')
+  }, { code: 'FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT' })
+
+  t.assert.doesNotThrow(() => {
+    fastify.get('/f', { handlerTimeout: 2147483647 }, async () => 'ok')
+  })
 })
 
 // --- Lazy signal without handlerTimeout ---

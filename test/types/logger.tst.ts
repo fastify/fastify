@@ -5,12 +5,13 @@ import { expect } from 'tstyche'
 import fastify, {
   FastifyBaseLogger,
   FastifyError,
+  FastifyInstance,
   FastifyLogFn,
   FastifyReply,
   FastifyRequest,
   LogLevel
 } from '../../fastify.js'
-import { ResSerializerReply } from '../../types/logger.js'
+import { LogController, ResSerializerReply } from '../../types/logger.js'
 
 expect(fastify().log).type.toBe<FastifyBaseLogger>()
 
@@ -274,3 +275,41 @@ expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serialize
 expect(childParent.child).type.not.toBeCallableWith()
 
 expect(childParent.child).type.not.toBeCallableWith({}, { nonExist: true })
+
+const logController = new LogController()
+expect(logController.requestCompleted).type.toBeCallableWith(undefined, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(null, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(new Error(), {} as FastifyRequest, {} as FastifyReply)
+
+const req = {} as FastifyRequest
+const rep = {} as FastifyReply
+const baseLogger = {} as FastifyBaseLogger
+const instance = {} as FastifyInstance
+expect(logController.onRequestAbortError).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.replyAlreadySent).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.headersAlreadySent).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.replyThenRejection).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.streamHeadersAlreadySent).type.toBeCallableWith(req, rep)
+expect(logController.streamPayloadNotClosable).type.toBeCallableWith(req, rep)
+expect(logController.trailerError).type.toBeCallableWith(new Error(), req, rep, { trailerName: 'etag' })
+expect(logController.trailerError).type.not.toBeCallableWith(new Error(), req, rep)
+expect(logController.notFoundInNotFoundHandler).type.toBeCallableWith(req, rep)
+expect(logController.fourOhFourFallback).type.toBeCallableWith(req, rep, { router: { prettyPrint: () => '' } })
+expect(logController.fourOhFourFallback).type.not.toBeCallableWith(req, rep)
+expect(logController.promiseRejectedAfterSent).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.headStreamError).type.toBeCallableWith(new Error(), req, rep)
+expect(logController.onListenHookError).type.toBeCallableWith(baseLogger, instance, new Error())
+expect(logController.clientError).type.toBeCallableWith(baseLogger, instance, new Error(), 'header_overflow')
+expect(logController.clientError).type.not.toBeCallableWith(baseLogger, instance, new Error(), 'other')
+expect(logController.serverListening).type.toBeCallableWith(baseLogger, instance, 'http://127.0.0.1:3000', (address: string) => address)
+
+class WinstonLogController extends LogController {
+  override replyAlreadySent (error: Error, request: FastifyRequest, reply: FastifyReply): void {
+    reply.log.warn(error.message)
+  }
+
+  override serverListening (logger: FastifyBaseLogger, server: FastifyInstance, address: string): void {
+    logger.info(address)
+  }
+}
+expect(new WinstonLogController()).type.toBeAssignableTo<LogController>()

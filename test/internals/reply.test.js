@@ -1768,6 +1768,7 @@ test('reply.then', async t => {
   t.plan(4)
 
   function request () { }
+  request[kRouteContext] = { server: { [kLogController]: new LogController() } }
 
   await t.test('without an error', (t, done) => {
     t.plan(1)
@@ -2018,7 +2019,10 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
     }
   }
 
-  const reply = new Reply(response, { [kRouteContext]: { onSend: null }, raw: { url: '/hello', method: 'GET' } }, log)
+  const reply = new Reply(response, {
+    [kRouteContext]: { onSend: null, server: { [kLogController]: new LogController() } },
+    raw: { url: '/hello', method: 'GET' }
+  }, log)
 
   try {
     reply.send('')

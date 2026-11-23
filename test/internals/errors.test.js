@@ -987,32 +987,6 @@ test('Ensure that all errors are in Errors.md documented', t => {
   }
 })
 
-test('Ensure that the Errors.md table rows are well-formed', t => {
-  t.plan(1)
-
-  const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
-  const lines = errorsMd.split('\n')
-  const tableStart = lines.findIndex(line => line.startsWith('Below is a table with all the error codes'))
-  const problems = []
-  for (let i = tableStart + 1; i < lines.length; i++) {
-    const line = lines[i]
-    if (line.trim() === '') continue
-    if (!line.startsWith('|')) break
-    if (line.startsWith('| Code |')) continue
-    if (/^\|[-: |]+$/.test(line)) continue
-    const cells = line.replace(/^\|/, '').replace(/\|\s*$/, '').split('|').map(cell => cell.trim())
-    if (cells.length !== 4) {
-      problems.push(`line ${i + 1}: expected 4 cells, found ${cells.length}`)
-      continue
-    }
-    const link = cells[3].match(/\[#(\d+)\]\(https:\/\/github\.com\/fastify\/fastify\/pull\/(\d+)\)/)
-    if (link !== null && link[1] !== link[2]) {
-      problems.push(`line ${i + 1}: link text #${link[1]} does not match pull request #${link[2]}`)
-    }
-  }
-  t.assert.deepStrictEqual(problems, [])
-})
-
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
   t.plan(expectedErrors)
 

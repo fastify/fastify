@@ -1,0 +1,77 @@
+# Packs Fastify once, then validates that exact tarball on every supported
+# Node.js version and OS. Used by ci.yml and release.yml. See RELEASING.md.
+name: release-gate
+
+on:
+  workflow_call:
+    outputs:
+      tarball:
+        description: 'File name of the validated tarball'
+        value: ${{ jobs.pack.outputs.tarball }}
+      sha256:
+        description: 'SHA-256 of the validated tarball'
+        value: ${{ jobs.pack.outputs.sha256 }}
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      tarball: ${{ steps.pack.outputs.tarball }}
+      sha256: ${{ steps.pack.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+
+      - name: Pack and check contents
+        id: pack
+        run: node scripts/release/check.js --out artifacts --require-clean --only none
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-tarball
+          path: artifacts/${{ steps.pack.outputs.tarball }}
+          if-no-files-found: error
+
+  validate:
+    needs: pack
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22, 24, 26]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-tarball
+          path: artifacts
+
+      # No `npm install` here: the consumer projects install what they need, so
+      # nothing from the repository's devDependencies can hide a problem.
+      - name: Validate the packed artifact
+        env:
+          TARBALL: ${{ needs.pack.outputs.tarball }}
+          SHA256: ${{ needs.pack.outputs.sha256 }}
+        run: node scripts/release/check.js --tarball "artifacts/${{ env.TARBALL }}" --sha256 "${{ env.SHA256 }}"

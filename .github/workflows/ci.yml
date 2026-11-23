@@ -223,6 +223,16 @@ jobs:
         run: |
           cd test/bundler/esbuild && npm run test
 
+  # Validates the package as published, not the checkout. See RELEASING.md.
+  release-gate:
+    needs:
+      - test-types
+      - test-unit
+      - test-pino-compat
+    permissions:
+      contents: read
+    uses: ./.github/workflows/release-gate.yml
+
   automerge:
     if: >
         github.event_name == 'pull_request' &&
@@ -232,6 +242,7 @@ jobs:
       - test-types
       - test-unit
       - package
+      - release-gate
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

@@ -1,0 +1,93 @@
+# The only supported way to publish Fastify. See RELEASING.md.
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to npm (otherwise only validate and keep the tarball)'
+        type: boolean
+        default: false
+      tag:
+        description: 'npm dist-tag'
+        type: string
+        default: 'latest'
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 'lts/*'
+          check-latest: true
+
+      - name: Install
+        run: npm install --ignore-scripts
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests and generated files
+        run: npm run release:verify-source
+
+      - name: Type tests
+        run: npm run test:types
+
+  gate:
+    needs: source
+    permissions:
+      contents: read
+    uses: ./.github/workflows/release-gate.yml
+
+  publish:
+    needs: gate
+    if: >
+      inputs.publish &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/next' ||
+      (startsWith(github.ref, 'refs/heads/') && endsWith(github.ref, '.x')))
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing and provenance
+    steps:
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24' # trusted publishing needs npm 11.5.1 or newer
+          check-latest: true
+          registry-url: 'https://registry.npmjs.org'
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-tarball
+          path: artifacts
+
+      # No checkout: the only thing that can be published is the validated file.
+      - name: Publish the validated tarball
+        env:
+          TARBALL: ${{ needs.gate.outputs.tarball }}
+          SHA256: ${{ needs.gate.outputs.sha256 }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          echo "$SHA256  artifacts/$TARBALL" | sha256sum --check --strict
+          version="${TARBALL#fastify-}"
+          version="${version%.tgz}"
+          if [[ "$TAG" == "latest" && ( "$version" == *-* || "$GITHUB_REF" != "refs/heads/main" ) ]]; then
+            echo "::error::$version from $GITHUB_REF must not be tagged latest; choose another dist-tag"
+            exit 1
+          fi
+          npm publish "./artifacts/$TARBALL" --tag "$TAG" --access public --provenance --ignore-scripts

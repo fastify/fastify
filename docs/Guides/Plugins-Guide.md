@@ -356,7 +356,9 @@ As you probably noticed by now, `request` and `reply` are not the standard
 Node.js *request* and *response* objects, but Fastify's objects.
 
 A plugin can also use the [preClose hook](../Reference/Hooks.md#preclose) to
-stop starting new background work once shutdown has begun:
+stop starting new background work during shutdown. New work is blocked from the
+moment this hook runs, which can be later than the `fastify.close()` call if
+earlier `preClose` hooks take time:
 
 ```js
 fastify.register(async function (instance) {
@@ -376,7 +378,9 @@ fastify.register(async function (instance) {
 
 The flag only prevents new work from starting. Work that is already running
 needs its own cancellation or completion logic, for example in an
-[onClose hook](../Reference/Hooks.md#onclose). The flag is local to the plugin
+[onClose hook](../Reference/Hooks.md#onclose). Work that keeps a request or
+stream open must be cancelled in `preClose` instead, since `onClose` only runs
+after the HTTP server has drained. The flag is local to the plugin
 that declares it; if several plugins need to share the same shutdown state, give
 that state an explicit shared owner, such as a decorator on a common parent
 instance.

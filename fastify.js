@@ -60,6 +60,15 @@ const {
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
+const booleanRouterOptions = [
+  'allowUnsafeRegex',
+  'caseSensitive',
+  'compile',
+  'ignoreDuplicateSlashes',
+  'ignoreTrailingSlash',
+  'useSemicolonDelimiter'
+]
+
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
@@ -948,6 +957,13 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   })
 
   const initialConfig = getSecuredInitialConfig(options)
+
+  // The validator coerces the boolean router options in initialConfig, where
+  // the string 'false' becomes false, while find-my-way treats any truthy
+  // value as on. Configure the router as initialConfig reports.
+  for (const key of booleanRouterOptions) {
+    options.routerOptions[key] = initialConfig.routerOptions[key]
+  }
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes

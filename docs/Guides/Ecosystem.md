@@ -231,9 +231,6 @@ section.
 - [`@stitchapi/fastify`](https://github.com/rejifald/StitchAPI/tree/main/packages/fastify)
   Decorate the app/request with a StitchAPI seam — request-scoped principal, SSE
   streaming, error mapping, and a Pino-logger bridge.
-- [`@thecodepace/fastify-http-query`](https://github.com/TheCodePace/fastify-http-query)
-  Fastify plugin enabling the HTTP `QUERY` method (a safe, idempotent, cacheable
-  method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)

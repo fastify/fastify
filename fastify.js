@@ -713,7 +713,7 @@ function fastify (serverOptions) {
       return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
     }
     const body = JSON.stringify({
-      error: 'Bad Request',
+      error: 'URI Too Long',
       code: 'FST_ERR_MAX_PARAM_LENGTH',
       message: `'${path}' is exceeding the max param length`,
       statusCode: 414
@@ -1006,7 +1006,7 @@ function defaultClientErrorHandler (err, socket) {
   // Most devs do not know what to do with this error.
   // In the vast majority of cases, it's a network error and/or some
   // config issue on the load balancer side.
-  this.log.trace({ err }, `client ${errorLabel}`)
+  this[kLogController].clientError(this.log, this, err, errorLabel)
   // Copying standard node behavior
   // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 

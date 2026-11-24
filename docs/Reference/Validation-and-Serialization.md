@@ -193,6 +193,13 @@ validate the body, querystring, or params. Fastify emits
 object instead (for example `fastify.getSchema('shared-headers')`), or write
 header names in lowercase.
 
+Normalization also does not apply to schemas compiled at request time with
+[`request.compileValidationSchema()`](./Request.md#compilevalidationschema) or
+[`request.validateInput()`](./Request.md#validate), even when `httpPart` is
+`'headers'`. These methods validate whatever data the caller passes, so Fastify
+cannot assume it holds lowercased header names. Write header names in
+lowercase in those schemas.
+
 Example:
 ```js
 const bodyJsonSchema = {

@@ -312,6 +312,81 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   t.assert.strictEqual(noneTrailingReply.statusCode, 200)
 })
 
+test('HEAD routes declared explicitly follow prefixTrailingSlash: \'both\'', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.register(function routes (f, opts, next) {
+    f.route({
+      method: 'HEAD',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send()
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
+  const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
+
+  t.assert.strictEqual(noneTrailingReply.statusCode, 200)
+  t.assert.strictEqual(trailingSlashReply.statusCode, 200)
+})
+
+test('HEAD routes declared explicitly follow prefixTrailingSlash: \'no-slash\'', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.register(function routes (f, opts, next) {
+    f.route({
+      method: 'HEAD',
+      url: '/',
+      prefixTrailingSlash: 'no-slash',
+      handler: (req, reply) => {
+        reply.send()
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
+  const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
+
+  t.assert.strictEqual(noneTrailingReply.statusCode, 200)
+  t.assert.strictEqual(trailingSlashReply.statusCode, 404)
+})
+
+test('HEAD routes declared explicitly follow prefixTrailingSlash: \'slash\'', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.register(function routes (f, opts, next) {
+    f.route({
+      method: 'HEAD',
+      url: '/',
+      prefixTrailingSlash: 'slash',
+      handler: (req, reply) => {
+        reply.send()
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
+  const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
+
+  t.assert.strictEqual(noneTrailingReply.statusCode, 404)
+  t.assert.strictEqual(trailingSlashReply.statusCode, 200)
+})
+
 test('GET route with body schema should throw', t => {
   t.plan(1)
 

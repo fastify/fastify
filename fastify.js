@@ -24,6 +24,8 @@ const {
   kReply,
   kRequest,
   kFourOhFour,
+  kFourOhFourContext,
+  kFourOhFourLevelInstance,
   kState,
   kOptions,
   kPluginNameChain,
@@ -44,7 +46,7 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, onRequestHookRunner, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogController, LogController } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
@@ -675,7 +677,7 @@ function fastify (serverOptions) {
     fourOhFour.router.lookup(req, res)
   }
 
-  function onBadUrl (path, req, res) {
+  function dispatchRouterError (error, req, res) {
     if (options.frameworkErrors) {
       const id = getGenReqId(routeEventContext.server, req)
       const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
@@ -685,44 +687,39 @@ function fastify (serverOptions) {
 
       routeEventContext.server[kLogController].incomingRequest(request, reply)
 
-      return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+      return options.frameworkErrors(error, request, reply)
     }
-    const body = JSON.stringify({
-      error: 'Bad Request',
-      code: 'FST_ERR_BAD_URL',
-      message: `'${path}' is not a valid url component`,
-      statusCode: 400
-    })
-    res.writeHead(400, {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(body)
-    })
-    res.end(body)
+
+    const context = fastify[kFourOhFourLevelInstance][kFourOhFourContext] || routeEventContext
+    const id = getGenReqId(context.server, req)
+    const childLogger = createChildLogger(context, options.logger, req, id)
+
+    const request = new Request(id, null, req, null, childLogger, context)
+    const reply = new Reply(res, request, childLogger)
+
+    setupResponseListeners(reply)
+    context.server[kLogController].incomingRequest(request, reply)
+
+    const sendError = (err, _request, reply) => {
+      if (reply.sent) {
+        return
+      }
+      reply.send(err || error)
+    }
+
+    if (context.onRequest !== null) {
+      onRequestHookRunner(context.onRequest, request, reply, sendError)
+    } else {
+      reply.send(error)
+    }
+  }
+
+  function onBadUrl (path, req, res) {
+    return dispatchRouterError(new FST_ERR_BAD_URL(path), req, res)
   }
 
   function onMaxParamLength (path, req, res) {
-    if (options.frameworkErrors) {
-      const id = getGenReqId(routeEventContext.server, req)
-      const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
-
-      const request = new Request(id, null, req, null, childLogger, routeEventContext)
-      const reply = new Reply(res, request, childLogger)
-
-      routeEventContext.server[kLogController].incomingRequest(request, reply)
-
-      return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
-    }
-    const body = JSON.stringify({
-      error: 'URI Too Long',
-      code: 'FST_ERR_MAX_PARAM_LENGTH',
-      message: `'${path}' is exceeding the max param length`,
-      statusCode: 414
-    })
-    res.writeHead(414, {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(body)
-    })
-    res.end(body)
+    return dispatchRouterError(new FST_ERR_MAX_PARAM_LENGTH(path), req, res)
   }
 
   function buildAsyncConstraintCallback (isAsync, req, res) {

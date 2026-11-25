@@ -849,3 +849,50 @@ test('Should not mutate user-provided routerOptions object', async t => {
   t.assert.strictEqual(routerOptions.defaultRoute, undefined)
   t.assert.strictEqual(routerOptions.onBadUrl, undefined)
 })
+
+test('Router errors (FST_ERR_MAX_PARAM_LENGTH and FST_ERR_BAD_URL) run onRequest hooks, setErrorHandler and request logging', async t => {
+  const logs = []
+  const logStream = split(line => {
+    logs.push(JSON.parse(line))
+  })
+
+  const app = Fastify({
+    logger: { stream: logStream },
+    routerOptions: { maxParamLength: 5 }
+  })
+  t.after(() => app.close())
+
+  app.addHook('onRequest', async (_request, reply) => {
+    reply.header('x-on-request', 'ran')
+  })
+
+  app.setErrorHandler((err, _request, reply) => {
+    reply.code(err.statusCode ?? 500).send({
+      handledBy: 'setErrorHandler',
+      code: err.code
+    })
+  })
+
+  app.get('/items/:id', async () => ({ ok: true }))
+
+  const maxParamRes = await app.inject('/items/123456')
+  t.assert.strictEqual(maxParamRes.statusCode, 414)
+  t.assert.strictEqual(maxParamRes.headers['x-on-request'], 'ran')
+  t.assert.deepStrictEqual(JSON.parse(maxParamRes.body), {
+    handledBy: 'setErrorHandler',
+    code: 'FST_ERR_MAX_PARAM_LENGTH'
+  })
+
+  const badUrlRes = await app.inject('/items/%E0%A4%A')
+  t.assert.strictEqual(badUrlRes.statusCode, 400)
+  t.assert.strictEqual(badUrlRes.headers['x-on-request'], 'ran')
+  t.assert.deepStrictEqual(JSON.parse(badUrlRes.body), {
+    handledBy: 'setErrorHandler',
+    code: 'FST_ERR_BAD_URL'
+  })
+
+  const incomingCount = logs.filter(entry => entry.msg === 'incoming request').length
+  const completedCount = logs.filter(entry => entry.msg === 'request completed').length
+  t.assert.strictEqual(incomingCount, 2)
+  t.assert.strictEqual(completedCount, 2)
+})

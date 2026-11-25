@@ -1581,3 +1581,49 @@ test('response $ref to a Response object with a missing content schema fails to 
     /Schema is missing for the content type 'application\/json'/
   )
 })
+
+test('response $ref to an unresolved schema still fails to build', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/Real',
+    content: {
+      'application/json': {
+        schema: { type: 'object' }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/DoesNotExist' }
+      }
+    }
+  }, async () => 'x')
+
+  await t.assert.rejects(
+    fastify.ready(),
+    /Cannot resolve ref "\/components\/responses\/DoesNotExist#"/
+  )
+})
+
+test('response $ref with a fragment that is not a resolvable schema fails to build', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/schemas/X',
+    type: 'object'
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '#/$defs/DoesNotExist' }
+      }
+    }
+  }, async () => 'x')
+
+  await t.assert.rejects(
+    fastify.ready(),
+    /Cannot find reference "#\/\$defs\/DoesNotExist"/
+  )
+})

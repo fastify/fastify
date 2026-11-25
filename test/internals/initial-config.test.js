@@ -381,3 +381,38 @@ test('Should not mutate the options object outside Fastify', async t => {
     t.assert.fail(error.message)
   }
 })
+
+test('initialConfig.routerOptions reports the deprecated top-level router options the router uses', async t => {
+  const fastify = Fastify({
+    ignoreDuplicateSlashes: true,
+    useSemicolonDelimiter: true,
+    ignoreTrailingSlash: true,
+    maxParamLength: 200,
+    caseSensitive: false,
+    allowUnsafeRegex: true,
+    routerOptions: { ignoreTrailingSlash: false, allowUnsafeRegex: false }
+  })
+  t.after(() => fastify.close())
+
+  const { routerOptions } = fastify.initialConfig
+  t.assert.strictEqual(routerOptions.ignoreDuplicateSlashes, true)
+  t.assert.strictEqual(routerOptions.useSemicolonDelimiter, true)
+  t.assert.strictEqual(routerOptions.maxParamLength, 200)
+  t.assert.strictEqual(routerOptions.caseSensitive, false)
+  // A value routerOptions sets is the one the router uses.
+  t.assert.strictEqual(routerOptions.ignoreTrailingSlash, false)
+  t.assert.strictEqual(routerOptions.allowUnsafeRegex, false)
+  t.assert.strictEqual(routerOptions.compile, false)
+
+  fastify.get('/admin', async () => 'admin')
+  for (const [url, statusCode] of [['//admin', 200], ['/admin;x', 200], ['/ADMIN', 200], ['/admin/', 404]]) {
+    t.assert.strictEqual((await fastify.inject(url)).statusCode, statusCode, url)
+  }
+})
+
+test('initialConfig.routerOptions is left unset when routerOptions is not passed', t => {
+  t.plan(2)
+  const fastify = Fastify({ ignoreDuplicateSlashes: true })
+  t.assert.strictEqual(fastify.initialConfig.routerOptions, undefined)
+  t.assert.strictEqual(fastify.initialConfig.ignoreDuplicateSlashes, true)
+})

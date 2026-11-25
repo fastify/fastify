@@ -419,7 +419,7 @@ section.
 - [`fastify-msgraph-webhook`](https://github.com/flower-of-the-bridges/fastify-msgraph-change-notifications-webhook)
   to manage
   [MS Graph Change Notifications webhooks](https://learn.microsoft.com/it-it/graph/change-notifications-delivery-webhooks?tabs=http).
-  - [`fastify-multichain-address`](https://github.com/zhangglnuo-art/fastify-multichain-address)
+- [`fastify-multichain-address`](https://github.com/zhangglnuo-art/fastify-multichain-address)
   Validate multi-chain crypto addresses, mandatory Memo/Destination Tags, and
   vanity address-poisoning across 46+ networks.
 - [`fastify-multilingual`](https://github.com/gbrugger/fastify-multilingual) Unobtrusively

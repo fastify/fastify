@@ -100,6 +100,8 @@ export interface LogControllerOptions {
   requestIdLogLabel?: string
 }
 
+type LogMetadata = Record<string, unknown>
+
 export declare class LogController {
   disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
   requestIdLogLabel: string
@@ -120,6 +122,34 @@ export declare class LogController {
   writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
   serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
+  onRequestAbortError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  replyAlreadySent (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  headersAlreadySent (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  replyThenRejection (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  streamHeadersAlreadySent (request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  streamPayloadNotClosable (request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  trailerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { trailerName: string }): void
+  notFoundInNotFoundHandler (request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  fourOhFourFallback (
+    request: FastifyRequest,
+    reply: FastifyReply,
+    metadata: { router: { prettyPrint (): string } }
+  ): void
+  promiseRejectedAfterSent (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  headStreamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: LogMetadata): void
+  onListenHookError (logger: FastifyBaseLogger, server: FastifyInstance, error: Error): void
+  clientError (
+    logger: FastifyBaseLogger,
+    server: FastifyInstance,
+    error: Error,
+    label: 'timeout' | 'header_overflow' | 'error'
+  ): void
+  serverListening (
+    logger: FastifyBaseLogger,
+    server: FastifyInstance,
+    address: string,
+    listenTextResolver: (address: string) => string
+  ): void
 }
 
 export interface FastifyChildLoggerFactory<

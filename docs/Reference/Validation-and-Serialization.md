@@ -721,8 +721,8 @@ Fastify adds two properties to all validation errors to help write a custom
 
 * `validation`: the content of the `error` property of the object returned by
   the validation function (returned by the custom `schemaCompiler`)
-* `validationContext`: the context (body, params, query, headers) where the
-  validation error occurred
+* `validationContext`: the context (body, params, querystring, headers) where
+  the validation error occurred
 
 A contrived example of such a custom `errorHandler` handling validation errors
 is shown below:
@@ -737,7 +737,7 @@ const errorHandler = (error, request, reply) => {
   // check if we have a validation error
   if (validation) {
     response = {
-      // validationContext will be 'body', 'params', 'headers', or 'query'
+      // validationContext will be 'body', 'params', 'headers', or 'querystring'
       message: `A validation error occurred when validating the ${validationContext}...`,
       // this is the result of the validation library...
       errors: validation

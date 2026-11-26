@@ -166,3 +166,22 @@ test('addresses getter', async t => {
   await app.close()
   t.assert.deepStrictEqual(app.addresses(), [], 'after close')
 })
+
+test('listen on 0.0.0.0 falls back to bound address when os.networkInterfaces() throws', async t => {
+  const os = require('node:os')
+  const originalNetworkInterfaces = os.networkInterfaces
+  os.networkInterfaces = () => {
+    throw Object.assign(new Error('uv_interface_addresses returned Unknown system error 13'), {
+      code: 'ERR_SYSTEM_ERROR'
+    })
+  }
+  t.after(() => {
+    os.networkInterfaces = originalNetworkInterfaces
+  })
+
+  const app = Fastify()
+  t.after(() => app.close())
+
+  const address = await app.listen({ port: 0, host: '0.0.0.0' })
+  t.assert.strictEqual(address, `http://0.0.0.0:${app.server.address().port}`)
+})

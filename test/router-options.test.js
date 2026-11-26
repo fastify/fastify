@@ -1351,7 +1351,11 @@ test('router is configured with the validated value of boolean router options', 
     [{ ignoreDuplicateSlashes: 'false' }, '//admin', 404],
     [{ ignoreDuplicateSlashes: 'false', routerOptions: { maxParamLength: 200 } }, '//admin', 404],
     [{ ignoreDuplicateSlashes: true, routerOptions: { ignoreDuplicateSlashes: 'false' } }, '//admin', 404],
-    [{ caseSensitive: 'false' }, '/ADMIN', 200]
+    [{ caseSensitive: 'false' }, '/ADMIN', 200],
+    [{ routerOptions: { caseSensitive: 'false' } }, '/ADMIN', 200],
+    [{ routerOptions: { caseSensitive: 'true' } }, '/ADMIN', 404],
+    [{ caseSensitive: true, routerOptions: { caseSensitive: 'false' } }, '/ADMIN', 200],
+    [{ caseSensitive: 'false', routerOptions: { maxParamLength: 200 } }, '/ADMIN', 200]
   ]) {
     const fastify = Fastify(options)
     fastify.get('/admin', async () => 'admin')
@@ -1360,4 +1364,14 @@ test('router is configured with the validated value of boolean router options', 
     t.assert.strictEqual(res.statusCode, statusCode, `${JSON.stringify(options)} ${url}`)
     await fastify.close()
   }
+})
+
+test('initialConfig reports the validated caseSensitive router option', async t => {
+  let fastify = Fastify({ routerOptions: { caseSensitive: 'false' } })
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.caseSensitive, false)
+
+  // No default true there hides the top-level option the router uses.
+  fastify = Fastify({ caseSensitive: false, routerOptions: { maxParamLength: 200 } })
+  t.assert.notStrictEqual(fastify.initialConfig.routerOptions.caseSensitive, true)
+  t.assert.strictEqual(fastify.initialConfig.caseSensitive, false)
 })

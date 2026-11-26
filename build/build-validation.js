@@ -116,6 +116,9 @@ const schema = {
       type: 'object',
       additionalProperties: true,
       properties: {
+        // No default: the router falls back to the top-level caseSensitive
+        // option when routerOptions does not set it.
+        caseSensitive: { type: 'boolean' },
         compile: { type: 'boolean', default: defaultInitOptions.routerOptions.compile },
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },

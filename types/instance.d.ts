@@ -10,7 +10,7 @@ import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
-import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
+import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteOptionsLocation, RouteShorthandMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
@@ -187,8 +187,8 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     const SchemaCompiler extends FastifySchema = FastifySchema
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  >(opts: RouteOptionsLocation<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+    TypeProvider, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;

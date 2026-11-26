@@ -209,10 +209,31 @@ export interface RouteOptions<
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
   TypeProvider, Logger> {
   method: HTTPMethods | HTTPMethods[];
-  url: string;
+  url?: string;
+  path?: string;
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>;
 }
+
+/**
+ * The declared body of `RouteOptions`, with the route location modelled as a
+ * union so that at least one of `url` and `path` is required.
+ *
+ * The runtime reads the location as `opts.url || opts.path` and asserts the
+ * result is non-empty, so a call that supplies neither compiles under a plain
+ * optional pair but throws `The path could not be empty` when it runs.
+ */
+export type RouteOptionsLocation<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
+> = RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger> &
+({ url: string; path?: string } | { path: string; url?: string })
 
 export type RouteHandler<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

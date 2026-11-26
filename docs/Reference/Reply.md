@@ -579,6 +579,8 @@ otherwise, an error will be thrown:
 - `string`
 - `Buffer`
 - `stream`
+- `ReadableStream`
+- `Response`
 - `undefined`
 - `null`
 

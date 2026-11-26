@@ -1,7 +1,8 @@
 'use strict'
 
 const { test } = require('node:test')
-const { kReplyHijacked } = require('../lib/symbols')
+const { kReplyHijacked, kRouteContext, kLogController } = require('../lib/symbols')
+const { LogController } = require('../lib/log-controller')
 const wrapThenable = require('../lib/wrap-thenable')
 const Reply = require('../lib/reply')
 
@@ -17,7 +18,7 @@ test('should resolve immediately when reply[kReplyHijacked] is true', async t =>
 
 test('should reject immediately when reply[kReplyHijacked] is true', t => {
   t.plan(1)
-  const reply = new Reply({}, {}, {})
+  const reply = new Reply({}, { [kRouteContext]: { server: { [kLogController]: new LogController() } } }, {})
   reply[kReplyHijacked] = true
   reply.log = {
     error: ({ err }) => {

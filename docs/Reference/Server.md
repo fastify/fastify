@@ -234,7 +234,8 @@ Defines the maximum number of milliseconds allowed for processing a request
 through the entire route lifecycle (from routing through onRequest, parsing,
 validation, handler execution, and serialization). If the response is not sent
 within this time, a `503 Service Unavailable` error is returned and
-`request.signal` is aborted.
+`request.signal` is aborted. The value must be at most `2147483647`, the longest
+delay a Node.js timer supports.
 
 Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
 level), `handlerTimeout` is an application-level timeout that works correctly
@@ -446,12 +447,19 @@ The error-related methods share a unified signature:
 `(error, request, reply, metadata)`, where `metadata` carries any extra
 per-method data (for example, the `statusCode` passed to `serializerError`).
 `incomingRequest` and `routeNotFound` omit the `error` argument, since they fire
-at lifecycle points where no error exists. `serviceUnavailable` is a further
-exception, since no route — and therefore no `request`/`reply` — is formed.
+at lifecycle points where no error exists. Server-scoped methods
+(`serviceUnavailable`, `onListenHookError`, `clientError` and
+`serverListening`) receive `(logger, server, ...)` instead, since no route —
+and therefore no `request`/`reply` — is formed.
+
+The request-lifecycle methods (`incomingRequest` through `serializerError`)
+are gated by `disableRequestLogging`. All other methods are always emitted by
+default, because they report misuse, failed hooks or possible Fastify bugs
+rather than routine request traffic.
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `isLogDisabled` | `(request)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `isLogDisabled` | `(request)` | Checks whether request logging is disabled for the given request. Used by the request-lifecycle methods below. |
 | `incomingRequest` | `(request, reply, metadata)` | Logs an incoming request at `info` level. |
 | `requestCompleted` | `(error, request, reply, metadata)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
 | `defaultErrorLog` | `(error, request, reply, metadata)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
@@ -460,6 +468,20 @@ exception, since no route — and therefore no `request`/`reply` — is formed.
 | `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
 | `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |
 | `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
+| `onRequestAbortError` | `(error, request, reply, metadata)` | Logs at `error` level an error thrown by an `onRequestAbort` hook. Always emitted. |
+| `replyAlreadySent` | `(error, request, reply, metadata)` | Logs at `warn` level a `FST_ERR_REP_ALREADY_SENT` error when `reply.send()` is called twice. Always emitted. |
+| `headersAlreadySent` | `(error, request, reply, metadata)` | Logs at `warn` level a "did you forget to `return reply`" hint when `writeHead` throws `ERR_HTTP_HEADERS_SENT`. Always emitted. |
+| `replyThenRejection` | `(error, request, reply, metadata)` | Logs at `warn` level a response error awaited through `reply.then()` without a reject callback. Always emitted. |
+| `streamHeadersAlreadySent` | `(request, reply, metadata)` | Logs at `warn` level when a stream is sent after `res.writeHead()` was called. Always emitted. |
+| `streamPayloadNotClosable` | `(request, reply, metadata)` | Logs at `warn` level when a stream payload has no `destroy`, `close` or `abort` method. Always emitted. |
+| `trailerError` | `(error, request, reply, metadata)` | Logs at `debug` level an error returned by a trailer function. The trailer name is available as `metadata.trailerName`. Always emitted. |
+| `notFoundInNotFoundHandler` | `(request, reply, metadata)` | Logs at `warn` level when `reply.callNotFound()` is called inside a 404 handler. Always emitted. |
+| `fourOhFourFallback` | `(request, reply, metadata)` | Logs two `warn` lines when the 404 router fallback is reached (a likely Fastify bug): a bug report request and `metadata.router.prettyPrint()`. Always emitted. |
+| `promiseRejectedAfterSent` | `(error, request, reply, metadata)` | Logs at `error` level when an async handler rejects after the reply was sent. Always emitted. |
+| `headStreamError` | `(error, request, reply, metadata)` | Logs at `error` level a stream error in an automatically created `HEAD` route. Always emitted. |
+| `onListenHookError` | `(logger, server, error)` | Logs at `error` level an error thrown by an `onListen` hook. `server` is the instance that registered the hook. |
+| `clientError` | `(logger, server, error, label)` | Logs at `trace` level a client error handled by the default `clientErrorHandler`. `label` is `timeout`, `header_overflow` or `error`. Not called when a custom `clientErrorHandler` is set. |
+| `serverListening` | `(logger, server, address, listenTextResolver)` | Logs at `info` level `listenTextResolver(address)` once per listening address. |
 
 **Note:** When you override a method, you take full control of it — the
 default `disableRequestLogging` check is **not** automatically applied.
@@ -742,7 +764,15 @@ possible to override one or more of those handlers with custom code using this
 option.
 
 > ℹ️ Note:
-> Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
+> Only `FST_ERR_BAD_URL`, `FST_ERR_MAX_PARAM_LENGTH` and
+> `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
+
+These errors are raised by the router before a route is matched, so they are
+handled outside the regular request lifecycle: hooks (such as `onRequest` and
+`onSend`) and the handler set with
+[`setErrorHandler`](#seterrorhandler) are not invoked for them. Use
+`frameworkErrors` to customize the response, for example to add headers that
+would otherwise be set by a hook.
 
 ```js
 const fastify = require('fastify')({

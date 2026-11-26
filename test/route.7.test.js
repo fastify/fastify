@@ -96,6 +96,116 @@ test('HEAD route should handle ReadableStream.cancel() error', (t, done) => {
   })
 })
 
+test('HEAD route should handle web Response return value', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      return new Response('Hello from web response!', {
+        status: 200,
+        headers: {
+          'x-custom-header': 'fastify-test',
+          'content-type': 'text/plain'
+        }
+      })
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['x-custom-header'], 'fastify-test')
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.body, '')
+})
+
+test('HEAD route should handle reply.send(new Response())', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response-send',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      reply.send(new Response('Hello from send!', {
+        status: 201,
+        headers: {
+          'x-custom-header': 'sent-response',
+          'content-type': 'text/plain'
+        }
+      }))
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-send'
+  })
+
+  t.assert.strictEqual(res.statusCode, 201)
+  t.assert.strictEqual(res.headers['x-custom-header'], 'sent-response')
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.body, '')
+})
+
+test('HEAD route should handle Response with ReadableStream.cancel() error', (t, done) => {
+  t.plan(7)
+
+  const logStream = split(JSON.parse)
+  const expectedError = new Error('Response cancel error!')
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response-cancel-error',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      const webStream = new ReadableStream({
+        start (controller) {
+          controller.enqueue('Hello from web stream in response!')
+        },
+        cancel (reason) {
+          t.assert.strictEqual(reason, 'Stream cancelled by HEAD route')
+          throw expectedError
+        }
+      })
+      return new Response(webStream)
+    }
+  })
+
+  logStream.once('data', line => {
+    const { message, stack } = expectedError
+    t.assert.deepStrictEqual(line.err, { type: 'Error', message, stack })
+    t.assert.strictEqual(line.msg, 'Error on Stream found for HEAD route')
+    t.assert.strictEqual(line.level, 50)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-cancel-error'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-type'], undefined)
+    done()
+  })
+})
+
 test('HEAD route should be exposed by default', async t => {
   t.plan(5)
 

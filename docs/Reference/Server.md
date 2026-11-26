@@ -2530,6 +2530,10 @@ The properties that can currently be exposed are:
   - querystringParser
   - useSemicolonDelimiter
 
+When `routerOptions` is passed, `initialConfig.routerOptions` reports the value
+the router uses for each of these options, including a deprecated top-level
+router option that `routerOptions` does not set.
+
 ```js
 const { readFileSync } = require('node:fs')
 const Fastify = require('fastify')

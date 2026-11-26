@@ -780,9 +780,12 @@ const fastify = require('fastify')({
     if (error instanceof FST_ERR_BAD_URL) {
       res.code(400)
       return res.send("Provided url is not valid")
-    } else if(error instanceof FST_ERR_ASYNC_CONSTRAINT) {
+    } else if (error instanceof FST_ERR_ASYNC_CONSTRAINT) {
       res.code(400)
       return res.send("Provided header is not valid")
+    } else if (error instanceof FST_ERR_MAX_PARAM_LENGTH) {
+      res.code(414)
+      return res.send("Provided path parameter exceeds maximum length")
     } else {
       res.send(error)
     }
@@ -1118,9 +1121,9 @@ the route is registered.
 ### `onBadUrl`
 <a id="on-bad-url"></a>
 
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
-the use case of a badly formatted url (eg: /hello/%world), by default find-my-way
-will invoke the defaultRoute, unless you specify the onBadUrl option.
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports
+the use case of a badly formatted URL (e.g. `/hello/%world`). By default, find-my-way
+will invoke the `defaultRoute`, unless you specify the `onBadUrl` option.
 
 ```js
 const fastify = require('fastify')({
@@ -1139,8 +1142,8 @@ objects and do not provide Fastify's decorated helpers.
 ### `onMaxParamLength`
 <a id="on-max-param-length"></a>
 
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
-the use case of a provide custom handler when `maxParamLength ` is exceed.
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports
+the use case of providing a custom handler when `maxParamLength` is exceeded.
 
 ```js
 const fastify = require('fastify')({

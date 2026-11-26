@@ -478,6 +478,7 @@ function fastify (serverOptions) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
+    throwIfAlreadyBooted,
     keepAliveConnections
   })
 
@@ -499,6 +500,13 @@ function fastify (serverOptions) {
 
   function throwIfAlreadyStarted (msg) {
     if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_STARTED(msg)
+  }
+
+  // Like throwIfAlreadyStarted, but it also throws while the onReady hooks are
+  // running. At that point the plugin tree has already booted, so routes and
+  // onClose hooks registered from there would be left incomplete or run out of order.
+  function throwIfAlreadyBooted (msg) {
+    if (fastify[kState].started || fastify[kState].booting) throw new FST_ERR_INSTANCE_ALREADY_STARTED(msg)
   }
 
   // HTTP injection handling
@@ -593,6 +601,10 @@ function fastify (serverOptions) {
         return fastify[kState].readyResolver.reject(err)
       }
 
+      // Avvio emits 'start' only after the ready queue drains, which is after
+      // the code awaiting ready() (or its callback) has run. Mark the instance
+      // as started now, so nothing can be registered once ready() has resolved.
+      fastify[kState].started = true
       fastify[kState].readyResolver.resolve(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
@@ -607,7 +619,14 @@ function fastify (serverOptions) {
 
   // wrapper that we expose to the user for hooks handling
   function addHook (name, fn) {
-    throwIfAlreadyStarted('Cannot call "addHook"!')
+    if (name === 'onClose') {
+      // onClose hooks run in reverse registration order, and the internal one that
+      // runs preClose and stops the server is registered when the plugin tree boots.
+      // An onClose hook added from onReady would run while requests are still in flight.
+      throwIfAlreadyBooted('Cannot call "addHook"!')
+    } else {
+      throwIfAlreadyStarted('Cannot call "addHook"!')
+    }
 
     if (fn == null) {
       throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)

@@ -343,11 +343,25 @@ example when implementing an authentication hook. Replying from a hook implies
 that the hook chain is __stopped__ and the rest of the hooks and handlers are
 not executed. If the hook is using the callback approach, i.e. it is not an
 `async` function or it returns a `Promise`, it is as simple as calling
-`reply.send()` and avoiding calling the callback. If the hook is `async`,
-`reply.send()` __must__ be called _before_ the function returns or the promise
-resolves, otherwise, the request will proceed. When `reply.send()` is called
-outside of the promise chain, it is important to `return reply` otherwise the
-request will be executed twice.
+`reply.send()` and avoiding calling the callback. If the hook is `async`, you
+__must__ `return reply`, or `await` the `send()` call, every time. This is
+required whether or not the response is sent from inside the promise chain:
+
+```js
+fastify.addHook('preHandler', async (request, reply) => {
+  return reply.code(401).send({ error: 'unauthorized' })
+})
+```
+
+Calling `reply.send()` and letting the `async` function return on its own is
+__not__ sufficient. `Reply` is a thenable that settles when the response has
+finished being written, so returning or awaiting it is what makes the hook wait
+for that; a bare `reply.send()` lets the hook settle on the next microtask tick
+instead, while the `onSend` chain is still running. The hook chain then sees a
+response that has not ended yet and continues into the route handler. Whether
+this happens depends on how many other `async` hooks are registered, so the
+bare form can appear to work and then stop working when an unrelated hook is
+added elsewhere.
 
 It is important to __not mix callbacks and `async`/`Promise`__, otherwise the
 hook chain will be executed twice.

@@ -48,7 +48,7 @@ const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogController, LogController } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
-const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
+const { buildRouting, validateBodyLimitOption, buildRouterOptions, withDeprecatedRouterOptions } = require('./lib/route')
 const build404 = require('./lib/four-oh-four')
 const getSecuredInitialConfig = require('./lib/initial-config-validation.js')
 const override = require('./lib/plugin-override')
@@ -952,7 +952,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
-  const initialConfig = getSecuredInitialConfig(options)
+  const initialConfig = getSecuredInitialConfig(withDeprecatedRouterOptions(options))
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes

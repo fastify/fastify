@@ -4,11 +4,18 @@
 
 ## Introduction
 
-Webhooks from services such as Stripe, GitHub, Shopify, Slack, and Svix protect
-against replay and tampering attacks by signing payloads with an HMAC secret. The
-service sends a cryptographic signature in an HTTP header (for example,
-`stripe-signature` or `x-hub-signature-256`), and your server verifies that the
-signature matches an HMAC hash calculated over the incoming request payload.
+Webhooks from services such as Stripe, GitHub, Shopify, Slack, and Svix sign
+payloads using an HMAC secret so your server can authenticate the payload's
+integrity and origin (assuming the secret remains secure). The service sends a
+cryptographic signature in an HTTP header (for example, `stripe-signature` or
+`x-hub-signature-256`), and your server verifies that the signature matches an
+HMAC hash calculated over the incoming request payload.
+
+Signature verification detects payload tampering, but verification alone does
+not prevent replay attacks: a valid signed request can still be captured and
+resent. To mitigate replay attacks, developers must implement provider-specific
+defenses, such as validating timestamp headers within a tolerance window or
+deduplicating delivery IDs.
 
 Signature verification requires the **exact, raw bytes** received over the
 network. If a payload is parsed into an object and re-serialized with
@@ -16,10 +23,13 @@ network. If a payload is parsed into an object and re-serialized with
 ordering, or number representations will cause the HMAC hash to differ, and
 verification will fail.
 
-Fastify's default JSON parser streams incoming requests directly into its parser
-for maximum performance without storing the raw payload in memory. This guide
-explains how to verify webhook signatures efficiently without sacrificing
-performance or adding unnecessary overhead to the rest of your application.
+Fastify's default JSON parser collects the complete request payload in memory
+before decoding and parsing it, but it does not retain a separate `rawBody`
+buffer on the request object. Developers who need the exact original bytes for
+signature verification must explicitly capture them or use an appropriate
+content type parser or plugin. This guide explains how to verify webhook
+signatures efficiently without sacrificing performance or adding unnecessary
+overhead to the rest of your application.
 
 ## The Pitfall: Re-stringifying Parsed JSON
 
@@ -50,8 +60,7 @@ In this pattern:
    `{ parseAs: 'buffer' }`.
 3. The route handler receives `request.body` as a `Buffer`, verifies the
    signature, and parses the JSON when valid.
-4. All other routes outside the plugin retain Fastify's default streaming JSON
-   parser.
+4. All other routes outside the plugin retain Fastify's default JSON parser.
 
 ### Example: GitHub Webhook Verification
 
@@ -59,8 +68,12 @@ In this pattern:
 import Fastify from 'fastify'
 import crypto from 'node:crypto'
 
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
+if (!WEBHOOK_SECRET) {
+  throw new Error('WEBHOOK_SECRET is required')
+}
+
 const fastify = Fastify()
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'your-secret'
 
 // Encapsulated webhook plugin
 await fastify.register(async function webhookRoutes (app) {
@@ -88,8 +101,14 @@ await fastify.register(async function webhookRoutes (app) {
       return reply.code(401).send({ error: 'Invalid signature' })
     }
 
-    // Safely parse JSON after verification succeeds
-    const payload = JSON.parse(request.body.toString('utf8'))
+    // Safely parse JSON after verification succeeds using Fastify's default parser
+    const defaultJsonParser = app.getDefaultJsonParser('error', 'error')
+    const payload = await new Promise((resolve, reject) => {
+      defaultJsonParser(request, request.body.toString('utf8'), (err, body) => {
+        if (err) return reject(err)
+        resolve(body)
+      })
+    })
 
     request.log.info({ event: payload.action }, 'Webhook verified successfully')
     return reply.code(200).send({ received: true })
@@ -114,7 +133,17 @@ Stripe's Node.js SDK expects the raw payload `Buffer` or string in its
 import Fastify from 'fastify'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
+if (!STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is required')
+}
+
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET
+if (!STRIPE_WEBHOOK_SECRET) {
+  throw new Error('STRIPE_WEBHOOK_SECRET is required')
+}
+
+const stripe = new Stripe(STRIPE_SECRET_KEY)
 const fastify = Fastify()
 
 await fastify.register(async function stripeWebhook (app) {
@@ -124,13 +153,16 @@ await fastify.register(async function stripeWebhook (app) {
 
   app.post('/webhook/stripe', async (request, reply) => {
     const signature = request.headers['stripe-signature']
+    if (!signature || typeof signature !== 'string') {
+      return reply.code(400).send({ error: 'Missing stripe-signature header' })
+    }
 
     let event
     try {
       event = stripe.webhooks.constructEvent(
         request.body,
         signature,
-        process.env.STRIPE_WEBHOOK_SECRET
+        STRIPE_WEBHOOK_SECRET
       )
     } catch (err) {
       request.log.error(err, 'Stripe webhook verification failed')
@@ -148,27 +180,112 @@ await fastify.register(async function stripeWebhook (app) {
     return reply.code(200).send({ received: true })
   })
 })
+
+await fastify.listen({ port: 3000 })
 ```
 
 ## Dual Access: Raw Buffer and Parsed Body
 
 If you want both `request.rawBody` as a `Buffer` **and** `request.body` as the
-parsed JSON object without manually calling `JSON.parse()`, you can capture the
-stream in a route-level `preParsing` hook:
+parsed JSON object without manually invoking Fastify's parser inside the route
+handler, you can tap the stream in a `preParsing` hook.
+
+### Hook Execution Order and Stream Encoding
+
+Fastify executes application-level and encapsulated shared `preParsing` hooks
+before route-level `preParsing` hooks. Consequently, a route-level hook receives
+the payload stream only after earlier hooks have processed it.
+
+This ordering introduces critical considerations for webhook verification:
+- If an earlier hook calls `payload.setEncoding('utf8')` or replaces the stream,
+  subsequent chunks emitted by the stream will be strings instead of `Buffer`
+  instances.
+- `Buffer.concat()` expects `Uint8Array` or `Buffer` elements; passing strings
+  causes a runtime `TypeError`.
+- Decoding raw wire bytes into strings (and later re-encoding them) can alter
+  byte representations or silently drop bytes when multi-byte characters split
+  across chunk boundaries, corrupting the exact sequence needed for
+  cryptographic signature verification.
+- Raw body collection must occur before any stream-decoding or transforming
+  hooks run. If your application uses shared `preParsing` hooks, ensure that
+  webhook routes are encapsulated in a plugin context free from decoding hooks,
+  or register the raw-body collection hook upstream of transformations.
+
+### Safe Raw-Body Collection with `preParsing`
+
+A custom stream collector must enforce the effective body limit and manage
+stream listener lifecycles cleanly to prevent memory leaks and
+denial-of-service risks:
 
 ```js
 fastify.post('/webhook', {
   preParsing: (request, reply, payload, done) => {
-    const chunks = []
-    payload.on('data', chunk => chunks.push(chunk))
-    payload.on('end', () => {
-      request.rawBody = Buffer.concat(chunks)
-    })
+    let chunks = []
+    let receivedLength = 0
+    // request.routeOptions.bodyLimit reflects the route or server body limit
+    const limit = request.routeOptions.bodyLimit
+
+    function cleanup () {
+      payload.removeListener('data', onData)
+      payload.removeListener('end', onEnd)
+      payload.removeListener('error', onError)
+      request.raw.removeListener('close', onClose)
+      request.raw.removeListener('aborted', onAborted)
+      chunks = null
+    }
+
+    function onData (chunk) {
+      // If an earlier hook decoded the stream into strings, abort collection
+      if (typeof chunk === 'string') {
+        cleanup()
+        return
+      }
+
+      receivedLength += chunk.length
+      if (receivedLength > limit) {
+        // Exceeded limit: discard buffered data and detach listeners
+        cleanup()
+        return
+      }
+
+      chunks.push(chunk)
+    }
+
+    function onEnd () {
+      if (chunks) {
+        request.rawBody = Buffer.concat(chunks, receivedLength)
+      }
+      cleanup()
+    }
+
+    function onError () {
+      cleanup()
+    }
+
+    function onClose () {
+      if (!request.raw.complete) {
+        cleanup()
+      }
+    }
+
+    function onAborted () {
+      cleanup()
+    }
+
+    payload.on('data', onData)
+    payload.on('end', onEnd)
+    payload.on('error', onError)
+    request.raw.on('close', onClose)
+    request.raw.on('aborted', onAborted)
+
+    // Pass the stream through untouched to Fastify's content-type parser
     done(null, payload)
   }
 }, async (request, reply) => {
-  // request.rawBody holds the exact bytes received over the wire
-  // request.body holds the parsed JSON object
+  if (!request.rawBody) {
+    return reply.code(400).send({ error: 'Unable to verify signature: raw body unavailable' })
+  }
+
   const isValid = verifySignature(request.rawBody, request.headers['x-signature'])
   if (!isValid) {
     return reply.code(401).send({ error: 'Invalid signature' })
@@ -178,10 +295,63 @@ fastify.post('/webhook', {
 })
 ```
 
+In this implementation:
+- **Synchronous Hook Completion:** Calling `done(null, payload)` synchronously
+  guarantees that Fastify attaches its downstream content-type parser listeners
+  in the same event-loop tick before the stream emits data, ensuring both the
+  collector and the parser receive every chunk without race conditions.
+- **Body Limit Responsibility:** The collector tracks captured bytes against
+  `request.routeOptions.bodyLimit` (which resolves the effective route limit or
+  the server-level `initialConfig.bodyLimit`). If the limit is exceeded, the
+  collector stops buffering, dereferences retained chunks, and detaches its
+  listeners. Fastify's downstream content-type parser independently enforces the
+  body limit on the incoming stream and rejects oversized requests with
+  HTTP 413.
+- **Resource Cleanup and Abort Handling:** Listeners are detached and retained
+  chunks are dereferenced upon stream completion (`end`), stream errors
+  (`error`), client aborts (`aborted`), premature connection termination
+  (`close` when `!request.raw.complete`), or limit breaches, preventing memory
+  leaks and dangling references.
+- **Encoding Safety:** If chunks arrive as strings due to an earlier hook,
+  collection halts immediately rather than attempting string-to-Buffer
+  conversion that would compromise the original wire bytes.
+
 ## Community Plugin: `fastify-raw-body`
 
 For larger applications that expose multiple webhook providers or routes where
-you prefer an automated helper, the community plugin
-[`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) provides a route
-option `config: { rawBody: true }` to automatically populate `request.rawBody`
-on selected endpoints without storing the raw body on non-webhook routes.
+you prefer an automated helper, you can use the community plugin
+[`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body).
+
+By default, `fastify-raw-body` operates with `{ global: true }`, which captures
+and attaches `request.rawBody` on all routes across your application. To avoid
+the memory overhead of buffering request bodies on non-webhook routes, register
+the plugin with `{ global: false }`:
+
+```js
+import Fastify from 'fastify'
+import rawBody from 'fastify-raw-body'
+
+const fastify = Fastify()
+
+await fastify.register(rawBody, {
+  field: 'rawBody', // default: 'rawBody'
+  global: false,    // do not capture bodies globally
+  encoding: false,  // keep request.rawBody as a Buffer (default is 'utf8')
+  runFirst: true    // run preParsing before other plugins
+})
+
+fastify.post('/webhook', {
+  config: {
+    rawBody: true   // opt in this route specifically
+  }
+}, async (request, reply) => {
+  // request.rawBody holds the Buffer
+  // request.body holds the parsed JSON object
+  return { received: true }
+})
+
+await fastify.listen({ port: 3000 })
+```
+
+With `global: false`, only routes configured with `config: { rawBody: true }`
+capture `request.rawBody`, keeping non-webhook routes fast and memory-efficient.

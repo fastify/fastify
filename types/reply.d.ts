@@ -41,6 +41,7 @@ export interface FastifyReply<
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
+  readonly mediaType: string | undefined;
 
   raw: RawReply;
   elapsedTime: number;

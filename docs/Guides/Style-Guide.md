@@ -225,12 +225,12 @@ hyperlink should look:
 <!-- More like this -->
 
 // Add clear & brief description
-[Fastify Plugins] (https://fastify.dev/docs/latest/Reference/Plugins/)
+[Fastify Plugins](https://fastify.dev/docs/latest/Reference/Plugins/)
 
 <!--Less like this -->
 
 // incomplete description
-[Fastify] (https://fastify.dev/docs/latest/Reference/Plugins/)
+[Fastify](https://fastify.dev/docs/latest/Reference/Plugins/)
 
 // Adding title in link brackets
 [](https://fastify.dev/docs/latest/Reference/Plugins/ "fastify plugin")

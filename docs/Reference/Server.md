@@ -1196,10 +1196,9 @@ const fastify = require('fastify')({
 
 + Default `false`
 
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports
 separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
-This decision originated from [delvedor/find-my-way#76]
-(https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
+This decision originated from [delvedor/find-my-way#76](https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
 backwards compatibility for the need to split on `;`. To enable support for splitting
 on `;` set `useSemicolonDelimiter` to `true`.
 

@@ -31,12 +31,19 @@ function request (session, path) {
   })
 }
 
+// A timed-out request has its stream torn down (matching HTTP/1, where the
+// socket is destroyed), so no response is delivered.
+function assertNoResponse (t, res) {
+  t.assert.strictEqual(res.status, undefined)
+  t.assert.strictEqual(res.body, '')
+}
+
 function hasTimeoutListener (emitter) {
   return emitter.listeners('timeout').some(listener => listener.name === 'handleTimeout')
 }
 
 test('onTimeout runs when an HTTP/2 request stream times out', async t => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify({ http2: true })
 
   let onTimeoutCalled
@@ -45,6 +52,9 @@ test('onTimeout runs when an HTTP/2 request stream times out', async t => {
   fastify.addHook('onTimeout', async (request, reply) => {
     t.assert.strictEqual(request.url, '/')
     t.assert.strictEqual(reply.request, request)
+    // The stream is torn down before the hook runs, matching HTTP/1 where the
+    // socket is already destroyed (see nodejs/node#67820).
+    t.assert.strictEqual(request.raw.stream.destroyed, true)
     onTimeoutCalled()
   })
 
@@ -56,11 +66,12 @@ test('onTimeout runs when an HTTP/2 request stream times out', async t => {
 
   const session = await connect(t, fastify)
   const res = await request(session, '/')
-  t.assert.deepStrictEqual(res, { status: 200, body: '{"ok":true}' })
+  // The stream is torn down on timeout (matching HTTP/1), so no response is sent.
+  assertNoResponse(t, res)
 })
 
 test('onTimeout runs for each concurrent request on the same HTTP/2 session', async t => {
-  t.plan(2)
+  t.plan(5)
   const fastify = Fastify({ http2: true })
 
   const timedOutUrls = []
@@ -81,8 +92,8 @@ test('onTimeout runs for each concurrent request on the same HTTP/2 session', as
   const session = await connect(t, fastify)
   const results = await Promise.all([request(session, '/a'), request(session, '/b')])
 
-  t.assert.deepStrictEqual(results, [{ status: 200, body: 'a' }, { status: 200, body: 'b' }])
   t.assert.deepStrictEqual(timedOutUrls.sort(), ['/a', '/b'])
+  for (const res of results) assertNoResponse(t, res)
 })
 
 test('onTimeout state lives on the HTTP/2 stream and is released after the response', async t => {

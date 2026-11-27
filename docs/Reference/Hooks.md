@@ -290,7 +290,8 @@ has been hung up. Therefore, you will not be able to send data to the client.
 > On HTTP/2, the `onTimeout` hook is triggered when the request's stream times
 > out, for example after `request.raw.setTimeout()`. Session-level timeouts
 > (`connectionTimeout` and `http2SessionTimeout`) apply to the whole session
-> and do not trigger it.
+> and do not trigger it. As on HTTP/1, the stream is closed when the hook runs,
+> so you will not be able to send data to the client afterwards.
 
 ### onRequestAbort
 

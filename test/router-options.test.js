@@ -92,6 +92,12 @@ test('Should honor maxParamLength option', async (t) => {
     url: '/test/123456789abcd'
   })
   t.assert.strictEqual(resError.statusCode, 414)
+  t.assert.deepStrictEqual(resError.json(), {
+    error: 'URI Too Long',
+    code: 'FST_ERR_MAX_PARAM_LENGTH',
+    message: '\'/test/123456789abcd\' is exceeding the max param length',
+    statusCode: 414
+  })
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {
@@ -842,4 +848,24 @@ test('Should not mutate user-provided routerOptions object', async t => {
   t.assert.strictEqual(routerOptions.maxParamLength, 2048)
   t.assert.strictEqual(routerOptions.defaultRoute, undefined)
   t.assert.strictEqual(routerOptions.onBadUrl, undefined)
+})
+
+test('router is configured with the validated value of boolean router options', async t => {
+  for (const [options, url, statusCode] of [
+    [{ routerOptions: { ignoreDuplicateSlashes: 'false' } }, '//admin', 404],
+    [{ routerOptions: { ignoreDuplicateSlashes: 'true' } }, '//admin', 200],
+    [{ routerOptions: { useSemicolonDelimiter: 'false' } }, '/admin;x', 404],
+    [{ routerOptions: { ignoreTrailingSlash: 'false' } }, '/admin/', 404],
+    [{ ignoreDuplicateSlashes: 'false' }, '//admin', 404],
+    [{ ignoreDuplicateSlashes: 'false', routerOptions: { maxParamLength: 200 } }, '//admin', 404],
+    [{ ignoreDuplicateSlashes: true, routerOptions: { ignoreDuplicateSlashes: 'false' } }, '//admin', 404],
+    [{ caseSensitive: 'false' }, '/ADMIN', 200]
+  ]) {
+    const fastify = Fastify(options)
+    fastify.get('/admin', async () => 'admin')
+
+    const res = await fastify.inject(url)
+    t.assert.strictEqual(res.statusCode, statusCode, `${JSON.stringify(options)} ${url}`)
+    await fastify.close()
+  }
 })

@@ -134,6 +134,19 @@ developer is responsible for ensuring errors are handled properly.
 Most errors result from unexpected input data, so it is recommended to
 [validate input data against a JSON schema](./Validation-and-Serialization.md).
 
+Errors that Fastify creates when it rejects an invalid request, such as a
+failed schema validation or a malformed body, do not have a stack trace, as it
+would only point at Fastify internals. These are
+[`FST_ERR_VALIDATION`](#fst_err_validation),
+[`FST_ERR_CTP_BODY_TOO_LARGE`](#fst_err_ctp_body_too_large),
+[`FST_ERR_CTP_INVALID_MEDIA_TYPE`](#fst_err_ctp_invalid_media_type),
+[`FST_ERR_CTP_INVALID_CONTENT_LENGTH`](#fst_err_ctp_invalid_content_length),
+[`FST_ERR_CTP_EMPTY_JSON_BODY`](#fst_err_ctp_empty_json_body),
+[`FST_ERR_CTP_INVALID_JSON_BODY`](#fst_err_ctp_invalid_json_body),
+[`FST_ERR_BAD_URL`](#fst_err_bad_url),
+[`FST_ERR_MAX_PARAM_LENGTH`](#fst_err_max_param_length)
+and [`FST_ERR_ROUTE_MISSING_CONTENT_TYPE`](#fst_err_route_missing_content_type).
+
 #### Catching Uncaught Errors In Fastify
 Fastify tries to catch as many uncaught errors as possible without hindering
 performance. This includes:
@@ -443,7 +456,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_route_body_validation_schema_not_supported">FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED</a> | Body validation schema route is not supported. | Use a different different method for the route. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_body_limit_option_not_int">FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT</a> | `bodyLimit` option must be an integer. | Use an integer for the `bodyLimit` option. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_handler_timeout">FST_ERR_HANDLER_TIMEOUT</a> | Request timed out. | Increase the `handlerTimeout` option or optimize the handler. | - |
-| <a id="fst_err_route_handler_timeout_option_not_int">FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT</a> | `handlerTimeout` option must be a positive integer. | Use a positive integer for the `handlerTimeout` option. | - |
+| <a id="fst_err_route_handler_timeout_option_not_int">FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT</a> | `handlerTimeout` option must be an integer between 1 and 2147483647. | Use an integer between 1 and 2147483647 for the `handlerTimeout` option. | - |
 | <a id="fst_err_route_rewrite_not_str">FST_ERR_ROUTE_REWRITE_NOT_STR</a> | `rewriteUrl` needs to be of type `string`. | Use a string for the `rewriteUrl`. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_missing_content_type">FST_ERR_ROUTE_MISSING_CONTENT_TYPE</a> | `Content-Type` header is required for the request. | Send request with `Content-Type` header. | [#6832](https://github.com/fastify/fastify/pull/6832) |
 | <a id="fst_err_reopened_close_server">FST_ERR_REOPENED_CLOSE_SERVER</a> | Fastify has already been closed and cannot be reopened. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |

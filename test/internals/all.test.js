@@ -33,6 +33,11 @@ test('fastify.all should add all the methods to the same url', async t => {
     }
 
     const res = await fastify.inject(options)
+    if (method === 'HEAD') {
+      // A HEAD response has no body, only the headers of the GET-like response
+      t.assert.strictEqual(res.headers['content-length'], String(Buffer.byteLength(JSON.stringify({ method }))))
+      return
+    }
     const payload = JSON.parse(res.payload)
     t.assert.deepStrictEqual(payload, { method })
   }

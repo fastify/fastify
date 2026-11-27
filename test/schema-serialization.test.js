@@ -243,7 +243,7 @@ test('Different content types', (t, testDone) => {
         reply.send({ details: 'validation error' })
         break
       default:
-        // to test if schema not found
+        // to test failing closed on an undeclared content-type
         reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(200)
         reply.send([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }])
@@ -320,8 +320,8 @@ test('Different content types', (t, testDone) => {
   })
   fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, JSON.stringify([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }]))
-    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.payload, '{}')
     completion.stepIn()
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
@@ -332,8 +332,8 @@ test('Different content types', (t, testDone) => {
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
-    t.assert.strictEqual(res.statusCode, 300)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.payload, '{}')
     completion.stepIn()
   })
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
@@ -386,8 +386,8 @@ test('Different content types', (t, testDone) => {
   })
   fastify.inject({ method: 'GET', url: '/test', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, JSON.stringify({ created: true }))
-    t.assert.strictEqual(res.statusCode, 201)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.payload, '{}')
     completion.stepIn()
   })
 
@@ -1307,6 +1307,119 @@ test('response schema is applied when Content-Type has trailing semicolon only',
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200)
     t.assert.deepStrictEqual(res.json(), { public: 'ok' })
+    testDone()
+  })
+})
+
+test('fails closed when the response content-type is not declared in the content map', (t, testDone) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/hal+json')
+    reply.send({ name: 'alice', password: 'SHOULD_NOT_LEAK' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(
+      JSON.parse(res.payload).code,
+      'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN'
+    )
+    testDone()
+  })
+})
+
+test('response content-type matching */* still serialises when no exact content-type is declared', (t, testDone) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            '*/*': {
+              schema: {
+                type: 'object',
+                required: ['name'],
+                additionalProperties: false,
+                properties: {
+                  name: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/hal+json')
+    reply.send({ name: 'alice', password: 'SHOULD_BE_STRIPPED' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { name: 'alice' })
+    testDone()
+  })
+})
+
+test('error responses fall back to the default error serializer when the content map does not declare the error content type', (t, testDone) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  // The content map does not declare `application/json` and has no `*/*`
+  // catch-all, so the error handler must fall back to the default serializer
+  // instead of failing closed.
+  fastify.get('/', {
+    schema: {
+      response: {
+        default: {
+          content: {
+            'application/problem+json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    throw new Error('boom')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'boom'
+    })
     testDone()
   })
 })

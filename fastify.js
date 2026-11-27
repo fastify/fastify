@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '6.0.0-alpha.4'
+const VERSION = '6.0.0-alpha.6'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -60,6 +60,15 @@ const {
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
+const booleanRouterOptions = [
+  'allowUnsafeRegex',
+  'caseSensitive',
+  'compile',
+  'ignoreDuplicateSlashes',
+  'ignoreTrailingSlash',
+  'useSemicolonDelimiter'
+]
+
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
@@ -82,6 +91,23 @@ const {
 const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
+
+function asyncDisposableHook (disposable) {
+  return function (instance, done) {
+    disposable[Symbol.asyncDispose]().then(() => done(), done)
+  }
+}
+
+function disposableHook (disposable) {
+  return function (instance, done) {
+    try {
+      disposable[Symbol.dispose]()
+      done()
+    } catch (err) {
+      done(err)
+    }
+  }
+}
 
 /**
  * @param {import('./fastify.js').FastifyServerOptions} serverOptions
@@ -381,6 +407,13 @@ function fastify (serverOptions) {
 
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
+    // All the routes are registered at this point. Routes added or removed
+    // afterwards make find-my-way compile the changed trees again lazily.
+    if (options.routerOptions.compile === true) {
+      router.compileRoutes()
+      fourOhFour.router.compile()
+    }
+
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
@@ -598,6 +631,16 @@ function fastify (serverOptions) {
       }
     }
 
+    if (name === 'onClose' && typeof fn !== 'function') {
+      if (typeof fn[Symbol.asyncDispose] === 'function') {
+        fn = asyncDisposableHook(fn)
+      } else if (typeof fn[Symbol.dispose] === 'function') {
+        fn = disposableHook(fn)
+      } else {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
+      }
+    }
+
     if (name === 'onClose') {
       this.onClose(fn.bind(this))
     } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute' || name === 'preClose') {
@@ -679,7 +722,7 @@ function fastify (serverOptions) {
       return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
     }
     const body = JSON.stringify({
-      error: 'Bad Request',
+      error: 'URI Too Long',
       code: 'FST_ERR_MAX_PARAM_LENGTH',
       message: `'${path}' is exceeding the max param length`,
       statusCode: 414
@@ -915,6 +958,13 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   const initialConfig = getSecuredInitialConfig(options)
 
+  // The validator coerces the boolean router options in initialConfig, where
+  // the string 'false' becomes false, while find-my-way treats any truthy
+  // value as on. Configure the router as initialConfig reports.
+  for (const key of booleanRouterOptions) {
+    options.routerOptions[key] = initialConfig.routerOptions[key]
+  }
+
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
@@ -972,7 +1022,7 @@ function defaultClientErrorHandler (err, socket) {
   // Most devs do not know what to do with this error.
   // In the vast majority of cases, it's a network error and/or some
   // config issue on the load balancer side.
-  this.log.trace({ err }, `client ${errorLabel}`)
+  this[kLogController].clientError(this.log, this, err, errorLabel)
   // Copying standard node behavior
   // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 

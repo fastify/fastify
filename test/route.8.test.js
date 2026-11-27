@@ -121,6 +121,41 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
   })
 })
 
+test('onRoute identifies generated HEAD routes', async t => {
+  const fastify = Fastify()
+  const routes = []
+
+  fastify.addHook('onRoute', function (routeOptions) {
+    routes.push({
+      method: routeOptions.method,
+      url: routeOptions.url,
+      isGeneratedHeadRoute: routeOptions.isGeneratedHeadRoute
+    })
+  })
+
+  fastify.get('/get', async () => 'ok')
+  fastify.head('/explicit-head', async () => 'ok')
+  fastify.route({
+    method: ['GET', 'HEAD'],
+    url: '/explicit-methods',
+    handler: async () => 'ok'
+  })
+  await fastify.register(async function routes (fastify) {
+    fastify.get('/', async () => 'ok')
+  }, { prefix: '/prefix' })
+  await fastify.ready()
+
+  t.assert.deepStrictEqual(routes, [
+    { method: 'GET', url: '/get', isGeneratedHeadRoute: false },
+    { method: 'HEAD', url: '/get', isGeneratedHeadRoute: true },
+    { method: 'HEAD', url: '/explicit-head', isGeneratedHeadRoute: false },
+    { method: ['GET', 'HEAD'], url: '/explicit-methods', isGeneratedHeadRoute: false },
+    { method: 'GET', url: '/prefix', isGeneratedHeadRoute: false },
+    { method: 'HEAD', url: '/prefix', isGeneratedHeadRoute: true },
+    { method: 'HEAD', url: '/prefix/', isGeneratedHeadRoute: true }
+  ])
+})
+
 test('using fastify.all when a catchall is defined does not degrade performance', { timeout: 30000 }, async t => {
   t.plan(1)
 

@@ -167,6 +167,39 @@ parameters at the top level.
 > ℹ For using the latest Ajv (v8), refer to the
 > [`schemaController`](./Server.md#schema-controller) section.
 
+##### Header name case
+
+Node.js exposes request header names in lowercase. Fastify normalizes header
+names in a `headers` schema to lowercase before compilation, so assertions
+written in the canonical header-name case still match the request, for example
+`required: ['X-Api-Key']`, `dependencies`, and a `propertyNames` deny-list that
+uses `enum` or `const`.
+
+Regular-expression constraints on header names are the exception. A
+`patternProperties` key and a `propertyNames` `pattern` are regular expressions
+matched against the already-lowercased header names, and Fastify cannot safely
+rewrite a regular expression. Author them to match lowercase (for example
+`^x-debug-.*$`, not `^X-Debug-.*$`) or make them case-insensitive. A pattern
+written in canonical case will not match, and the assertion it guards will not
+apply.
+
+Normalization applies to the schema object passed as `headers`, including one
+that carries the `$id` of a schema registered with `addSchema()`, such as the
+object returned by `getSchema()`. It does not reach a registered schema that the
+`headers` schema references through an external `$ref` (for example
+`{ $ref: 'shared-headers#' }`), because a registered schema can also be used to
+validate the body, querystring, or params. Fastify emits
+[`FSTSEC002`](./Warnings.md#FSTSEC002) at startup in that case. Pass the schema
+object instead (for example `fastify.getSchema('shared-headers')`), or write
+header names in lowercase.
+
+Normalization also does not apply to schemas compiled at request time with
+[`request.compileValidationSchema()`](./Request.md#compilevalidationschema) or
+[`request.validateInput()`](./Request.md#validate), even when `httpPart` is
+`'headers'`. These methods validate whatever data the caller passes, so Fastify
+cannot assume it holds lowercased header names. Write header names in
+lowercase in those schemas.
+
 Example:
 ```js
 const bodyJsonSchema = {
@@ -783,7 +816,7 @@ For example:
 const schema = {
   response: {
     200: {
-      description: 'Response schema that support different content types'
+      description: 'Response schema that support different content types',
       content: {
         'application/json': {
           schema: {
@@ -834,6 +867,15 @@ const schema = {
 
 fastify.post('/url', { schema }, handler)
 ```
+
+> When the route declares a per-content-type response schema through `content`,
+> Fastify matches the response `Content-Type` against the declared keys and falls
+> back to `*/*` (if present). If the response `Content-Type` is not declared and
+> there is no `*/*` key, serialization **fails closed**: Fastify throws
+> `FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN` and replies with a `500` error,
+> instead of silently serializing the payload with `JSON.stringify` (which would
+> bypass the response schema). Every `Content-Type` a route may respond with must
+> be declared, or the route must define a `*/*` catch-all.
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>
@@ -915,6 +957,11 @@ message has to be rebuilt from the raw validation result:
 - `validationContext` is the part of the request that failed validation
   (`body`, `params`, `querystring` or `headers`).
 - `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
+- When the validator reports a list of errors (as Ajv does) and the default
+  [`schemaErrorFormatter`](#schemaerrorformatter) is used, the error is an
+  instance of [`FST_ERR_VALIDATION`](./Errors.md#fst_err_validation) without a
+  [stack trace](./Errors.md#errors-in-input-data). Errors returned by the
+  validator itself, or by a custom formatter, are used as they are.
 
 ```js
 const fastify = Fastify()

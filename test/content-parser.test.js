@@ -827,3 +827,42 @@ test('string body with invalid UTF-8 is not treated as a content-length mismatch
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.body, 'a�b')
 })
+
+test('a synchronous throw in a custom parser is handled like a route error, not an uncaught exception', async t => {
+  await t.test('stream-mode parser', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+    fastify.addContentTypeParser('application/json', function (req, payload, done) {
+      throw new Error('parser boom')
+    })
+    fastify.post('/', (req, reply) => reply.send('ok'))
+    const res = await fastify.inject({ method: 'POST', url: '/', headers: { 'content-type': 'application/json' }, payload: '{}' })
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.json().message, 'parser boom')
+  })
+
+  await t.test('parseAs string parser', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+    fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+      throw new Error('parser boom')
+    })
+    fastify.post('/', (req, reply) => reply.send('ok'))
+    const res = await fastify.inject({ method: 'POST', url: '/', headers: { 'content-type': 'application/json' }, payload: '{}' })
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.json().message, 'parser boom')
+  })
+
+  await t.test('a thrown error with a statusCode is preserved', async t => {
+    t.plan(1)
+    const fastify = Fastify()
+    fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+      const err = new Error('too big')
+      err.statusCode = 413
+      throw err
+    })
+    fastify.post('/', (req, reply) => reply.send('ok'))
+    const res = await fastify.inject({ method: 'POST', url: '/', headers: { 'content-type': 'application/json' }, payload: '{}' })
+    t.assert.strictEqual(res.statusCode, 413)
+  })
+})

@@ -471,6 +471,68 @@ test('serviceUnavailable subclass can use server', t => {
   dispatcher.serviceUnavailable({}, fakeServer)
 })
 
+test('LogController default output is unchanged for previously direct log lines', async t => {
+  const err = new Error('kaboom')
+  const router = { prettyPrint: () => '└── / (GET)' }
+  const listenTextResolver = (address) => `Server listening at ${address}`
+  const request = { raw: { url: '/hello', method: 'GET' } }
+  const cases = [
+    ['onRequestAbortError', [err, request], 'error', [{ err }, 'onRequestAborted hook failed']],
+    ['replyAlreadySent', [err, request], 'warn', [{ err }]],
+    ['headersAlreadySent', [err, request], 'warn', ['Reply was already sent, did you forget to "return reply" in the "/hello" (GET) route?']],
+    ['replyThenRejection', [err, request], 'warn', ['unhandled rejection on reply.then']],
+    ['streamHeadersAlreadySent', [request], 'warn', ['response will send, but you shouldn\'t use res.writeHead in stream mode']],
+    ['streamPayloadNotClosable', [request], 'warn', ['stream payload does not end properly']],
+    ['trailerError', [err, request], 'debug', [err], { trailerName: 'etag' }],
+    ['notFoundInNotFoundHandler', [request], 'warn', ['Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.']],
+    ['promiseRejectedAfterSent', [err, request], 'error', [{ err }, 'Promise errored, but reply.sent = true was set']],
+    ['headStreamError', [err, request], 'error', [{ err }, 'Error on Stream found for HEAD route']]
+  ]
+
+  for (const [method, args, level, expected, metadata] of cases) {
+    await t.test(method, t => {
+      t.plan(2)
+      // disableRequestLogging must not suppress these lines
+      const controller = new LogController({ disableRequestLogging: true })
+      const log = {
+        [level]: (...logged) => {
+          t.assert.ok(true)
+          t.assert.deepStrictEqual(logged, expected)
+        }
+      }
+      controller[method](...args, { log, request }, metadata)
+    })
+  }
+
+  await t.test('fourOhFourFallback', t => {
+    t.plan(1)
+    const logged = []
+    const controller = new LogController({ disableRequestLogging: true })
+    const log = { warn: (...args) => logged.push(args) }
+    controller.fourOhFourFallback({ log }, {}, { router })
+    t.assert.deepStrictEqual(logged, [
+      ['the default handler for 404 did not catch this, this is likely a fastify bug, please report it'],
+      ['└── / (GET)']
+    ])
+  })
+
+  const server = {}
+  const serverCases = [
+    ['onListenHookError', [err], 'error', [err]],
+    ['clientError', [err, 'header_overflow'], 'trace', [{ err }, 'client header_overflow']],
+    ['serverListening', ['http://127.0.0.1:3000', listenTextResolver], 'info', ['Server listening at http://127.0.0.1:3000']]
+  ]
+
+  for (const [method, args, level, expected] of serverCases) {
+    await t.test(method, t => {
+      t.plan(1)
+      const controller = new LogController({ disableRequestLogging: true })
+      const logger = { [level]: (...logged) => t.assert.deepStrictEqual(logged, expected) }
+      controller[method](logger, server, ...args)
+    })
+  }
+})
+
 test('LogController is exported from fastify', t => {
   t.plan(2)
   t.assert.ok(Fastify.LogController)

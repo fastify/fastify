@@ -209,6 +209,26 @@ describe('ContentType class', () => {
     t.assert.equal(found.isValid, true)
     t.assert.equal(found.parameters.get('name'), 'he said "hi"')
   })
+
+  test('re-escapes a quoted-pair when serializing a value', (t) => {
+    // RFC 9110 §5.6.4: a `"` or `\` octet inside a quoted-string MUST be
+    // written as a quoted-pair. toString() must round-trip: re-parsing its
+    // output recovers the original parameter value.
+    const found = new ContentType('application/json; name="he said \\"hi\\""; path="a\\\\b"')
+    t.assert.equal(found.parameters.get('name'), 'he said "hi"')
+    t.assert.equal(found.parameters.get('path'), 'a\\b')
+
+    t.assert.equal(
+      found.toString(),
+      'application/json; name="he said \\"hi\\""; path="a\\\\b"'
+    )
+
+    const reparsed = new ContentType(found.toString())
+    t.assert.deepStrictEqual(
+      Array.from(reparsed.parameters.entries()),
+      Array.from(found.parameters.entries())
+    )
+  })
 })
 
 describe('ContentType class cache', () => {

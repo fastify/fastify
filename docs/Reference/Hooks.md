@@ -51,6 +51,10 @@ It is easy to understand where each hook is executed by looking at the
 Hooks are affected by Fastify's encapsulation, and can thus be applied to
 selected routes. See the [Scopes](#scope) section for more information.
 
+All Request/Reply hooks are invoked with `this` bound to the route's
+encapsulated Fastify instance. Arrow functions can access the same instance via
+`request.server` (or `reply.server` when `reply` is available).
+
 There are ten different hooks that you can use in Request/Reply *(in order of
 execution)*:
 
@@ -303,7 +307,8 @@ fastify.addHook('onRequestAbort', async (request) => {
 ```
 The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been processed. Therefore, you will not be able to send
-data to the client.
+data to the client. Hook functions have `this` bound to the route's encapsulated
+Fastify instance, which is also accessible via `request.server`.
 
 > ℹ️ Note:
 > Client abort detection is not completely reliable.
@@ -405,6 +410,13 @@ fastify.addHook('preHandler', async (request, reply) => {
 
 You can hook into the application-lifecycle as well.
 
+All application hooks bind `this` to the Fastify instance associated with their
+invocation and also pass that `instance` as the first argument, so both regular
+`function` declarations and arrow functions have consistent access to the
+encapsulated Fastify scope. Inherited `onRoute` hooks receive the instance where
+the route is registered. Inherited `onRegister` hooks receive the parent instance
+where the plugin is registered, followed by the new child instance.
+
 - [onReady](#onready)
 - [onListen](#onlisten)
 - [onClose](#onclose)
@@ -416,20 +428,21 @@ You can hook into the application-lifecycle as well.
 Triggered before the server starts listening for requests and when `.ready()` is
 invoked. It cannot change the routes or add new hooks. Registered hook functions
 are executed serially. Only after all `onReady` hook functions have completed
-will the server start listening for requests. Hook functions accept one
-argument: a callback, `done`, to be invoked after the hook function is complete.
-Hook functions are invoked with `this` bound to the associated Fastify instance.
+will the server start listening for requests. The hook function receives the
+Fastify instance as the first argument and, for callback-style hooks, a `done`
+callback as the second argument. Hook functions are invoked with `this` bound to
+the associated Fastify instance.
 
 ```js
 // callback style
-fastify.addHook('onReady', function (done) {
+fastify.addHook('onReady', function (instance, done) {
   // Some code
-  const err = null;
+  const err = null
   done(err)
 })
 
 // or async/await style
-fastify.addHook('onReady', async function () {
+fastify.addHook('onReady', async function (instance) {
   // Some async code
   await loadCacheFromDatabase()
 })
@@ -439,23 +452,23 @@ fastify.addHook('onReady', async function () {
 
 Triggered when the server starts listening for requests. The hooks run one
 after another. If a hook function causes an error, it is logged and
-ignored, allowing the queue of hooks to continue. Hook functions accept one
-argument: a callback, `done`, to be invoked after the hook function is
-complete. Hook functions are invoked with `this` bound to the associated
-Fastify instance.
+ignored, allowing the queue of hooks to continue. The hook function receives the
+Fastify instance as the first argument and, for callback-style hooks, a `done`
+callback as the second argument. Hook functions are invoked with `this` bound to
+the associated Fastify instance.
 
 This is an alternative to `fastify.server.on('listening', () => {})`.
 
 ```js
 // callback style
-fastify.addHook('onListen', function (done) {
+fastify.addHook('onListen', function (instance, done) {
   // Some code
-  const err = null;
+  const err = null
   done(err)
 })
 
 // or async/await style
-fastify.addHook('onListen', async function () {
+fastify.addHook('onListen', async function (instance) {
   // Some async code
 })
 ```
@@ -474,8 +487,9 @@ This makes `onClose` the safe place for [plugins](./Plugins.md) to release
 resources such as database connection pools, as no new requests will
 arrive.
 
-The hook function takes the Fastify instance as a first argument,
-and a `done` callback for synchronous hook functions.
+The hook function takes the Fastify instance as a first argument, and a `done`
+callback for synchronous hook functions. Hook functions are also invoked with
+`this` bound to the associated Fastify instance.
 
 Alternatively, an object implementing `Symbol.asyncDispose` or
 `Symbol.dispose` can be registered as an `onClose` hook. Fastify invokes
@@ -541,15 +555,19 @@ connections or Server-Sent Events streams that must be explicitly terminated for
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
 
+The hook function receives the Fastify instance as the first argument and, for
+callback-style hooks, a `done` callback as the second argument. Hook functions
+are invoked with `this` bound to the associated Fastify instance.
+
 ```js
 // callback style
-fastify.addHook('preClose', (done) => {
+fastify.addHook('preClose', (instance, done) => {
   // Some code
   done()
 })
 
 // or async/await style
-fastify.addHook('preClose', async () => {
+fastify.addHook('preClose', async (instance) => {
   // Some async code
   await removeSomeServerState()
 })
@@ -558,7 +576,7 @@ fastify.addHook('preClose', async () => {
 For example, closing WebSocket connections during shutdown:
 
 ```js
-fastify.addHook('preClose', async () => {
+fastify.addHook('preClose', async (instance) => {
   // Close all WebSocket connections so that server.close() can complete.
   // Without this, open connections would keep the server alive.
   for (const ws of activeWebSockets) {
@@ -570,12 +588,14 @@ fastify.addHook('preClose', async () => {
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
-object as the sole parameter. The interface is synchronous, and, as such, the
-listeners are not passed a callback. This hook is encapsulated.
+Triggered when a new route is registered. Listeners are passed the associated
+Fastify `instance` as the first parameter and a
+[`routeOptions`](./Routes.md#routes-options) object as the second parameter,
+with `this` bound to `instance`. The interface is synchronous, and, as such,
+the listeners are not passed a callback. This hook is encapsulated.
 
 ```js
-fastify.addHook('onRoute', (routeOptions) => {
+fastify.addHook('onRoute', (instance, routeOptions) => {
   //Some code
   routeOptions.method
   routeOptions.schema
@@ -594,7 +614,7 @@ If you are authoring a plugin and you need to customize application routes, like
 modifying the options or adding new route hooks, this is the right place.
 
 ```js
-fastify.addHook('onRoute', (routeOptions) => {
+fastify.addHook('onRoute', (instance, routeOptions) => {
   function onPreSerialization(request, reply, payload, done) {
     // Your code
     done(null, payload)
@@ -611,13 +631,13 @@ not tagged. The recommended approach is shown below.
 ```js
 const kRouteAlreadyProcessed = Symbol('route-already-processed')
 
-fastify.addHook('onRoute', function (routeOptions) {
+fastify.addHook('onRoute', function (instance, routeOptions) {
   const { url, method } = routeOptions
 
   const isAlreadyProcessed = (routeOptions.custom && routeOptions.custom[kRouteAlreadyProcessed]) || false
 
   if (!isAlreadyProcessed) {
-    this.route({
+    instance.route({
       url,
       method,
       custom: {
@@ -636,6 +656,10 @@ For more details, see this [issue](https://github.com/fastify/fastify/issues/431
 
 Triggered when a new plugin is registered and a new encapsulation context is
 created. The hook will be executed **before** the registered code.
+
+Listeners receive the parent Fastify `instance` as the first argument (also
+bound to `this`), the newly created encapsulated `newInstance` as the second
+argument, and the registration `opts` as the third argument.
 
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
@@ -661,12 +685,12 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (instance, opts) => {
+fastify.addHook('onRegister', (instance, newInstance, opts) => {
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated
   // instances of the `data` property
-  instance.data = instance.data.slice()
+  newInstance.data = instance.data.slice()
 
   // the options of the new registered instance
   console.log(opts.prefix)

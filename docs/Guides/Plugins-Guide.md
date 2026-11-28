@@ -68,7 +68,7 @@ object, and `done` is the function you **must** call when your plugin is ready.
 Fastify's plugin model is fully reentrant and graph-based, it handles
 asynchronous code without any problems and it enforces both the load and close
 order of plugins. *How?* Glad you asked, check out
-[`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin
+[`avvio`](https://github.com/fastify/avvio)! Fastify starts loading the plugin
 __after__ `.listen()`, `.inject()` or `.ready()` are called.
 
 Inside a plugin you can do whatever you want, register routes and utilities (we
@@ -322,7 +322,7 @@ fastify.register((instance, opts, done) => {
     done()
   }
 
-  instance.addHook('onRoute', (routeOptions) => {
+  instance.addHook('onRoute', (hookInstance, routeOptions) => {
     if (routeOptions.config && routeOptions.config.useUtil === true) {
       // set or add our handler to the route preHandler hook
       if (!routeOptions.preHandler) {

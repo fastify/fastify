@@ -1423,3 +1423,207 @@ test('error responses fall back to the default error serializer when the content
     testDone()
   })
 })
+
+test('response $ref to a Response object applies the per-content-type schema', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/ItNoWorky',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          additionalProperties: false,
+          properties: { foo: { type: 'string' } }
+        }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/ItNoWorky' }
+      }
+    }
+  }, async (req, reply) => {
+    reply.header('Content-Type', 'application/json')
+    return { foo: 'bar', extra: 'SHOULD_BE_STRIPPED' }
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.deepStrictEqual(res.json(), { foo: 'bar' })
+})
+
+test('response $ref to a Response object resolves the serializer by content-type', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/ItNoWorky',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          additionalProperties: false,
+          properties: { foo: { type: 'string' } }
+        }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/ItNoWorky' }
+      }
+    }
+  }, async (req, reply) => {
+    // This content-type is not declared in the referenced Response object and
+    // there is no `*/*` fallback, so it must fail closed just like the inline
+    // `content` form instead of silently serialising with JSON.stringify.
+    reply.header('Content-Type', 'application/hal+json')
+    return { foo: 'bar', password: 'SHOULD_NOT_LEAK' }
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(
+    JSON.parse(res.payload).code,
+    'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN'
+  )
+})
+
+test('response $ref to a Response object with */* fallback still serialises', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/Any',
+    content: {
+      '*/*': {
+        schema: {
+          type: 'object',
+          required: ['name'],
+          additionalProperties: false,
+          properties: { name: { type: 'string' } }
+        }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/Any' }
+      }
+    }
+  }, async (req, reply) => {
+    reply.header('Content-Type', 'application/hal+json')
+    return { name: 'alice', password: 'SHOULD_BE_STRIPPED' }
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.deepStrictEqual(res.json(), { name: 'alice' })
+})
+
+test('response $ref to a Response object chains through another $ref', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/Base',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          additionalProperties: false,
+          properties: { foo: { type: 'string' } }
+        }
+      }
+    }
+  })
+  fastify.addSchema({ $id: '/components/responses/Alias', $ref: '/components/responses/Base' })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/Alias' }
+      }
+    }
+  }, async (req, reply) => {
+    reply.header('Content-Type', 'application/json')
+    return { foo: 'bar', extra: 'SHOULD_BE_STRIPPED' }
+  })
+
+  const res = await fastify.inject('/')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.deepStrictEqual(res.json(), { foo: 'bar' })
+})
+
+test('response $ref to a Response object with a missing content schema fails to build', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/Broken',
+    content: {
+      'application/json': {}
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/Broken' }
+      }
+    }
+  }, async () => 'x')
+
+  await t.assert.rejects(
+    fastify.ready(),
+    /Schema is missing for the content type 'application\/json'/
+  )
+})
+
+test('response $ref to an unresolved schema still fails to build', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/responses/Real',
+    content: {
+      'application/json': {
+        schema: { type: 'object' }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '/components/responses/DoesNotExist' }
+      }
+    }
+  }, async () => 'x')
+
+  await t.assert.rejects(
+    fastify.ready(),
+    /Cannot resolve ref "\/components\/responses\/DoesNotExist#"/
+  )
+})
+
+test('response $ref with a fragment that is not a resolvable schema fails to build', async t => {
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: '/components/schemas/X',
+    type: 'object'
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: { $ref: '#/$defs/DoesNotExist' }
+      }
+    }
+  }, async () => 'x')
+
+  await t.assert.rejects(
+    fastify.ready(),
+    /Cannot find reference "#\/\$defs\/DoesNotExist"/
+  )
+})

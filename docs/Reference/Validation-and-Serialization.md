@@ -877,6 +877,37 @@ fastify.post('/url', { schema }, handler)
 > bypass the response schema). Every `Content-Type` a route may respond with must
 > be declared, or the route must define a `*/*` catch-all.
 
+You can also `$ref` a shared **Response object** (a schema registered with
+[`addSchema`](./Server.md#addschema) whose top-level keys are `description`
+and/or `content`) to reuse the same per-content-type response schema across
+routes. The referenced `content` map is resolved and matched exactly like an
+inline `content` map:
+
+```js
+fastify.addSchema({
+  $id: '/components/responses/Ok',
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        properties: {
+          value: { type: 'string' }
+        }
+      }
+    }
+  }
+})
+
+const schema = {
+  response: {
+    200: { $ref: '/components/responses/Ok' }
+  }
+}
+```
+
+The `Content-Type` matching and `*/*` fallback rules described above apply to the
+referenced Response object exactly as they do to an inline `content` map.
+
 #### Serializer Compiler
 <a id="schema-serializer"></a>
 

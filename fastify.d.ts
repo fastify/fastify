@@ -156,9 +156,9 @@ declare namespace fastify {
         buildValidator?: ValidatorFactory;
         buildSerializer?: SerializerFactory;
       };
+      validatorOptions?: Parameters<BuildCompilerFromPool>[1];
     };
     return503OnClosing?: boolean,
-    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <
       RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
       TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,

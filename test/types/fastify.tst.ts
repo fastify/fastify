@@ -246,37 +246,47 @@ expect(fastify({
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ return503OnClosing: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
-  ajv: {
-    customOptions: {
-      removeAdditional: 'all'
-    },
-    plugins: [(ajv: Ajv): Ajv => ajv]
-  }
-})).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({
-  ajv: {
-    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
-  }
-})).type.toBeAssignableTo<FastifyInstance>()
-fastify({
-  ajv: {
-    customOptions: {
-      removeAdditional: 'all'
-    },
-    plugins: [
-      // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
-      () => { }
-    ]
-  }
-})
-expect(fastify({
-  ajv: {
-    onCreate: (ajvInstance) => {
-      expect(ajvInstance).type.toBe<Ajv>()
-      return ajvInstance
+  schemaController: {
+    validatorOptions: {
+      customOptions: {
+        removeAdditional: 'all'
+      },
+      plugins: [(ajv: Ajv): Ajv => ajv]
     }
   }
 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
+  schemaController: {
+    validatorOptions: {
+      plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
+    }
+  }
+})).type.toBeAssignableTo<FastifyInstance>()
+fastify({
+  schemaController: {
+    validatorOptions: {
+      customOptions: {
+        removeAdditional: 'all'
+      },
+      plugins: [
+        // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
+        () => { }
+      ]
+    }
+  }
+})
+expect(fastify({
+  schemaController: {
+    validatorOptions: {
+      onCreate: (ajvInstance) => {
+        expect(ajvInstance).type.toBe<Ajv>()
+        return ajvInstance
+      }
+    }
+  }
+})).type.toBeAssignableTo<FastifyInstance>()
+// @ts-expect-error  No overload matches this call.
+fastify({ ajv: { customOptions: { removeAdditional: 'all' } } })
 expect(fastify({ frameworkErrors: () => { } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
   rewriteUrl: function (req) {

@@ -30,7 +30,6 @@ describes the properties available in that options object.
   - [`pluginTimeout`](#plugintimeout)
   - [`exposeHeadRoutes`](#exposeheadroutes)
   - [`return503OnClosing`](#return503onclosing)
-  - [`ajv`](#ajv)
   - [`serializerOpts`](#serializeropts)
   - [`http2SessionTimeout`](#http2sessiontimeout)
   - [`frameworkErrors`](#frameworkerrors)
@@ -696,33 +695,6 @@ stop routing traffic to it.
 When `false`, requests arriving during the closing phase are routed and
 processed normally. They will still receive a `Connection: close` header so that
 clients do not attempt to reuse the connection.
-
-### `ajv`
-<a id="factory-ajv"></a>
-
-Configure the Ajv v8 instance used by Fastify without providing a custom one.
-The default configuration is explained in the
-[#schema-validator](./Validation-and-Serialization.md#schema-validator) section.
-
-```js
-const fastify = require('fastify')({
-  ajv: {
-    customOptions: {
-      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/options.html#removeadditional)
-    },
-    plugins: [
-      require('ajv-merge-patch'),
-      [require('ajv-keywords'), 'instanceof']
-      // Usage: [plugin, pluginOptions] - Plugin with options
-      // Usage: plugin - Plugin without options
-    ],
-    onCreate: (ajv) => {
-      // Modify the ajv instance as you need.
-      ajv.addFormat('myFormat', (data) => typeof data === 'string')
-    }
-  }
-})
-```
 
 ### `serializerOpts`
 <a id="serializer-opts"></a>
@@ -1827,6 +1799,7 @@ the `validationCompiler` fails to validate the schema. See
 This property can be used to fully manage:
 - `bucket`: where the schemas of your application will be stored
 - `compilersFactory`: what module must compile the JSON schemas
+- `validatorOptions`: the options passed to the validator compiler factory
 
 It can be useful when your schemas are stored in another data structure that is
 unknown to Fastify.
@@ -1835,6 +1808,40 @@ Another use case is to tweak all the schemas processing. Doing so it is possible
 to use Ajv v8 JTD or Standalone feature. To use such as JTD or the Standalone
 mode, refers to the [`@fastify/ajv-compiler`
 documentation](https://github.com/fastify/ajv-compiler#usage).
+
+##### validatorOptions
+<a id="schema-controller-validator-options"></a>
+
+Configure the Ajv v8 instance used by Fastify without providing a custom one.
+The default configuration is explained in the
+[#schema-validator](./Validation-and-Serialization.md#schema-validator) section.
+
+```js
+const fastify = require('fastify')({
+  schemaController: {
+    validatorOptions: {
+      customOptions: {
+        removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/options.html#removeadditional)
+      },
+      plugins: [
+        require('ajv-merge-patch'),
+        [require('ajv-keywords'), 'instanceof']
+        // Usage: [plugin, pluginOptions] - Plugin with options
+        // Usage: plugin - Plugin without options
+      ],
+      onCreate: (ajv) => {
+        // Modify the ajv instance as you need.
+        ajv.addFormat('myFormat', (data) => typeof data === 'string')
+      }
+    }
+  }
+})
+```
+
+> ℹ️ Note:
+> The top-level `ajv` option has been removed. Fastify throws a
+> [`FST_ERR_AJV_OPT_REMOVED`](./Errors.md#fst_err_ajv_opt_removed) error when
+> it is set. Move its value to `schemaController.validatorOptions`.
 
 ```js
 const fastify = Fastify({
@@ -1880,12 +1887,12 @@ const fastify = Fastify({
        * It may receive as input the schemas of the parent context if some schemas have been added.
        * @param {object} externalSchemas these schemas will be returned by the
        * `bucket.getSchemas()`. Needed to resolve the external references $ref.
-       * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly
+       * @param {object} validatorOptions the `schemaController.validatorOptions` options to build your compilers accordingly
        */
-      buildValidator: function factory (externalSchemas, ajvServerOption) {
+      buildValidator: function factory (externalSchemas, validatorOptions) {
         // This factory function must return a schema validator compiler.
         // See [#schema-validator](./Validation-and-Serialization.md#schema-validator) for details.
-        const yourAjvInstance = new Ajv(ajvServerOption.customOptions)
+        const yourAjvInstance = new Ajv(validatorOptions.customOptions)
         return function validatorCompiler ({ schema, method, url, httpPart }) {
           return yourAjvInstance.compile(schema)
         }

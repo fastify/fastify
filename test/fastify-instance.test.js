@@ -5,8 +5,8 @@ const Fastify = require('..')
 const os = require('node:os')
 
 const {
-  kOptions,
   kErrorHandler,
+  kSchemaController,
   kChildLoggerFactory,
   kState
 } = require('../lib/symbols')
@@ -18,16 +18,18 @@ test('root fastify instance is an object', t => {
   t.assert.strictEqual(typeof Fastify(), 'object')
 })
 
-test('fastify instance should contains ajv options', t => {
+test('fastify instance should contains schemaController.validatorOptions', t => {
   t.plan(1)
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        nullable: false
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          nullable: false
+        }
       }
     }
   })
-  t.assert.deepStrictEqual(fastify[kOptions].ajv, {
+  t.assert.deepStrictEqual(fastify[kSchemaController].opts.validatorOptions, {
     customOptions: {
       nullable: false
     },
@@ -35,17 +37,19 @@ test('fastify instance should contains ajv options', t => {
   })
 })
 
-test('fastify instance should contains ajv options.plugins nested arrays', t => {
+test('fastify instance should contains schemaController.validatorOptions.plugins nested arrays', t => {
   t.plan(1)
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        nullable: false
-      },
-      plugins: [[]]
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          nullable: false
+        },
+        plugins: [[]]
+      }
     }
   })
-  t.assert.deepStrictEqual(fastify[kOptions].ajv, {
+  t.assert.deepStrictEqual(fastify[kSchemaController].opts.validatorOptions, {
     customOptions: {
       nullable: false
     },
@@ -53,23 +57,60 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
   })
 })
 
-test('fastify instance get invalid ajv options', t => {
+test('fastify instance should contains the default schemaController.validatorOptions', t => {
   t.plan(1)
-  t.assert.throws(() => Fastify({
-    ajv: {
-      customOptions: 8
-    }
-  }))
+  const fastify = Fastify()
+  t.assert.deepStrictEqual(fastify[kSchemaController].opts.validatorOptions, {
+    customOptions: {},
+    plugins: []
+  })
 })
 
-test('fastify instance get invalid ajv options.plugins', t => {
+test('fastify instance get invalid schemaController.validatorOptions.customOptions', t => {
+  t.plan(1)
+  t.assert.throws(() => Fastify({
+    schemaController: {
+      validatorOptions: {
+        customOptions: 8
+      }
+    }
+  }), { code: 'FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ' })
+})
+
+test('fastify instance get invalid schemaController.validatorOptions.plugins', t => {
+  t.plan(1)
+  t.assert.throws(() => Fastify({
+    schemaController: {
+      validatorOptions: {
+        customOptions: {},
+        plugins: 8
+      }
+    }
+  }), { code: 'FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR' })
+})
+
+test('setSchemaController validates schemaController.validatorOptions', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.assert.throws(() => fastify.setSchemaController({
+    validatorOptions: {
+      plugins: 8
+    }
+  }), { code: 'FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR' })
+})
+
+test('fastify instance throws when the removed ajv option is set', t => {
   t.plan(1)
   t.assert.throws(() => Fastify({
     ajv: {
-      customOptions: {},
-      plugins: 8
+      customOptions: {
+        nullable: false
+      }
     }
-  }))
+  }), {
+    code: 'FST_ERR_AJV_OPT_REMOVED',
+    message: 'The ajv option has been removed. Use schemaController.validatorOptions instead.'
+  })
 })
 
 test('fastify instance should contain default errorHandler', t => {

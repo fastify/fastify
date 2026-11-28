@@ -76,8 +76,7 @@ const {
   FST_ERR_OPTIONS_NOT_OBJ,
   FST_ERR_QSP_NOT_FN,
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
-  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
-  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
+  FST_ERR_AJV_OPT_REMOVED,
   FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
@@ -910,6 +909,10 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
     throw new FST_ERR_QSP_NOT_FN(typeof options.routerOptions.querystringParser)
   }
 
+  if (options.ajv !== undefined) {
+    throw new FST_ERR_AJV_OPT_REMOVED()
+  }
+
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
     throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
   }
@@ -919,18 +922,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-
-  const ajvOptions = Object.assign({
-    customOptions: {},
-    plugins: []
-  }, options.ajv)
-
-  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
-  }
-  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
-  }
 
   const { logger, hasLogger } = createLogger(options)
 
@@ -945,7 +936,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.requestIdHeader = requestIdHeader
-  options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 

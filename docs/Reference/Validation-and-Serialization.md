@@ -447,14 +447,17 @@ For more information, see [Ajv Coercion](https://ajv.js.org/coercion.html).
 A list of plugins can be provided for use with the default `ajv` instance.
 Ensure the plugin is **compatible with the Ajv version shipped within Fastify**.
 
-> Refer to [`ajv options`](./Server.md#ajv) to check plugins format.
+> Refer to [`schemaController.validatorOptions`](./Server.md#schema-controller-validator-options)
+> to check plugins format.
 
 ```js
 const fastify = require('fastify')({
-  ajv: {
-    plugins: [
-      require('ajv-merge-patch')
-    ]
+  schemaController: {
+    validatorOptions: {
+      plugins: [
+        require('ajv-merge-patch')
+      ]
+    }
   }
 })
 
@@ -530,7 +533,8 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 ```
 
 Modify the baseline configuration by providing
-[`ajv.customOptions`](./Server.md#factory-ajv) to the Fastify factory.
+[`schemaController.validatorOptions.customOptions`](./Server.md#schema-controller-validator-options)
+to the Fastify factory.
 
 To change or set additional config options, create a custom instance and
 override the existing one:
@@ -1029,15 +1033,17 @@ case:
 
 ```js
 const fastify = Fastify({
-  ajv: {
-    customOptions: {
-      jsonPointers: true,
-      // ⚠ Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
-      allErrors: true
-    },
-    plugins: [
-      require('ajv-errors')
-    ]
+  schemaController: {
+    validatorOptions: {
+      customOptions: {
+        jsonPointers: true,
+        // ⚠ Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
+        allErrors: true
+      },
+      plugins: [
+        require('ajv-errors')
+      ]
+    }
   }
 })
 

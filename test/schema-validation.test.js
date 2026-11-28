@@ -1031,9 +1031,11 @@ test('Custom AJV settings - pt1', (t, testDone) => {
 test('Custom AJV settings - pt2', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        coerceTypes: false
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          coerceTypes: false
+        }
       }
     }
   })
@@ -2072,7 +2074,7 @@ test('header schema detects a $ref inside propertyNames nested in an array', asy
 
 test('header schema normalization traverses dependent schema keywords', async t => {
   const fastify = Fastify({
-    ajv: { customOptions: { strictSchema: false } }
+    schemaController: { validatorOptions: { customOptions: { strictSchema: false } } }
   })
 
   fastify.get('/', {
@@ -2179,7 +2181,7 @@ test('header schema propertyNames: not-enum deny-list is lowercased', async t =>
 
 test('header schema propertyNames: non-string enum items are left untouched', async t => {
   const fastify = Fastify({
-    ajv: { customOptions: { strictSchema: false } }
+    schemaController: { validatorOptions: { customOptions: { strictSchema: false } } }
   })
 
   fastify.get('/', {

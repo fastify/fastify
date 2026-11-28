@@ -82,6 +82,7 @@
     - [FST_ERR_ROUTE_OPTIONS_NOT_OBJ](#fst_err_route_options_not_obj)
     - [FST_ERR_ROUTE_DUPLICATED_HANDLER](#fst_err_route_duplicated_handler)
     - [FST_ERR_ROUTE_HANDLER_NOT_FN](#fst_err_route_handler_not_fn)
+    - [FST_ERR_ROUTE_ERROR_HANDLER_NOT_FN](#fst_err_route_error_handler_not_fn)
     - [FST_ERR_ROUTE_MISSING_HANDLER](#fst_err_route_missing_handler)
     - [FST_ERR_ROUTE_METHOD_INVALID](#fst_err_route_method_invalid)
     - [FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED](#fst_err_route_method_already_supported)
@@ -448,6 +449,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_route_options_not_obj">FST_ERR_ROUTE_OPTIONS_NOT_OBJ</a> | Options for the route must be an object. | Use an object for the route options. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_duplicated_handler">FST_ERR_ROUTE_DUPLICATED_HANDLER</a> | Duplicate handler for the route is not allowed. | Use a different handler. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_handler_not_fn">FST_ERR_ROUTE_HANDLER_NOT_FN</a> | Handler for the route must be a function. | Use a function for the handler. | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_route_error_handler_not_fn">FST_ERR_ROUTE_ERROR_HANDLER_NOT_FN</a> | Error handler for the route, if defined, must be a function. | Use a function for the route's `errorHandler`. | [#7274](https://github.com/fastify/fastify/issues/7274) |
 | <a id="fst_err_route_missing_handler">FST_ERR_ROUTE_MISSING_HANDLER</a> | Missing handler function for the route. | Add a handler function. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_method_invalid">FST_ERR_ROUTE_METHOD_INVALID</a> | Method is not a valid value. | Use a valid value for the method. | [#4750](https://github.com/fastify/fastify/pull/4750) |
 | <a id="fst_err_route_method_already_supported">FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED</a> | The HTTP method is already supported. | Pass `{ overrideExisting: true }` to explicitly override it. | [#6909](https://github.com/fastify/fastify/pull/6909) |

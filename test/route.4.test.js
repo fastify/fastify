@@ -77,7 +77,7 @@ test('throws when route with empty url in shorthand declaration', async t => {
 })
 
 test('throws when route-level error handler is not a function', t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -91,6 +91,7 @@ test('throws when route-level error handler is not a function', t => {
       errorHandler: 'teapot'
     })
   } catch (err) {
+    t.assert.strictEqual(err.code, 'FST_ERR_ROUTE_ERROR_HANDLER_NOT_FN')
     t.assert.strictEqual(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
 })

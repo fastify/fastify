@@ -73,7 +73,10 @@ test('route', async t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.assert.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }))
+    t.assert.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }), {
+      code: 'FST_ERR_ROUTE_HANDLER_NOT_FN',
+      message: 'Handler for GET:/ route must be a function'
+    })
   })
 
   await t.test('Add Multiple methods per route all uppercase', async (t) => {

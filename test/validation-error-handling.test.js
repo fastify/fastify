@@ -132,7 +132,7 @@ test('error inside custom error handler should have validationContext', async (t
 
   fastify.post('/', {
     schema,
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
         return { error: new Error('this failed') }
       }
@@ -164,7 +164,7 @@ test('error inside custom error handler should have validationContext if specifi
 
   fastify.post('/', {
     schema,
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
         const error = new Error('this failed')
         error.validationContext = 'customContext'
@@ -441,7 +441,7 @@ test('should return a defined output message parsing JOI errors', async (t) => {
 
   fastify.post('/', {
     schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => schema.validate(data)
     }
   },
@@ -471,7 +471,7 @@ test('should return a defined output message parsing JOI error details', async (
 
   fastify.post('/', {
     schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
+    inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => {
         const validation = schema.validate(data)
         return { error: validation.error.details }
@@ -905,7 +905,7 @@ describe('sync and async must work in the same way', () => {
         properties: { name: { type: 'string' } }
       }
     },
-    validatorCompiler: () => {
+    inputValidatorCompiler: () => {
       return function (inputData) {
         // This custom validator throws a sync error instead of returning `{ error }`
         throw new Error('Custom validation failed')

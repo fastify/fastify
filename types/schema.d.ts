@@ -45,6 +45,12 @@ export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) =
 export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
 
 /**
+ * The options of the input validator pool: the options of the
+ * `@fastify/ajv-compiler` pool builder.
+ */
+export type FastifyInputValidatorOptions = Parameters<BuildCompilerFromPool>[1]
+
+/**
  * The options of the output validator pool.
  *
  * The output side validates *and* shapes the response payload with the JSON
@@ -64,10 +70,11 @@ export interface FastifySchemaControllerOptions {
     getSchemas(): Record<string, unknown>;
   };
   compilersFactory?: {
-    buildValidator?: ValidatorFactory;
+    buildInputValidator?: ValidatorFactory;
     buildSerializer?: SerializerFactory;
     buildOutputValidator?: BuildCompilerFromPool;
   };
+  inputValidatorOptions?: FastifyInputValidatorOptions;
   outputValidatorOptions?: FastifyOutputValidatorOptions;
 }
 

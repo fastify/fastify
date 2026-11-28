@@ -76,8 +76,6 @@ const {
   FST_ERR_OPTIONS_NOT_OBJ,
   FST_ERR_QSP_NOT_FN,
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
-  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
-  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
   FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
@@ -256,7 +254,8 @@ function fastify (serverOptions) {
     addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
-    setValidatorCompiler,
+    setInputValidatorCompiler,
+    setOutputValidatorCompiler,
     setSerializerCompiler,
     setSchemaController,
     setReplySerializer,
@@ -340,9 +339,9 @@ function fastify (serverOptions) {
       configurable: true,
       get () { return this[kRoutePrefix] }
     },
-    validatorCompiler: {
+    inputValidatorCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getValidatorCompiler() }
+      get () { return this[kSchemaController].getInputValidatorCompiler() }
     },
     outputValidatorCompiler: {
       configurable: true,
@@ -770,9 +769,15 @@ function fastify (serverOptions) {
     return this
   }
 
-  function setValidatorCompiler (validatorCompiler) {
-    throwIfAlreadyStarted('Cannot call "setValidatorCompiler"!')
-    this[kSchemaController].setValidatorCompiler(validatorCompiler)
+  function setInputValidatorCompiler (inputValidatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setInputValidatorCompiler"!')
+    this[kSchemaController].setInputValidatorCompiler(inputValidatorCompiler)
+    return this
+  }
+
+  function setOutputValidatorCompiler (outputValidatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setOutputValidatorCompiler"!')
+    this[kSchemaController].setOutputValidatorCompiler(outputValidatorCompiler)
     return this
   }
 
@@ -924,18 +929,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
-  const ajvOptions = Object.assign({
-    customOptions: {},
-    plugins: []
-  }, options.ajv)
-
-  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
-  }
-  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
-  }
-
   const { logger, hasLogger } = createLogger(options)
 
   // the internal logger uses the input logger to execute the logging. This allows the user
@@ -949,7 +942,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.requestIdHeader = requestIdHeader
-  options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 

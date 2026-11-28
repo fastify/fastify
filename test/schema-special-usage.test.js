@@ -14,13 +14,15 @@ const { waitForCb } = require('./helper')
 test('Ajv plugins array parameter', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        allErrors: true
-      },
-      plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          allErrors: true
+        },
+        plugins: [
+          [ajvErrors, { singleError: '@@@@' }]
+        ]
+      }
     }
   })
 
@@ -62,10 +64,12 @@ test('Ajv plugins array parameter', (t, testDone) => {
 test('Should handle root $merge keywords in header', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+    schemaController: {
+      validatorOptions: {
+        plugins: [
+          ajvMergePatch
+        ]
+      }
     }
   })
 
@@ -114,10 +118,12 @@ test('Should handle root $merge keywords in header', (t, testDone) => {
 test('Should handle root $patch keywords in header', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+    schemaController: {
+      validatorOptions: {
+        plugins: [
+          ajvMergePatch
+        ]
+      }
     }
   })
 
@@ -175,8 +181,10 @@ test('Should handle root $patch keywords in header', (t, testDone) => {
 test('Should handle $merge keywords in body', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [ajvMergePatch]
+    schemaController: {
+      validatorOptions: {
+        plugins: [ajvMergePatch]
+      }
     }
   })
 
@@ -227,8 +235,10 @@ test('Should handle $merge keywords in body', (t, testDone) => {
 test('Should handle $patch keywords in body', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({
-    ajv: {
-      plugins: [ajvMergePatch]
+    schemaController: {
+      validatorOptions: {
+        plugins: [ajvMergePatch]
+      }
     }
   })
 
@@ -825,21 +835,23 @@ test('Supports async AJV validation', (t, testDone) => {
 
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        },
+        plugins: [
+          [ajvErrors, { singleError: '@@@@' }]
         ]
-      },
-      plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
+      }
     }
   })
 
@@ -1023,17 +1035,19 @@ test('async custom validator resolving false uses its validation errors', async 
 test('Check all the async AJV validation paths', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })
@@ -1137,17 +1151,19 @@ test('Check all the async AJV validation paths', async (t) => {
 test('Check mixed sync and async AJV validations', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })
@@ -1317,17 +1333,19 @@ test('Check mixed sync and async AJV validations', async (t) => {
 test('Check if hooks and attachValidation work with AJV validations', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,
-    ajv: {
-      customOptions: {
-        allErrors: true,
-        keywords: [
-          {
-            keyword: 'idExists',
-            async: true,
-            type: 'number',
-            validate: checkIdExists
-          }
-        ]
+    schemaController: {
+      validatorOptions: {
+        customOptions: {
+          allErrors: true,
+          keywords: [
+            {
+              keyword: 'idExists',
+              async: true,
+              type: 'number',
+              validate: checkIdExists
+            }
+          ]
+        }
       }
     }
   })

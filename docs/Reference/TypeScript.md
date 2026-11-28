@@ -459,8 +459,8 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
     }
     */
 
-    request.body.name // will not throw type error
-    request.body.notthere // will throw type error
+    request.body.name // inferred as string
+    request.body.notthere // allowed, but inferred as unknown
 
     reply.status(201).send();
   },
@@ -632,7 +632,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/types/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!
@@ -1370,8 +1370,8 @@ const plugin: FastifyPluginCallback<{
   option2: boolean;
 }> = function (instance, opts, done) { }
 
-server().register(plugin, {}) // Error - options object is missing required properties
-server().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
+server.register(plugin, {}) // Error - options object is missing required properties
+server.register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
 ```
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples

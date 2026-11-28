@@ -247,6 +247,52 @@ test('Should throw if schema is missing for content type', (t, testDone) => {
   })
 })
 
+test('Should throw for a null body content entry', (t, testDone) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.post('/', {
+    handler: echoBody,
+    schema: {
+      body: {
+        content: {
+          'application/json': null
+        }
+      }
+    }
+  })
+
+  fastify.ready(err => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
+    t.assert.strictEqual(err.message, "Schema is missing for the content type 'application/json'")
+    testDone()
+  })
+})
+
+test('Should throw for a null response content entry', (t, testDone) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    handler: echoParams,
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': null
+          }
+        }
+      }
+    }
+  })
+
+  fastify.ready(err => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
+    t.assert.strictEqual(err.message, "Schema is missing for the content type 'application/json'")
+    testDone()
+  })
+})
+
 test('Should throw of the schema does not exists in output', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()

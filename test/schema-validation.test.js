@@ -461,7 +461,8 @@ test('Triple $ref with a simple $id', (t, testDone) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(res.json(), { foo: 105 })
+    // the response schema does not declare `additionalProperties: false`
+    t.assert.deepStrictEqual(res.json(), { foo: 105, bar: 'foo' })
     completion.stepIn()
   })
   fastify.inject({
@@ -944,7 +945,8 @@ test('Use $ref to /definitions', (t, testDone) => {
       test: { $ref: 'test#' },
       address: { $ref: '#/definitions/address' }
     },
-    required: ['address', 'test']
+    required: ['address', 'test'],
+    additionalProperties: false
   }
 
   fastify.post('/', {

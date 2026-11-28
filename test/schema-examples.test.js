@@ -369,10 +369,6 @@ test('Example - serializator', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    return data => JSON.stringify(data)
-  })
-
   fastify.get('/user', {
     handler (req, reply) {
       reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })

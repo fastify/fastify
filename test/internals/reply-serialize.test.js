@@ -80,7 +80,7 @@ test('Reply#compileSerializationSchema', async t => {
       try {
         serialize({ world: 'foo' })
       } catch (err) {
-        t.assert.strictEqual(err.message, '"hello" is required!')
+        t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'hello'")
       }
 
       reply.send({ hello: 'world' })
@@ -120,7 +120,7 @@ test('Reply#compileSerializationSchema', async t => {
         try {
           serialize({ world: 'foo' })
         } catch (err) {
-          t.assert.strictEqual(err.message, '"hello" is required!')
+          t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'hello'")
         }
 
         reply.send({ hello: 'world' })
@@ -137,56 +137,53 @@ test('Reply#compileSerializationSchema', async t => {
     }
   )
 
-  await t.test('Should use the custom serializer compiler for the route',
+  await t.test('Should use the output validator compiler of the instance',
     async t => {
-      const fastify = Fastify()
       let called = 0
-      const custom = ({ schema, httpStatus, url, method }) => {
-        t.assert.strictEqual(schema, schemaObj)
-        t.assert.strictEqual(url, '/')
-        t.assert.strictEqual(method, 'GET')
-        t.assert.strictEqual(httpStatus, '201')
-
-        return input => {
-          called++
-          t.assert.deepStrictEqual(input, { hello: 'world' })
-          return JSON.stringify(input)
-        }
-      }
-
-      const custom2 = ({ schema, httpStatus, url, method, contentType }) => {
-        t.assert.strictEqual(schema, schemaObj)
-        t.assert.strictEqual(url, '/user')
-        t.assert.strictEqual(method, 'GET')
-        t.assert.strictEqual(httpStatus, '3xx')
-        t.assert.strictEqual(contentType, 'application/json')
-
-        return input => {
-          t.assert.deepStrictEqual(input, { fullName: 'Jone', phone: 1090243795 })
-          return JSON.stringify(input)
-        }
-      }
-
-      t.plan(17)
       const schemaObj = getDefaultSchema()
+      const fastify = Fastify({
+        schemaController: {
+          compilersFactory: {
+            buildOutputValidator: () => ({ schema, httpStatus, url, method, contentType }) => {
+              t.assert.strictEqual(schema, schemaObj)
+              t.assert.strictEqual(method, 'GET')
+              if (url === '/') {
+                t.assert.strictEqual(httpStatus, '201')
+                t.assert.strictEqual(contentType, undefined)
+              } else {
+                t.assert.strictEqual(url, '/user')
+                t.assert.strictEqual(httpStatus, '3xx')
+                t.assert.strictEqual(contentType, 'application/json')
+              }
 
-      fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
+              return () => {
+                called++
+                return true
+              }
+            }
+          }
+        }
+      })
+
+      t.plan(14)
+
+      fastify.get('/', (req, reply) => {
         const input = { hello: 'world' }
         const first = reply.compileSerializationSchema(schemaObj, '201')
         const second = reply.compileSerializationSchema(schemaObj, '201')
 
         t.assert.strictEqual(first, second)
-        t.assert.ok(first(input), JSON.stringify(input))
-        t.assert.ok(second(input), JSON.stringify(input))
+        t.assert.strictEqual(first(input), JSON.stringify(input))
+        t.assert.strictEqual(second(input), JSON.stringify(input))
         t.assert.strictEqual(called, 2)
 
         reply.send({ hello: 'world' })
       })
 
-      fastify.get('/user', { serializerCompiler: custom2 }, (req, reply) => {
+      fastify.get('/user', (req, reply) => {
         const input = { fullName: 'Jone', phone: 1090243795 }
         const first = reply.compileSerializationSchema(schemaObj, '3xx', 'application/json')
-        t.assert.ok(first(input), JSON.stringify(input))
+        t.assert.strictEqual(first(input), JSON.stringify(input))
         reply.send(input)
       })
 
@@ -304,20 +301,20 @@ test('Reply#getSerializationFunction', async t => {
             } catch (err) {
               t.assert.strictEqual(
                 err.message,
-                'The value "something" cannot be converted to an integer.'
+                'Response validation failed. Errors: /code must be integer'
               )
             }
 
             try {
               serialize201(notOkInput201)
             } catch (err) {
-              t.assert.strictEqual(err.message, '"status" is required!')
+              t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'status'")
             }
 
             try {
               serializeJson3xx(noOkInput3xx)
             } catch (err) {
-              t.assert.strictEqual(err.message, 'The value "phone" cannot be converted to a number.')
+              t.assert.strictEqual(err.message, 'Response validation failed. Errors: /phone must be number')
             }
 
             reply.status(201).send(okInput201)
@@ -382,7 +379,7 @@ test('Reply#getSerializationFunction', async t => {
             try {
               serialize(notOkInput)
             } catch (err) {
-              t.assert.strictEqual(err.message, '"hello" is required!')
+              t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'hello'")
             }
 
             cached = serialize
@@ -395,7 +392,7 @@ test('Reply#getSerializationFunction', async t => {
             try {
               serialize(notOkInput)
             } catch (err) {
-              t.assert.strictEqual(err.message, '"hello" is required!')
+              t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'hello'")
             }
           }
 
@@ -566,7 +563,7 @@ test('Reply#serializeInput', async t => {
         try {
           reply.serializeInput(noOkInput3xx, '3xx', 'application/json')
         } catch (err) {
-          t.assert.strictEqual(err.message, 'The value "phone" cannot be converted to a number.')
+          t.assert.strictEqual(err.message, 'Response validation failed. Errors: /phone must be number')
         }
 
         try {
@@ -574,14 +571,14 @@ test('Reply#serializeInput', async t => {
         } catch (err) {
           t.assert.strictEqual(
             err.message,
-            'The value "something" cannot be converted to an integer.'
+            'Response validation failed. Errors: /code must be integer'
           )
         }
 
         try {
           reply.serializeInput(notOkInput201, 201)
         } catch (err) {
-          t.assert.strictEqual(err.message, '"status" is required!')
+          t.assert.strictEqual(err.message, "Response validation failed. Errors: must have required property 'status'")
         }
 
         reply.status(204).send('')
@@ -601,8 +598,7 @@ test('Reply#serializeInput', async t => {
       let serializerCalled = 0
       const testInput = { hello: 'world' }
       const schemaObj = getDefaultSchema()
-      const fastify = Fastify()
-      const serializerCompiler = ({ schema, httpStatus, method, url }) => {
+      const outputValidatorCompiler = ({ schema, httpStatus, method, url }) => {
         t.assert.strictEqual(schema, schemaObj)
         t.assert.ok(!httpStatus)
         t.assert.strictEqual(method, 'GET')
@@ -612,13 +608,16 @@ test('Reply#serializeInput', async t => {
         return input => {
           t.assert.strictEqual(input, testInput)
           serializerCalled++
-          return JSON.stringify(input)
+          return true
         }
       }
+      const fastify = Fastify({
+        schemaController: { compilersFactory: { buildOutputValidator: () => outputValidatorCompiler } }
+      })
 
       t.plan(10)
 
-      fastify.get('/', { serializerCompiler }, (req, reply) => {
+      fastify.get('/', (req, reply) => {
         t.assert.strictEqual(
           reply.serializeInput(testInput, schemaObj),
           JSON.stringify(testInput)
@@ -648,31 +647,34 @@ test('Reply#serializeInput', async t => {
     let cached
     const testInput = { hello: 'world' }
     const schemaObj = getDefaultSchema()
-    const fastify = Fastify()
-    const serializer = input => {
+    const validator = input => {
       t.assert.strictEqual(input, testInput)
       serializerCalled++
-      return JSON.stringify(input)
+      return true
     }
-    const serializerCompiler = ({ schema, httpStatus, method, url }) => {
+    const outputValidatorCompiler = ({ schema, httpStatus, method, url }) => {
       t.assert.strictEqual(schema, schemaObj)
       t.assert.ok(!httpStatus)
       t.assert.strictEqual(method, 'GET')
       t.assert.strictEqual(url, '/')
 
       compilerCalled++
-      return serializer
+      return validator
     }
+    const fastify = Fastify({
+      schemaController: { compilersFactory: { buildOutputValidator: () => outputValidatorCompiler } }
+    })
 
     t.plan(12)
 
-    fastify.get('/', { serializerCompiler }, (req, reply) => {
+    fastify.get('/', (req, reply) => {
       t.assert.strictEqual(
         reply.serializeInput(testInput, schemaObj),
         JSON.stringify(testInput)
       )
 
       cached = reply.getSerializationFunction(schemaObj)
+      t.assert.strictEqual(cached, reply.compileSerializationSchema(schemaObj))
 
       t.assert.strictEqual(
         reply.serializeInput(testInput, schemaObj),
@@ -687,7 +689,6 @@ test('Reply#serializeInput', async t => {
       method: 'GET'
     })
 
-    t.assert.strictEqual(cached, serializer)
     t.assert.strictEqual(compilerCalled, 1)
     t.assert.strictEqual(serializerCalled, 3)
   })
@@ -716,13 +717,17 @@ test('Reply#serializeInput', async t => {
 test('Reply#compileSerializationSchema omits absent metadata instead of passing null', async t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildOutputValidator: () => ({ httpStatus, contentType }) => {
+          t.assert.strictEqual(httpStatus, undefined)
+          t.assert.strictEqual(contentType, undefined)
 
-  fastify.setSerializerCompiler(({ httpStatus, contentType }) => {
-    t.assert.strictEqual(httpStatus, undefined)
-    t.assert.strictEqual(contentType, undefined)
-
-    return input => JSON.stringify(input)
+          return () => true
+        }
+      }
+    }
   })
 
   fastify.get('/', (req, reply) => {
@@ -731,4 +736,23 @@ test('Reply#compileSerializationSchema omits absent metadata instead of passing 
   })
 
   await fastify.inject({ path: '/', method: 'GET' })
+})
+
+test('Reply#getSerializationFunction and Reply#serializeInput look up the exact response schema key', async t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { response: getResponseSchema() } }, (req, reply) => {
+    // no NXX fallback
+    t.assert.strictEqual(reply.getSerializationFunction(404), undefined)
+    t.assert.throws(() => reply.serializeInput({}, 404), { code: 'FST_ERR_MISSING_SERIALIZATION_FN', message: 'Missing serialization function. Key "404"' })
+    // a content map needs the content type
+    t.assert.strictEqual(reply.getSerializationFunction('3xx'), undefined)
+    t.assert.throws(() => reply.serializeInput({}, '3xx'), { code: 'FST_ERR_MISSING_SERIALIZATION_FN', message: 'Missing serialization function. Key "3xx"' })
+
+    reply.send({ hello: 'world' })
+  })
+
+  const result = await fastify.inject('/')
+  t.assert.strictEqual(result.statusCode, 200)
 })

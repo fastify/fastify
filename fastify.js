@@ -256,7 +256,6 @@ function fastify (serverOptions) {
     getSchemas: schemaController.getSchemas.bind(schemaController),
     setInputValidatorCompiler,
     setOutputValidatorCompiler,
-    setSerializerCompiler,
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
@@ -346,10 +345,6 @@ function fastify (serverOptions) {
     outputValidatorCompiler: {
       configurable: true,
       get () { return this[kSchemaController].getOutputValidatorCompiler() }
-    },
-    serializerCompiler: {
-      configurable: true,
-      get () { return this[kSchemaController].getSerializerCompiler() }
     },
     childLoggerFactory: {
       configurable: true,
@@ -785,12 +780,6 @@ function fastify (serverOptions) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter"!')
     validateSchemaErrorFormatter(errorFormatter)
     this[kSchemaErrorFormatter] = errorFormatter.bind(this)
-    return this
-  }
-
-  function setSerializerCompiler (serializerCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSerializerCompiler"!')
-    this[kSchemaController].setSerializerCompiler(serializerCompiler)
     return this
   }
 

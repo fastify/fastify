@@ -129,12 +129,9 @@ expect(fastify({ handlerTimeout: 5000 })).type.toBeAssignableTo<FastifyInstance>
 expect(fastify({ maxParamLength: 100 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onProtoPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onConstructorPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ serializerOpts: { rounding: 'ceil' } })).type.toBeAssignableTo<FastifyInstance>()
-expect(
-  fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } })
-).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ serializerOpts: { schema: {} } })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ serializerOpts: { otherProp: {} } })).type.toBeAssignableTo<FastifyInstance>()
+// The `serializerOpts` option has been removed together with fast-json-stringify
+// @ts-expect-error  Object literal may only specify known properties
+fastify({ serializerOpts: { rounding: 'ceil' } })
 expect(fastify({ logger: true })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >()

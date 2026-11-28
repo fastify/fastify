@@ -1,5 +1,4 @@
 import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
-import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { FastifyInstance, SafePromiseLike } from '../fastify'
 /**
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
@@ -42,8 +41,6 @@ export interface FastifyValidationResult {
  */
 export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => FastifyValidationResult
 
-export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
-
 /**
  * The options of the input validator pool: the options of the
  * `@fastify/ajv-compiler` pool builder.
@@ -71,7 +68,6 @@ export interface FastifySchemaControllerOptions {
   };
   compilersFactory?: {
     buildInputValidator?: ValidatorFactory;
-    buildSerializer?: SerializerFactory;
     buildOutputValidator?: BuildCompilerFromPool;
   };
   inputValidatorOptions?: FastifyInputValidatorOptions;

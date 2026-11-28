@@ -264,6 +264,7 @@ function fastify (serverOptions) {
     // set generated request id
     setGenReqId,
     // custom parsers
+    setContentTypeHeaderParser,
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
     getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
@@ -763,6 +764,12 @@ function fastify (serverOptions) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler"!')
 
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
+    return this
+  }
+
+  function setContentTypeHeaderParser (parser) {
+    throwIfAlreadyStarted('Cannot call "setContentTypeHeaderParser"!')
+    this[kContentTypeParser].setParser(parser)
     return this
   }
 

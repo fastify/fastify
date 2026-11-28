@@ -459,6 +459,10 @@ section.
   configuration and validation.
 - [`pubsub-http-handler`](https://github.com/simenandre/pubsub-http-handler) A Fastify
   plugin to easily create Google Cloud PubSub endpoints.
+- [`validonce`](https://validonce.metatoy.com/docs/getting-started-fastify)
+  Cross-field validation rules (required when, compare, at least one of) written
+  once on the route schema, enforced by Fastify, exported in the OpenAPI
+  document and checked unchanged by browser forms.
 
 #### [Community Tools](#community-tools)
 

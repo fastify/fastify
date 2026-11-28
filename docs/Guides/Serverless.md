@@ -30,6 +30,7 @@ snippet of code.
 - [Google Firebase Functions](#google-firebase-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
+- [Prisma Compute](#prisma-compute)
 - [Vercel](#vercel)
 
 ## AWS
@@ -633,6 +634,142 @@ Add this command to your `package.json` *scripts*
 ```
 
 Then it should work fine.
+
+## Prisma Compute
+
+[Prisma Compute](https://www.prisma.io/compute) runs a Fastify application as a
+regular HTTP server that handles multiple requests at the same time and scales
+to zero when idle. Compute runs the application on [Bun](https://bun.com)
+instead of Node.js, and deploys applications declared with
+[Prisma Composer](https://www.prisma.io/docs/composer).
+
+### Adjust Fastify server
+
+Listen on the port the service provides and on all IPv4 addresses:
+
+```js
+// server.js
+import Fastify from 'fastify'
+import service from './service.ts'
+
+const fastify = Fastify({ logger: true })
+
+fastify.get('/', async () => {
+  return { hello: 'world' }
+})
+
+await fastify.listen({ port: service.port(), host: '0.0.0.0' })
+```
+
+### Declare the service
+
+Set `"type": "module"` in `package.json` and install the Composer packages:
+
+```bash
+npm i @prisma/composer @prisma/composer-prisma-cloud
+npm i -D prisma esbuild
+```
+
+Add `service.ts` to name the service and point to its bundled entry file,
+`module.ts` to name the project, and `prisma.config.ts` to configure the deploy:
+
+```ts
+// service.ts
+import node from '@prisma/composer/node'
+import { compute } from '@prisma/composer-prisma-cloud'
+
+export default compute({
+  name: 'api',
+  deps: {},
+  build: node({ module: import.meta.url, entry: './dist/server.mjs' })
+})
+```
+
+```ts
+// module.ts
+import { module } from '@prisma/composer'
+import apiService from './service.ts'
+
+export default module('fastify-app', ({ provision }) => {
+  provision(apiService)
+})
+```
+
+```ts
+// prisma.config.ts
+import { defineConfig as composer } from '@prisma/composer/config'
+import { nodeBuild } from '@prisma/composer/node/control'
+import { prismaCloud, prismaState } from '@prisma/composer-prisma-cloud/control'
+import { definePrismaConfig } from 'prisma/config'
+
+export default definePrismaConfig({
+  composer: composer({
+    entry: './module.ts',
+    extensions: [prismaCloud({ region: 'eu-central-1' }), nodeBuild()],
+    state: prismaState()
+  })
+})
+```
+
+### Deploy
+
+Sign in with `npx prisma auth login`, then bundle the server into a single file
+and deploy it:
+
+```bash
+npx esbuild server.js --bundle --platform=node --format=esm --outfile=dist/server.mjs
+npx prisma deploy
+```
+
+The command prints the public URL of the service.
+
+### Add a database
+
+To give the service a [Prisma Postgres](https://www.prisma.io/postgres)
+database, install
+[@fastify/postgres](https://github.com/fastify/fastify-postgres) with
+`npm i @fastify/postgres pg`. In `service.ts`, import `rawPostgres` from
+`@prisma/composer-prisma-cloud` and replace `deps: {}` with
+`deps: { db: rawPostgres() }`. Then provision the database in `module.ts`:
+
+```ts
+// module.ts
+import { module } from '@prisma/composer'
+import { rawPostgres } from '@prisma/composer-prisma-cloud'
+import apiService from './service.ts'
+
+export default module('fastify-app', ({ provision }) => {
+  const db = provision(rawPostgres({ name: 'database' }))
+  provision(apiService, { deps: { db } })
+})
+```
+
+The next deploy creates the database and passes its connection string to the
+service. Read it with `service.load()` in `server.js`:
+
+```js
+import fastifyPostgres from '@fastify/postgres'
+
+const { db } = service.load()
+
+fastify.register(fastifyPostgres, {
+  connectionString: db.url,
+  // Close idle connections before Compute suspends the instance
+  idleTimeoutMillis: 1000
+})
+
+fastify.get('/now', async () => {
+  const { rows } = await fastify.pg.query('SELECT now()')
+  return rows[0]
+})
+```
+
+Compute suspends an idle instance after a few seconds. A connection that stays
+in the pool across a suspension can delay the first query after the instance
+resumes, so keep the idle timeout short.
+
+Running the service locally with its database requires Bun: `npx prisma dev`
+starts the service and a local Postgres database.
 
 ## Vercel
 

@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 94
+const expectedErrors = 96
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -581,6 +581,26 @@ test('FST_ERR_SCH_SERIALIZATION_BUILD', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
   t.assert.strictEqual(error.message, 'Failed building the serialization schema for %s: %s, due to error %s')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_SCH_OUTPUT_VALIDATION_BUILD', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_SCH_OUTPUT_VALIDATION_BUILD()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_SCH_OUTPUT_VALIDATION_BUILD')
+  t.assert.strictEqual(error.message, 'Failed building the output validation schema for %s: %s, due to error %s')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_SCH_OUTPUT_VALIDATION', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_SCH_OUTPUT_VALIDATION()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
+  t.assert.strictEqual(error.message, 'Response validation failed. Errors: %s')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

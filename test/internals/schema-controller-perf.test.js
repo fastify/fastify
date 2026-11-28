@@ -8,7 +8,8 @@ test('SchemaController are NOT loaded when the controllers are custom', async t 
     schemaController: {
       compilersFactory: {
         buildValidator: () => () => { },
-        buildSerializer: () => () => { }
+        buildSerializer: () => () => { },
+        buildOutputValidator: () => () => { }
       }
     }
   })

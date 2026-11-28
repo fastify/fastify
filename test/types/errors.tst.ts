@@ -61,6 +61,8 @@ expect(errorCodes.FST_ERR_SCH_CONTENT_MISSING_SCHEMA).type.toBeAssignableTo<Fast
 expect(errorCodes.FST_ERR_SCH_DUPLICATE).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_VALIDATION_BUILD).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_SERIALIZATION_BUILD).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_SCH_OUTPUT_VALIDATION_BUILD).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_SCH_OUTPUT_VALIDATION).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_INIT_OPTS_INVALID).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE).type.toBeAssignableTo<FastifyErrorConstructor>()

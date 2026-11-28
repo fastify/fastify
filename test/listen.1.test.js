@@ -1,5 +1,6 @@
 'use strict'
 
+const os = require('node:os')
 const { networkInterfaces } = require('node:os')
 const { test, before } = require('node:test')
 const Fastify = require('..')
@@ -115,5 +116,24 @@ test('listen works with null host', async t => {
   const address = fastify.server.address()
   t.assert.strictEqual(address.address, localhost)
   t.assert.ok(address.port > 0)
+  await fastify.close()
+})
+
+test('listen works when the interface list cannot be enumerated', async t => {
+  assertNoWarning(t)
+
+  const original = os.networkInterfaces
+  os.networkInterfaces = () => {
+    throw Object.assign(
+      new Error('uv_interface_addresses returned Unknown system error 13'),
+      { code: 'ERR_SYSTEM_ERROR' }
+    )
+  }
+  t.after(() => { os.networkInterfaces = original })
+
+  const fastify = Fastify()
+
+  await fastify.listen({ port: 0, host: '0.0.0.0' })
+  t.assert.ok(fastify.server.address().port > 0)
   await fastify.close()
 })
